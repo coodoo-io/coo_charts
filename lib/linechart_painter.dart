@@ -855,28 +855,59 @@ class LineChartPainter extends CustomPainter {
     bool firstIsADoubleValue = false;
 
     for (var linechartDataSerie in linechartDataSeries) {
-      List<double?> values = linechartDataSerie.dataPoints.map((e) => e.value).toList();
-      values.removeWhere((element) => element == null);
+      {
+        // Alle Datenwerte  prüfen
+        List<double?> values = linechartDataSerie.dataPoints.map((e) => e.value).toList();
+        values.removeWhere((element) => element == null);
 
-      if (values.isEmpty) {
-        continue;
+        if (values.isEmpty) {
+          continue;
+        }
+
+        // check first
+        if (!firstIsADoubleValue && values[0]! % 1 != 0) {
+          firstIsADoubleValue = true;
+        }
+
+        // Min- und Max-Value herausfinden (Nulls beachten und ignorieren)
+        final maxValueTmp = values.cast<double>().reduce(max);
+        if (maxDataPointValue == null || maxDataPointValue! < maxValueTmp) {
+          maxDataPointValue = maxValueTmp;
+          yAxisMaxValue = maxValueTmp;
+        }
+        final minValueTmp = values.cast<double>().reduce(min);
+        if (minDataPointValue == null || minDataPointValue! > minValueTmp) {
+          minDataPointValue = minValueTmp;
+          yAxisMinValue = minValueTmp;
+        }
       }
 
-      // check first
-      if (!firstIsADoubleValue && values[0]! % 1 != 0) {
-        firstIsADoubleValue = true;
-      }
+      // Prüfen ob die Max-Werte eines Punktes anezeigt werden sollen.
+      // Falls ja, muss dieser als Max-Wert
+      if (linechartDataSerie.showMinMaxArea) {
+        // Max aus den Punkten der range max Daten
+        List<double?> maxValues = linechartDataSerie.dataPoints.map((e) => e.maxValue).toList();
+        maxValues.removeWhere((element) => element == null);
 
-      // Min- und Max-Value herausfinden (Nulls beachten und ignorieren)
-      final maxValueTmp = values.cast<double>().reduce(max);
-      if (maxDataPointValue == null || maxDataPointValue! < maxValueTmp) {
-        maxDataPointValue = maxValueTmp;
-        yAxisMaxValue = maxValueTmp;
-      }
-      final minValueTmp = values.cast<double>().reduce(min);
-      if (minDataPointValue == null || minDataPointValue! > minValueTmp) {
-        minDataPointValue = minValueTmp;
-        yAxisMinValue = minValueTmp;
+        if (maxValues.isNotEmpty) {
+          final maxValuesMax = maxValues.cast<double>().reduce(max);
+          if (maxDataPointValue == null || maxDataPointValue! < maxValuesMax) {
+            maxDataPointValue = maxValuesMax;
+            yAxisMaxValue = maxValuesMax;
+          }
+        }
+
+        // Max aus den Punkten der range max Daten
+        List<double?> minValues = linechartDataSerie.dataPoints.map((e) => e.minValue).toList();
+        minValues.removeWhere((element) => element == null);
+
+        if (minValues.isNotEmpty) {
+          final minValuesMin = minValues.cast<double>().reduce(min);
+          if (minDataPointValue == null || minDataPointValue! > minValuesMin) {
+            minDataPointValue = minValuesMin;
+            yAxisMinValue = minValuesMin;
+          }
+        }
       }
     }
 

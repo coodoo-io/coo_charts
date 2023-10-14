@@ -392,8 +392,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateKachelmann14TageWetterTrend() {
     _resetToDefault();
 
-    yAxisMinLabelValue = -5;
-    yAxisMaxLabelValue = 30;
+    // yAxisMinLabelValue = -5;
+    // yAxisMaxLabelValue = 30;
     yAxisLabelCount = 8;
     xAxisValueType = XAxisValueType.date;
     xAxisBottomDateFormat = 'E';
