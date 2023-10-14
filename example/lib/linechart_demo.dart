@@ -64,7 +64,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
         children: [
           Container(
             color: Colors.blue,
-            child: SizedBox(
+            child: const SizedBox(
               height: 150,
               child: Row(),
             ),
@@ -97,7 +97,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   xAxisConfig: XAxisConfig(
                     startNumber: xAxisStartNumber,
                     xAxisValueType: xAxisValueType,
-                    dateFormat: xAxisDateFormat,
+                    bottomDateFormat: xAxisDateFormat,
                   ),
                   yAxisConfig: YAxisConfig(
                     addValuePadding: calcYAxisValuePadding,

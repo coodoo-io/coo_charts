@@ -72,9 +72,6 @@ class _LineChartWidgetState extends State<LineChartWidget> {
         width = constraints.maxWidth;
       }
 
-      if (kDebugMode) {
-        print('LayoutBuilder width: $width, height: $height');
-      }
       return GestureDetector(
         child: MouseRegion(
           onHover: (event) {

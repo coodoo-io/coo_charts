@@ -1,4 +1,3 @@
-
 /// Alle möglichen Konfigurationen, die direkten Bezug auf die Y-Achse haben.
 class YAxisConfig {
   const YAxisConfig({
@@ -6,7 +5,12 @@ class YAxisConfig {
     this.minLabelValue,
     this.maxLabelValue,
     this.addValuePadding = true,
+    this.showYAxisLables = true,
+    this.showAxis = true,
   });
+
+  /// Shoud the y-axis be printed. Default is true
+  final bool showAxis;
 
   // Anzahl Labels auf der Y-Achse. Es werden die hier konfigurierte Anzahl Labels für die Bezeichner der Y-Achse
   // angezeigt. Dabei werden die Werte zwischen Min- und Max-Werten berechnet.
@@ -27,4 +31,5 @@ class YAxisConfig {
   /// Wenn false, wird das Chart von den Grenzen gezeichnet. Es startet dann unten auf der Base-Line mit
   /// dem niedrigsten Wert und endet Oben mit dem Max-Wert.
   final bool addValuePadding;
+  final bool showYAxisLables;
 }
