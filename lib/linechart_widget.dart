@@ -123,12 +123,12 @@ class _LineChartWidgetState extends State<LineChartWidget> {
 
 /// Welchen Datentyp hat die X-Achse?
 enum XAxisValueType {
-  number, // Zahlen 1,2,3.. (es kann ein Startwert angegeben werden)
+  number, // Einfache Durchnummerierung 1,2,3.. (es kann ein Startwert angegeben werden)
   datetime, // Datum mit Zeitangabe
   date, // Datum ohne Zeitangabe
 }
 
-/// In welchem Range sollen die Labels angebrat werden?
+/// In welchem Range sollen die Labels angebracht werden?
 /// Mo 13.4., Di 14.4., Do 15.4., ...
 /// Jan, Feb, Mar, ...
 /// 2023, 2024, 2025

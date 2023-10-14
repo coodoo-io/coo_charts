@@ -15,8 +15,6 @@ class LineChartDemo extends StatefulWidget {
 
 class _LineChartDemoState extends State<LineChartDemo> {
   late List<LinechartDataSeries> linechartDataSeries = List.empty(growable: true);
-  XAxisValueType xAxisValueType = XAxisValueType.number; // Konfiguriert den X-Achsen Wert (Zahlen oder Datum usw.)
-
   bool curvedLine = false; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   bool crosshair = false; // Soll ein Fadenkreuz angezeigt werden?
   bool showGridHorizontal = true; // if true, grid horizontal lines are painted
@@ -44,7 +42,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   /// X-Achse Config
   int xAxisStartNumber = 0;
-  String xAxisDateFormat = 'dd.MM';
+  XAxisValueType xAxisValueType = XAxisValueType.number; // Konfiguriert den X-Achsen Wert (Zahlen oder Datum usw.)
+  String xAxisBottomDateFormat = 'dd.MM';
+
+  bool xAxisShowTopLabels = false;
+  bool xAxisShowBottomLabels = true;
 
   @override
   initState() {
@@ -65,7 +67,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
           Container(
             color: Colors.blue,
             child: const SizedBox(
-              height: 150,
+              height: 50,
               child: Row(),
             ),
           ),
@@ -96,8 +98,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
                   xAxisConfig: XAxisConfig(
                     startNumber: xAxisStartNumber,
-                    xAxisValueType: xAxisValueType,
-                    bottomDateFormat: xAxisDateFormat,
+                    valueType: xAxisValueType,
+                    showTopLabels: xAxisShowTopLabels,
+                    showBottomLabels: xAxisShowBottomLabels,
+                    bottomDateFormat: xAxisBottomDateFormat,
                   ),
                   yAxisConfig: YAxisConfig(
                     addValuePadding: calcYAxisValuePadding,
@@ -180,6 +184,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   ElevatedButton(
                     onPressed: () => setState(() => crosshair = !crosshair),
                     child: Text('Crosshair ${crosshair ? '✅' : '❌'}'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => xAxisShowTopLabels = !xAxisShowTopLabels),
+                    child: Text('Top Labels ${xAxisShowTopLabels ? '✅' : '❌'}'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => xAxisShowBottomLabels = !xAxisShowBottomLabels),
+                    child: Text('Bottom Labels ${xAxisShowBottomLabels ? '✅' : '❌'}'),
                   ),
 
                   // ElevatedButton(
@@ -367,20 +379,16 @@ class _LineChartDemoState extends State<LineChartDemo> {
     yAxisMinLabelValue = -5;
     yAxisMaxLabelValue = 30;
     yAxisLabelCount = 8;
-    xAxisDateFormat = 'E dd.';
-
     xAxisValueType = XAxisValueType.date;
+    xAxisBottomDateFormat = 'E';
+    xAxisShowTopLabels = true;
+
     linechartDataSeries.clear();
 
     // Voraussichtliche Tageshöchsttemperatur
     var hoechstTemperatur = List<LineChartDataPoint>.empty(growable: true);
-    hoechstTemperatur.add(LineChartDataPoint(
-      value: 14,
-      minValue: 12,
-      maxValue: 14,
-      label: '14°',
-      time: DateTime(2023, 4, 9),
-    ));
+    hoechstTemperatur
+        .add(LineChartDataPoint(value: 14, minValue: 12, maxValue: 14, label: '14°', time: DateTime(2023, 4, 9)));
     hoechstTemperatur
         .add(LineChartDataPoint(value: 16, minValue: 14, maxValue: 17, label: '16°', time: DateTime(2023, 4, 10)));
     hoechstTemperatur
@@ -408,8 +416,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       dataPoints: hoechstTemperatur,
       label: 'Voraussichtliche Tageshöchsttemperatur',
       showMinMaxArea: true,
-      dataLineColor: Colors.red,
-      minMaxAreaColor: Colors.red.withOpacity(0.4),
+      dataLineColor: const Color(0xffd85930),
+      minMaxAreaColor: const Color.fromRGBO(216, 89, 48, .4),
       dataLabelColor: Colors.white,
     );
     linechartDataSeries.add(linechartHoechstTemperatur);
@@ -445,8 +453,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       dataPoints: tiefstTemperatur,
       label: 'Voraussichtliche Tagestiefsttemperatur',
       showMinMaxArea: true,
-      dataLineColor: Colors.blue,
-      minMaxAreaColor: Colors.blue.withOpacity(0.4),
+      dataLineColor: const Color(0xff0080b5),
+      minMaxAreaColor: const Color.fromRGBO(84, 185, 233, .4),
       dataLabelColor: Colors.white,
     );
     linechartDataSeries.add(dataSeriesTiefsttemperatur);

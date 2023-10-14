@@ -2,24 +2,24 @@ import 'package:coo_charts/linechart_widget.dart';
 
 class XAxisConfig {
   const XAxisConfig({
-    this.xAxisTopValueType = XAxisValueType.date,
-    this.xAxisBottomValueType = XAxisValueType.number,
-    this.xAxisValueType = XAxisValueType.number,
-    this.startNumber = 0,
-    this.topDateFormat,
-    this.bottomDateFormat,
+    this.valueType = XAxisValueType.number,
     this.showAxis = true,
+    this.showTopLabels = false,
+    this.showBottomLabels = true,
+    this.startNumber = 0, // If value type is number -> startnumber
+    this.topDateFormat, // If value type is date - date formatter for top labels
+    this.bottomDateFormat, // If value type is date - date formatter for bottom labels
   });
 
   /// Shoud the x-axis be printed. Default is true
   final bool showAxis;
 
   /// Which type of x-axis values (number, date, ...)
-  final XAxisValueType? xAxisTopValueType;
-  final XAxisValueType? xAxisBottomValueType;
+  final XAxisValueType valueType;
 
-  /// Which type of x-axis values (number, date, ...)
-  final XAxisValueType? xAxisValueType;
+  // Show the x-axis lables or not?
+  final bool showTopLabels;
+  final bool showBottomLabels;
 
   /// The formatter of a date x-axis value. There is a build in default but you can use all the availble
   /// [DateFormat] formatter options (https://api.flutter.dev/flutter/intl/DateFormat-class.html).

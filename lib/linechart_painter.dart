@@ -36,16 +36,15 @@ class LineChartPainter extends CustomPainter {
 
     _initializeValues();
 
-    switch (xAxisConfig.xAxisBottomValueType) {
+    // Initialisierung anhand des übergebenen Datentyps.
+    // Reihen die ein Datum als Wert haben werden anders bewerted
+    switch (xAxisConfig.valueType) {
       case XAxisValueType.date:
       case XAxisValueType.datetime:
         _initializeDateTimeLineChartValues();
-        break;
-      case XAxisValueType.number:
-        _initializeNumberLineChartValues();
-        break;
+
       default:
-        throw UnimplementedError('X-Axis value Type $xAxisConfig.xAxisValueType is not implmenented');
+        _initializeNumberLineChartValues();
     }
 
     if (!centerDataPointBetweenVerticalGrid) {
@@ -88,7 +87,7 @@ class LineChartPainter extends CustomPainter {
   /// Padding des Canvas um das der Graph eingerückt ist.
   final int paddingLeft = 100;
   final int paddingRight = 100;
-  final int paddingTop = 150;
+  final int paddingTop = 50;
   final int paddingBottom = 50;
 
   double chartWidth = 0.0;
@@ -626,7 +625,10 @@ class LineChartPainter extends CustomPainter {
     }
   }
 
-  // Malt die X-Achse in der Breite des Charts
+  /// Malt die Y-Achse, alle Y-Linien der Datenpunkte und die Labels in der Breite des Charts
+  ///
+  /// Labels können unter und über dem Chart gemalt werden.
+  /// Definiert wird das durch [xAxisConfig.topValueType] und [xAxisConfig.bottomValueType].
   void _drawXAxisLabelAndVerticalGridLine({
     required Canvas canvas,
     required double chartWidth,
@@ -640,45 +642,37 @@ class LineChartPainter extends CustomPainter {
     double xOffsetInterval = chartWidth / (xGridLineCount);
     double xBottomPos = chartHeight + paddingTop;
 
+    // In case of a date label define the default date format
     DateFormat? topDateFormat;
-    switch (xAxisConfig.xAxisTopValueType) {
-      case XAxisValueType.date:
-        topDateFormat = DateFormat('dd.MM.');
-        break;
-
-      case XAxisValueType.datetime:
-        topDateFormat = DateFormat('dd.MM.yyyy hh:mm');
-        break;
-
-      case XAxisValueType.number:
-      default:
-      // nothing to do for default..
-    }
-
     DateFormat? bottomDateFormat;
-    switch (xAxisConfig.xAxisBottomValueType) {
+    switch (xAxisConfig.valueType) {
       case XAxisValueType.date:
-        bottomDateFormat = DateFormat('dd.MM.');
+        topDateFormat = DateFormat.MMMMd();
+        bottomDateFormat = DateFormat.MMMMd();
         break;
 
       case XAxisValueType.datetime:
-        bottomDateFormat = DateFormat('dd.MM.yyyy hh:mm');
-        break;
+        topDateFormat = DateFormat.yMd().add_Hm();
 
-      case XAxisValueType.number:
+        bottomDateFormat = DateFormat.yMd().add_Hm();
+        break;
       default:
       // nothing to do for default..
     }
 
+    // Check custom given formats
     if (xAxisConfig.topDateFormat != null) {
+      // Custom date format given by implementer
       topDateFormat = DateFormat(xAxisConfig.topDateFormat);
     }
 
     if (xAxisConfig.bottomDateFormat != null) {
+      // Custom date format given by implementer
       bottomDateFormat = DateFormat(xAxisConfig.bottomDateFormat);
     }
 
     int startNumber = xAxisConfig.startNumber;
+    gridLineLoop:
     for (int i = 0; i <= xGridLineCount; i++) {
       double x = (xOffsetInterval * i) + paddingLeft;
       double xVerticalGridline = x;
@@ -695,6 +689,11 @@ class LineChartPainter extends CustomPainter {
       // draw highlight vertical line on mouse-over
       if (highlightPointsVerticalLine && i != 0 && i == mouseInRectYIndex) {
         canvas.drawLine(Offset(x, paddingTop.toDouble()), Offset(x, xBottomPos), _highlightLinePaint);
+      }
+
+      if (!xAxisConfig.showTopLabels && !xAxisConfig.showBottomLabels) {
+        // Es sollen keine Labels gemalt werden - können uns diese Auswertung sparen.
+        continue gridLineLoop;
       }
 
       TextStyle textStyle;
@@ -716,46 +715,38 @@ class LineChartPainter extends CustomPainter {
       // nicht, denn das wäre ein nicht vorhandener Datenpunkt zu viel
       if (!centerDataPointBetweenVerticalGrid || i != xGridLineCount) {
         late String topLabel;
-        switch (xAxisConfig.xAxisTopValueType) {
+        late String bottomLabel;
+        switch (xAxisConfig.valueType) {
           case XAxisValueType.date:
-            topLabel = topDateFormat!.format(allDateTimeXAxisValues[i]);
-            break;
           case XAxisValueType.datetime:
             topLabel = topDateFormat!.format(allDateTimeXAxisValues[i]);
+            bottomLabel = bottomDateFormat!.format(allDateTimeXAxisValues[i]);
             break;
-          default:
+          case XAxisValueType.number:
+            bottomLabel = startNumber.toString();
             topLabel = startNumber.toString();
+            break;
         }
 
-        if (!centerDataPointBetweenVerticalGrid || i != xGridLineCount) {
-          late String bottomLabel;
-          switch (xAxisConfig.xAxisBottomValueType) {
-            case XAxisValueType.date:
-              bottomLabel = bottomDateFormat!.format(allDateTimeXAxisValues[i]);
-              break;
-            case XAxisValueType.datetime:
-              bottomLabel = bottomDateFormat!.format(allDateTimeXAxisValues[i]);
-              break;
-            default:
-              bottomLabel = startNumber.toString();
-          }
+        startNumber++;
 
-          startNumber++;
-
+        if (xAxisConfig.showTopLabels) {
           _axisLabelPainter.text = TextSpan(text: topLabel, style: textStyle);
           _axisLabelPainter.layout();
           // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-          var xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
+          final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
           // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
-          var xPos = x - (xOffsetInterval / 2) + xPosCenter;
-          _axisLabelPainter.paint(canvas, Offset(xPos, -5));
+          final xPos = x - (xOffsetInterval / 2) + xPosCenter;
+          _axisLabelPainter.paint(canvas, Offset(xPos, paddingTop.toDouble() - 25));
+        }
 
+        if (xAxisConfig.showBottomLabels) {
           _axisLabelPainter.text = TextSpan(text: bottomLabel, style: textStyle);
           _axisLabelPainter.layout();
           // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-          xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
+          final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
           // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
-          xPos = x - (xOffsetInterval / 2) + xPosCenter;
+          final xPos = x - (xOffsetInterval / 2) + xPosCenter;
           _axisLabelPainter.paint(canvas, Offset(xPos, chartHeight + paddingTop + 10));
         }
       }
@@ -840,9 +831,9 @@ class LineChartPainter extends CustomPainter {
     return normalizedDataPoints;
   }
 
-  // Initialisiert die Rahmendaten anhand DateTime Serien
-  // - Sortiert alle DateTime Datenpunkte und
-  // - Findet die absolute (Data-Series übergreifende) Menge an Datenpunkte heraus
+  /// Initialisiert die Rahmendaten anhand DateTime Serien
+  /// - Sortiert alle DateTime Datenpunkte und
+  /// - Findet die absolute (Data-Series übergreifende) Menge an Datenpunkte heraus
   void _initializeDateTimeLineChartValues() {
     Set<DateTime> allDateTimesTmp = {}; // Alle Dates einmal speichern (doppelte herausfiltern)
 
@@ -866,6 +857,7 @@ class LineChartPainter extends CustomPainter {
     allDateTimeXAxisValues.sort((a, b) => a.compareTo(b));
   }
 
+  /// Initialisiert die Rahmendaten anhand der übergebenen Werte numerisch
   void _initializeNumberLineChartValues() {
     for (var linechartDataSerie in linechartDataSeries) {
       if (linechartDataSerie.dataPoints.length > maxAbsoluteValueCount) {
