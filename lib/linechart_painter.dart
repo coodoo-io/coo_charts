@@ -27,9 +27,10 @@ class LineChartPainter extends CustomPainter {
     required this.xAxisConfig,
     required this.centerDataPointBetweenVerticalGrid,
     required this.yAxisConfig,
+    required this.padding,
   }) {
-    chartWidth = canvasWidth - paddingLeft - paddingRight;
-    chartHeight = canvasHeight - paddingBottom - paddingTop;
+    chartWidth = canvasWidth - padding.left - padding.right;
+    chartHeight = canvasHeight - padding.bottom - padding.top;
 
     _initializeValues();
 
@@ -56,6 +57,7 @@ class LineChartPainter extends CustomPainter {
   final List<LinechartDataSeries> linechartDataSeries;
   final double canvasHeight;
   final double canvasWidth;
+  final ChartPadding padding;
   final Offset? mousePosition; // Position des Mauszeigers - wird für das Fadenkreuz benötigt (interne Variable)
 
   /// Externe Konfigurationsmöglichkeiten
@@ -79,10 +81,6 @@ class LineChartPainter extends CustomPainter {
   final bool centerDataPointBetweenVerticalGrid;
 
   /// Padding des Canvas um das der Graph eingerückt ist.
-  final int paddingLeft = 100;
-  final int paddingRight = 100;
-  final int paddingTop = 50;
-  final int paddingBottom = 50;
 
   double chartWidth = 0.0;
   double chartHeight = 0.0;
@@ -267,17 +265,17 @@ class LineChartPainter extends CustomPainter {
 
         double x;
         if (i == 0) {
-          x = 0.0 + paddingLeft;
+          x = 0.0 + padding.left;
         } else {
-          x = (i * xSegmentWidth) + paddingLeft;
+          x = (i * xSegmentWidth) + padding.left;
         }
         if (centerDataPointBetweenVerticalGrid) {
           x += xSegementWidthHalf; // add center offset
         }
 
-        final y = (canvasHeight - paddingTop - paddingBottom) -
-            (dataValue * (canvasHeight - paddingTop - paddingBottom)) +
-            paddingTop;
+        final y = (canvasHeight - padding.top - padding.bottom) -
+            (dataValue * (canvasHeight - padding.top - padding.bottom)) +
+            padding.top;
 
         if (!startPointAdded) {
           lineChartDataPointsPath.moveTo(x, y);
@@ -409,17 +407,17 @@ class LineChartPainter extends CustomPainter {
 
       double x;
       if (i == 0) {
-        x = 0.0 + paddingLeft;
+        x = 0.0 + padding.left;
       } else {
-        x = (i * xSegmentWidth) + paddingLeft;
+        x = (i * xSegmentWidth) + padding.left;
       }
       if (centerDataPointBetweenVerticalGrid) {
         x += xSegementWidthHalf; // add center offset
       }
 
-      final y = (canvasHeight - paddingTop - paddingBottom) -
-          (dataValue * (canvasHeight - paddingTop - paddingBottom)) +
-          paddingTop;
+      final y = (canvasHeight - padding.top - padding.bottom) -
+          (dataValue * (canvasHeight - padding.top - padding.bottom)) +
+          padding.top;
 
       if (!startPointAdded) {
         lineChartDataPointsPath.moveTo(x, y);
@@ -455,17 +453,17 @@ class LineChartPainter extends CustomPainter {
 
       double x;
       if (i == 0) {
-        x = 0.0 + paddingLeft;
+        x = 0.0 + padding.left;
       } else {
-        x = (i * xSegmentWidth) + paddingLeft;
+        x = (i * xSegmentWidth) + padding.left;
       }
       if (centerDataPointBetweenVerticalGrid) {
         x += xSegementWidthHalf; // add center offset
       }
 
-      final y = (canvasHeight - paddingTop - paddingBottom) -
-          (dataValue * (canvasHeight - paddingTop - paddingBottom)) +
-          paddingTop;
+      final y = (canvasHeight - padding.top - padding.bottom) -
+          (dataValue * (canvasHeight - padding.top - padding.bottom)) +
+          padding.top;
 
       if (!startPointAdded) {
         lineChartDataPointsPath.moveTo(x, y);
@@ -516,16 +514,16 @@ class LineChartPainter extends CustomPainter {
 
     // das erste und das letzte Rect sind nur halb so groß, wenn der Punkt direkt bei 0 auf der Y-Achse liegt
     for (var i = 0; i < maxAbsoluteValueCount; i++) {
-      var x1 = (i * xSegmentWidth) + paddingLeft - xSegementWidthHalf;
-      var y1 = paddingTop.toDouble();
+      var x1 = (i * xSegmentWidth) + padding.left - xSegementWidthHalf;
+      var y1 = padding.top.toDouble();
 
-      var x2 = (i * xSegmentWidth) + xSegmentWidth + paddingLeft - xSegementWidthHalf;
-      var y2 = paddingTop + chartHeigt;
+      var x2 = (i * xSegmentWidth) + xSegmentWidth + padding.left - xSegementWidthHalf;
+      var y2 = padding.top + chartHeigt;
 
       // Erster und letzter Datenpunkt sind nur halb zu sehen
       if (i == 0 && !centerDataPointBetweenVerticalGrid) {
-        x1 = 0 + paddingLeft.toDouble();
-        x2 = xSegementWidthHalf + paddingLeft.toDouble();
+        x1 = 0 + padding.left.toDouble();
+        x2 = xSegementWidthHalf + padding.left.toDouble();
       }
 
       if (centerDataPointBetweenVerticalGrid) {
@@ -563,7 +561,7 @@ class LineChartPainter extends CustomPainter {
     }
 
     // Nur anzeigen, wenn die Mausposition im Feld des gemalten Charts liegt.
-    var rectangle = Rectangle(paddingLeft, paddingTop, chartWidth, chartHeight);
+    var rectangle = Rectangle(padding.left, padding.top, chartWidth, chartHeight);
     bool containsPoint = rectangle.containsPoint(Point(mousePosition.dx, mousePosition.dy));
     if (!containsPoint) {
       return;
@@ -571,13 +569,13 @@ class LineChartPainter extends CustomPainter {
 
     // Crosshair malen
     canvas.drawLine(
-      Offset(mousePosition.dx, paddingTop.toDouble()),
-      Offset(mousePosition.dx, chartHeight + paddingTop),
+      Offset(mousePosition.dx, padding.top.toDouble()),
+      Offset(mousePosition.dx, chartHeight + padding.top),
       _mousePositionPaint,
     );
     canvas.drawLine(
-      Offset(paddingLeft.toDouble(), mousePosition.dy),
-      Offset(chartWidth + paddingLeft, mousePosition.dy),
+      Offset(padding.left.toDouble(), mousePosition.dy),
+      Offset(chartWidth + padding.left, mousePosition.dy),
       _mousePositionPaint,
     );
 
@@ -595,16 +593,16 @@ class LineChartPainter extends CustomPainter {
   }) {
     if (showXAxis) {
       canvas.drawLine(
-        Offset(paddingLeft.toDouble(), height - paddingBottom),
-        Offset(chartWidth + paddingLeft, height - paddingBottom),
+        Offset(padding.left.toDouble(), height - padding.bottom),
+        Offset(chartWidth + padding.left, height - padding.bottom),
         _axisPaint,
       );
     }
 
     if (showYAxis) {
       canvas.drawLine(
-        Offset(paddingLeft.toDouble(), paddingTop.toDouble()),
-        Offset(paddingLeft.toDouble(), height - paddingBottom),
+        Offset(padding.left.toDouble(), padding.top.toDouble()),
+        Offset(padding.left.toDouble(), height - padding.bottom),
         _axisPaint,
       );
     }
@@ -625,7 +623,7 @@ class LineChartPainter extends CustomPainter {
       xGridLineCount -= 1;
     }
     double xOffsetInterval = chartWidth / (xGridLineCount);
-    double xBottomPos = chartHeight + paddingTop;
+    double xBottomPos = chartHeight + padding.top;
 
     // In case of a date label define the default date format
     DateFormat? topDateFormat;
@@ -659,7 +657,7 @@ class LineChartPainter extends CustomPainter {
     int startNumber = xAxisConfig.startNumber;
     gridLineLoop:
     for (int i = 0; i <= xGridLineCount; i++) {
-      double x = (xOffsetInterval * i) + paddingLeft;
+      double x = (xOffsetInterval * i) + padding.left;
       double xVerticalGridline = x;
       if (centerDataPointBetweenVerticalGrid) {
         x += xSegementWidthHalf; // add center offset
@@ -668,12 +666,12 @@ class LineChartPainter extends CustomPainter {
       // Don't draw the first vertical grid line because there is already the y-Axis line
       if (i != 0 && showGridVertical) {
         canvas.drawLine(
-            Offset(xVerticalGridline, paddingTop.toDouble()), Offset(xVerticalGridline, xBottomPos), _gridPaint);
+            Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), _gridPaint);
       }
 
       // draw highlight vertical line on mouse-over
       if (highlightPointsVerticalLine && i != 0 && i == mouseInRectYIndex) {
-        canvas.drawLine(Offset(x, paddingTop.toDouble()), Offset(x, xBottomPos), _highlightLinePaint);
+        canvas.drawLine(Offset(x, padding.top.toDouble()), Offset(x, xBottomPos), _highlightLinePaint);
       }
 
       if (!xAxisConfig.showTopLabels && !xAxisConfig.showBottomLabels) {
@@ -722,7 +720,7 @@ class LineChartPainter extends CustomPainter {
           final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
           // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
           final xPos = x - (xOffsetInterval / 2) + xPosCenter;
-          _axisLabelPainter.paint(canvas, Offset(xPos, paddingTop.toDouble() - 25));
+          _axisLabelPainter.paint(canvas, Offset(xPos, padding.top.toDouble() - 25));
         }
 
         if (xAxisConfig.showBottomLabels) {
@@ -732,7 +730,7 @@ class LineChartPainter extends CustomPainter {
           final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
           // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
           final xPos = x - (xOffsetInterval / 2) + xPosCenter;
-          _axisLabelPainter.paint(canvas, Offset(xPos, chartHeight + paddingTop + 10));
+          _axisLabelPainter.paint(canvas, Offset(xPos, chartHeight + padding.top + 10));
         }
       }
     }
@@ -748,11 +746,11 @@ class LineChartPainter extends CustomPainter {
     final double yOffsetInterval = chartHeight / (yAxisConfig.labelCount - 1);
 
     for (int i = 0; i < yAxisConfig.labelCount; i++) {
-      double y = chartHeight - (i * yOffsetInterval) + paddingTop;
+      double y = chartHeight - (i * yOffsetInterval) + padding.top;
 
       // // Don't draw the first horizontal grid line because there is already the x-Axis line
       if (i != 0 && showGridHorizontal) {
-        canvas.drawLine(Offset(paddingLeft.toDouble(), y), Offset(chartWidth + paddingLeft, y), _gridPaint);
+        canvas.drawLine(Offset(padding.left.toDouble(), y), Offset(chartWidth + padding.left, y), _gridPaint);
       }
 
       // Draw Y-axis scale points
@@ -773,7 +771,7 @@ class LineChartPainter extends CustomPainter {
 
       if (showYAxisLables) {
         _axisLabelPainter.layout();
-        _axisLabelPainter.paint(canvas, Offset(paddingLeft - 35, y - _axisLabelPainter.height / 2));
+        _axisLabelPainter.paint(canvas, Offset(padding.left - 35, y - _axisLabelPainter.height / 2));
       }
     }
   }
@@ -943,4 +941,19 @@ class LineChartPainter extends CustomPainter {
       }
     }
   }
+}
+
+// You can shift the painted chart area by setting padding values.
+class ChartPadding {
+  const ChartPadding({
+    this.top = 50, // Space for top labels
+    this.right = 0,
+    this.bottom = 50, // Space for bottom labels
+    this.left = 50, // Space for left labels
+  });
+
+  final int left;
+  final int right;
+  final int top;
+  final int bottom;
 }

@@ -22,6 +22,7 @@ class LineChartWidget extends StatefulWidget {
     this.centerDataPointBetweenVerticalGrid = false,
     this.yAxisConfig = const YAxisConfig(),
     this.xAxisConfig = const XAxisConfig(),
+    this.padding = const ChartPadding(),
   });
 
   final List<LinechartDataSeries> linechartDataSeries;
@@ -45,6 +46,8 @@ class LineChartWidget extends StatefulWidget {
   /// Die Konfiguration der Y-Achse
   final YAxisConfig yAxisConfig;
   final XAxisConfig xAxisConfig;
+
+  final ChartPadding padding;
 
   @override
   State<LineChartWidget> createState() => _LineChartWidgetState();
@@ -87,6 +90,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                 linechartDataSeries: widget.linechartDataSeries,
                 canvasWidth: width,
                 canvasHeight: height,
+                padding: widget.padding,
                 mousePosition: _mousePointer,
                 curvedLine: widget.curvedLine,
                 crosshair: widget.crosshair,
