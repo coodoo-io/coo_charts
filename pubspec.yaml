@@ -1,0 +1,20 @@
+name: coo_charts
+description: A new Flutter package project.
+version: 0.0.1
+homepage: "https://github.com/coodoo-io/coo_charts"
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  intl: ^0.18.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
