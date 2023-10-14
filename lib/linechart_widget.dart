@@ -23,6 +23,9 @@ class LineChartWidget extends StatefulWidget {
     this.yAxisConfig = const YAxisConfig(),
     this.xAxisConfig = const XAxisConfig(),
     this.padding = const ChartPadding(),
+    this.xAxisLabelBottomPostfix,
+    this.xAxisLabelTopPostfix,
+    this.yAxisLabelPostfix,
   });
 
   final List<LinechartDataSeries> linechartDataSeries;
@@ -48,6 +51,17 @@ class LineChartWidget extends StatefulWidget {
   final XAxisConfig xAxisConfig;
 
   final ChartPadding padding;
+
+  /// This text will added to every label on y-axis
+  /// e.g. °C -> 2 °C, 4 °C, 6 °C ...
+  /// or cm -> 2 cm, 4 cm, 6 cm
+  final String? yAxisLabelPostfix;
+
+  /// This text will be added to every label on x-axis
+  /// e.g. °C -> 2 °C, 4 °C, 6 °C ...
+  /// or cm -> 2 cm, 4 cm, 6 cm
+  final String? xAxisLabelBottomPostfix;
+  final String? xAxisLabelTopPostfix;
 
   @override
   State<LineChartWidget> createState() => _LineChartWidgetState();
@@ -103,6 +117,9 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                 xAxisConfig: widget.xAxisConfig,
                 centerDataPointBetweenVerticalGrid: widget.centerDataPointBetweenVerticalGrid,
                 yAxisConfig: widget.yAxisConfig,
+                yAxisLabelPostfix: widget.yAxisLabelPostfix,
+                xAxisLabelBottomPostfix: widget.xAxisLabelBottomPostfix,
+                xAxisLabelTopPostfix: widget.xAxisLabelTopPostfix,
               ),
             ),
           ),

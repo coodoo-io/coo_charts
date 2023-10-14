@@ -24,10 +24,13 @@ class LineChartPainter extends CustomPainter {
     required this.highlightPoints,
     required this.highlightPointsVerticalLine,
     required this.highlightPointsHorizontalLine,
-    required this.xAxisConfig,
     required this.centerDataPointBetweenVerticalGrid,
+    required this.xAxisConfig,
     required this.yAxisConfig,
     required this.padding,
+    required this.yAxisLabelPostfix,
+    required this.xAxisLabelBottomPostfix,
+    required this.xAxisLabelTopPostfix,
   }) {
     chartWidth = canvasWidth - padding.left - padding.right;
     chartHeight = canvasHeight - padding.bottom - padding.top;
@@ -76,6 +79,17 @@ class LineChartPainter extends CustomPainter {
   /// Die Konfiguration für X- und Y-Achse
   final YAxisConfig yAxisConfig;
   final XAxisConfig xAxisConfig;
+
+  /// This text will added to every label on y-axis
+  /// e.g. °C -> 2 °C, 4 °C, 6 °C ...
+  /// or cm -> 2 cm, 4 cm, 6 cm
+  final String? yAxisLabelPostfix;
+
+  /// This text will be added to every label on x-axis
+  /// e.g. °C -> 2 °C, 4 °C, 6 °C ...
+  /// or cm -> 2 cm, 4 cm, 6 cm
+  final String? xAxisLabelBottomPostfix;
+  final String? xAxisLabelTopPostfix;
 
   /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
   final bool centerDataPointBetweenVerticalGrid;
@@ -611,7 +625,7 @@ class LineChartPainter extends CustomPainter {
   /// Malt die Y-Achse, alle Y-Linien der Datenpunkte und die Labels in der Breite des Charts
   ///
   /// Labels können unter und über dem Chart gemalt werden.
-  /// Definiert wird das durch [xAxisConfig.topValueType] und [xAxisConfig.bottomValueType].
+  /// Definiert wird das durch [xAxisConfig.showTopLabels] und [xAxisConfig.showBottomLabels].
   void _drawXAxisLabelAndVerticalGridLine({
     required Canvas canvas,
     required double chartWidth,
@@ -711,6 +725,13 @@ class LineChartPainter extends CustomPainter {
             break;
         }
 
+        if (xAxisLabelTopPostfix != null) {
+          topLabel = '$topLabel $xAxisLabelBottomPostfix';
+        }
+        if (xAxisLabelBottomPostfix != null) {
+          topLabel = '$topLabel $xAxisLabelBottomPostfix';
+        }
+
         startNumber++;
 
         if (xAxisConfig.showTopLabels) {
@@ -736,6 +757,9 @@ class LineChartPainter extends CustomPainter {
     }
   }
 
+  /// Malt die X-Achse, alle X-Linien des Datengrids und die Labels auf der Y-Achse
+  ///
+  /// Labels können links neben dem Chart gemalt werden
   void _drawYAxisLabelAndHorizontalGridLine({
     required Canvas canvas,
     required double chartWidth,
@@ -756,11 +780,17 @@ class LineChartPainter extends CustomPainter {
       // Draw Y-axis scale points
       var yAxisLabelValue = (i * yAxisSteps + yAxisMinValue!);
       late String label;
-      if (yAxisLabelValue is int) {
+      if (yAxisLabelValue is int || yAxisLabelValue % 1 == 0) {
+        // Zahl ist eine ganze Zahl und wird ohne Kommastelle
         label = yAxisLabelValue.toInt().toString();
       } else {
         label = yAxisLabelValue.toStringAsFixed(2);
       }
+
+      if (yAxisLabelPostfix != null) {
+        label = '$label $yAxisLabelPostfix';
+      }
+
       _axisLabelPainter.text = TextSpan(
         text: label,
         style: const TextStyle(
@@ -771,7 +801,11 @@ class LineChartPainter extends CustomPainter {
 
       if (showYAxisLables) {
         _axisLabelPainter.layout();
-        _axisLabelPainter.paint(canvas, Offset(padding.left - 35, y - _axisLabelPainter.height / 2));
+
+        // Die Labels an der Y-Achse sollen rechtsbündig sein.
+        // Somit muss der Padding mit der Größe des Textes berechnet werden
+        var w = _axisLabelPainter.width;
+        _axisLabelPainter.paint(canvas, Offset(padding.left - w - 10, y - _axisLabelPainter.height / 2));
       }
     }
   }
@@ -911,6 +945,7 @@ class LineChartPainter extends CustomPainter {
       }
     }
 
+    // Soll unter- und oberhalb der Linie etwas Platz eingerechnet werden?
     if (yAxisConfig.addValuePadding) {
       // Es darf unten und oben etwas Platz gelassen werden- daher wird dynamisch etwas oben und unten dazugerechnet.
       // Liegt kein Wert unterhalb von und und ist die Differenz zu 0 im Vergleich zum Max -> obere Grenze kleiner,
@@ -928,11 +963,10 @@ class LineChartPainter extends CustomPainter {
       } else {
         yAxisMinValue = minValueInt.toDouble();
 
-        // Wenn kei Wert unter 0 vorhanden ist kann Min auf 0 gesetzt werden - für den Betrachter optisch besser
-        if (minDataPointValue! >= 0) {
-          if (yAxisMinValue! < 0) {
-            yAxisMinValue = 0;
-          }
+        // Wenn kein Wert unter 0 vorhanden ist kann Min auf 0 gesetzt werden
+        // Für den Betrachter optisch besser.
+        if (minDataPointValue! >= 0 && yAxisMinValue! < 0) {
+          yAxisMinValue = 0;
         }
       }
 

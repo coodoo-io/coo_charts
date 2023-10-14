@@ -48,6 +48,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
   bool xAxisShowTopLabels = false;
   bool xAxisShowBottomLabels = true;
 
+  String? yAxisLabelPostfix;
+  String? xAxisLabelTopPostfix;
+  String? xAxisLabelBottomPostfix;
+
   @override
   initState() {
     super.initState();
@@ -94,6 +98,9 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   highlightPointsHorizontalLine: highlightPointsHorizontalLine,
                   highlightPointsVerticalLine: highlightPointsVerticalLine,
                   centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+                  yAxisLabelPostfix: yAxisLabelPostfix,
+                  xAxisLabelBottomPostfix: xAxisLabelBottomPostfix,
+                  xAxisLabelTopPostfix: xAxisLabelTopPostfix,
                   xAxisConfig: XAxisConfig(
                     startNumber: xAxisStartNumber,
                     valueType: xAxisValueType,
@@ -398,6 +405,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisValueType = XAxisValueType.date;
     xAxisBottomDateFormat = 'E';
     xAxisShowTopLabels = true;
+    yAxisLabelPostfix = '°C';
 
     linechartDataSeries.clear();
 

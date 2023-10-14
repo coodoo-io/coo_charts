@@ -12,18 +12,20 @@ class YAxisConfig {
   /// Shoud the y-axis be printed. Default is true
   final bool showAxis;
 
+  /// Defines whether labels on the y-axis are shown or not.
+  /// Default is [true]
+  final bool showYAxisLables;
+
   // Anzahl Labels auf der Y-Achse. Es werden die hier konfigurierte Anzahl Labels für die Bezeichner der Y-Achse
   // angezeigt. Dabei werden die Werte zwischen Min- und Max-Werten berechnet.
-  final int labelCount; // TODO labelCount darf null sein, dann wird es automatisch berechnet
+  final int labelCount;
 
   /// Welcher ist das kleinste Label, der angezeigt werden soll?
   /// Wenn null wird dieses Label berechnet.
-  // TODO minLabelValue Wert auslesen und verwenden
   final double? minLabelValue;
 
   /// Was ist der größte Label der, der angezeigt werden soll?
   /// Wenn null wird dieses Label berechnet.
-  // TODO maxLabelValue Wert auslesen und verwenden
   final double? maxLabelValue;
 
   /// Soll von dem kleinsten Wert zur X-Achse ein Abstand einberechnet werden?
@@ -31,5 +33,4 @@ class YAxisConfig {
   /// Wenn false, wird das Chart von den Grenzen gezeichnet. Es startet dann unten auf der Base-Line mit
   /// dem niedrigsten Wert und endet Oben mit dem Max-Wert.
   final bool addValuePadding;
-  final bool showYAxisLables;
 }
