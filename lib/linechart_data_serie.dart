@@ -4,8 +4,8 @@ import 'package:coo_charts/linechart_data_point.dart';
 
 class LinechartDataSeries {
   LinechartDataSeries(
-    this.label,
     this.dataPoints, {
+    this.label,
     this.showDataLine = true,
     this.showDataPoints = true,
     this.showMinMaxArea = false,
@@ -17,7 +17,7 @@ class LinechartDataSeries {
   });
 
   /// Titel der Datenreihe
-  final String label;
+  final String? label;
 
   /// Die Datenpunkte, die den Line-Chart beschreiben
   final List<LineChartDataPoint> dataPoints;
