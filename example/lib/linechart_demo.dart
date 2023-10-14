@@ -21,8 +21,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
   bool showGridVertical = true; // if true, grid vertical lines are painted
   bool showDataPoints = true; // Sollen die Punkte auf der Kurve angezeigt werden?
   /// Sollen die data labels direkt auf dem Chart gezeichnet werden?
-  bool showDataLabels = true;
-  bool showDataPath = true; // Soll der path auf der Kurve angezeigt werden?
+  bool showDataLabels = false;
+  bool showDataLine = true; // Soll der path auf der Kurve angezeigt werden?
   bool highlightMouseColumn = true; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
   bool highlightPoints = true; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
   bool highlightPointsVerticalLine =
@@ -88,9 +88,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   crosshair: crosshair,
                   showGridHorizontal: showGridHorizontal,
                   showGridVertical: showGridVertical,
-                  showDataPoints: showDataPoints,
-                  showDataLabels: showDataLabels,
-                  showDataPath: showDataPath,
+                  showDataPath: showDataLine,
                   highlightMouseColumn: highlightMouseColumn,
                   highlightPoints: highlightPoints,
                   highlightPointsHorizontalLine: highlightPointsHorizontalLine,
@@ -170,16 +168,34 @@ class _LineChartDemoState extends State<LineChartDemo> {
                     child: Text('Curved ${curvedLine ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => showDataPoints = !showDataPoints),
+                    onPressed: () => setState(() {
+                      showDataPoints = !showDataPoints;
+                      for (var i = 0; i < linechartDataSeries.length; i++) {
+                        final lineChart = linechartDataSeries[i].copyWith(showDataPoints: showDataPoints);
+                        linechartDataSeries[i] = lineChart;
+                      }
+                    }),
                     child: Text('Show Data Points ${showDataPoints ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => showDataLabels = !showDataLabels),
+                    onPressed: () => setState(() {
+                      showDataLabels = !showDataLabels;
+                      for (var i = 0; i < linechartDataSeries.length; i++) {
+                        final lineChart = linechartDataSeries[i].copyWith(showDataLabels: showDataLabels);
+                        linechartDataSeries[i] = lineChart;
+                      }
+                    }),
                     child: Text('Show Data Lables ${showDataLabels ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => showDataPath = !showDataPath),
-                    child: Text('Show Data Path ${showDataPath ? '✅' : '❌'}'),
+                    onPressed: () => setState(() {
+                      showDataLine = !showDataLine;
+                      for (var i = 0; i < linechartDataSeries.length; i++) {
+                        final lineChart = linechartDataSeries[i].copyWith(showDataLine: showDataLine);
+                        linechartDataSeries[i] = lineChart;
+                      }
+                    }),
+                    child: Text('Show Data Path ${showDataLine ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
                     onPressed: () => setState(() => crosshair = !crosshair),

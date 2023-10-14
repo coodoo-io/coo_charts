@@ -13,8 +13,6 @@ class LineChartWidget extends StatefulWidget {
     this.crosshair = false,
     this.showGridHorizontal = false,
     this.showGridVertical = false,
-    this.showDataPoints = true,
-    this.showDataLabels = false,
     this.showDataPath = true,
     this.highlightMouseColumn = false,
     this.highlightPoints = true,
@@ -31,9 +29,6 @@ class LineChartWidget extends StatefulWidget {
   final bool crosshair; // Soll ein Fadenkreuz angezeigt werden?
   final bool showGridHorizontal; // if true, grid horizontal lines are painted
   final bool showGridVertical; // if true, grid vertical lines are painted
-  final bool showDataPoints; // Sollen die Punkte auf der Kurve angezeigt werden?
-  /// Sollen die data labels direkt auf dem Chart gezeichnet werden?
-  final bool showDataLabels;
 
   final bool showDataPath; // Soll der path auf der Kurve angezeigt werden?
   final bool highlightMouseColumn; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
@@ -97,9 +92,6 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                 crosshair: widget.crosshair,
                 showGridHorizontal: widget.showGridHorizontal,
                 showGridVertical: widget.showGridVertical,
-                showDataPoints: widget.showDataPoints,
-                showDataLabels: widget.showDataLabels,
-                showDataPath: widget.showDataPath,
                 highlightMouseColumn: widget.highlightMouseColumn,
                 highlightPoints: widget.highlightPoints,
                 highlightPointsVerticalLine: widget.highlightPointsVerticalLine,

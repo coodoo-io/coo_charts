@@ -20,9 +20,6 @@ class LineChartPainter extends CustomPainter {
     required this.crosshair,
     required this.showGridHorizontal,
     required this.showGridVertical,
-    required this.showDataPoints,
-    required this.showDataLabels,
-    required this.showDataPath,
     required this.highlightMouseColumn,
     required this.highlightPoints,
     required this.highlightPointsVerticalLine,
@@ -66,10 +63,7 @@ class LineChartPainter extends CustomPainter {
   final bool crosshair; // Soll ein Fadenkreuz angezeigt werden?
   final bool showGridHorizontal; // if true, grid horizontal lines are painted
   final bool showGridVertical; // if true, grid vertical lines are painted
-  final bool showDataPoints; // Sollen die Punkte auf der Kurve angezeigt werden?
-  /// Sollen die data labels direkt auf dem Chart gezeichnet werden?
-  final bool showDataLabels;
-  final bool showDataPath; // Soll der path auf der Kurve angezeigt werden?
+
   final bool highlightMouseColumn; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
   final bool highlightPoints; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
   final bool
@@ -254,7 +248,7 @@ class LineChartPainter extends CustomPainter {
       dataPointsLoop:
       for (var i = 0; i < dataSeriesNormalizedValues.length; i++) {
         // Lables für den späteren plotten parsen
-        if (showDataLabels) {
+        if (localLinechartDataSeries.showDataLabels) {
           var dataPoint = localLinechartDataSeries.dataPoints[i];
           if (dataPoint.label != null) {
             dataSeriesLabels.add(dataPoint.label!.trim());
@@ -322,20 +316,15 @@ class LineChartPainter extends CustomPainter {
         );
       }
       // Linechart Verbindungsline malen
-      bool showPathTmp = showDataPath;
       if (localLinechartDataSeries.showDataLine) {
-        // Falls gesetzt gewinnt die Konfiguration in der einzelnen Series
-        showPathTmp = localLinechartDataSeries.showDataLine;
-      }
-      if (localLinechartDataSeries.dataLineColor != null) {
-        _linePaint.color = localLinechartDataSeries.dataLineColor!;
+        if (localLinechartDataSeries.dataLineColor != null) {
+          _linePaint.color = localLinechartDataSeries.dataLineColor!;
 
-        // Falls die Linefarbe angegeben wurde wird diese als default für die Datenpunkte, Highlight und Font gesetzt.
-        _pointPaint.color = localLinechartDataSeries.dataLineColor!;
-        _pointPaintHighlight.color = localLinechartDataSeries.dataLineColor!;
-        dataLabelTextStyle = dataLabelTextStyle.copyWith(color: localLinechartDataSeries.dataLineColor!);
-      }
-      if (showPathTmp) {
+          // Falls die Linefarbe angegeben wurde wird diese als default für die Datenpunkte, Highlight und Font gesetzt.
+          _pointPaint.color = localLinechartDataSeries.dataLineColor!;
+          _pointPaintHighlight.color = localLinechartDataSeries.dataLineColor!;
+          dataLabelTextStyle = dataLabelTextStyle.copyWith(color: localLinechartDataSeries.dataLineColor!);
+        }
         canvas.drawPath(
           lineChartDataPointsPath,
           _linePaint,
@@ -355,10 +344,6 @@ class LineChartPainter extends CustomPainter {
       }
 
       // Linechart Datenpunkte malen
-      bool showPointsTmp = showDataPoints;
-      if (localLinechartDataSeries.showDataPoints != null) {
-        showPointsTmp = localLinechartDataSeries.showDataPoints!;
-      }
       drawLineDataPointsLoop:
       for (var i = 0; i < lineDataPoints.length; i++) {
         Offset? dataPointOffset = lineDataPoints[i];
@@ -368,11 +353,11 @@ class LineChartPainter extends CustomPainter {
         }
         if (highlightPoints && mouseInRectYIndex == i) {
           canvas.drawCircle(dataPointOffset, 8, _pointPaintHighlight);
-        } else if (showPointsTmp) {
+        } else if (localLinechartDataSeries.showDataPoints) {
           canvas.drawCircle(dataPointOffset, 4, _pointPaint);
         }
 
-        if (showDataLabels) {
+        if (localLinechartDataSeries.showDataLabels) {
           String? label = dataSeriesLabels[i];
           if (label != null) {
             _dataLabelPainter.text = TextSpan(text: label, style: dataLabelTextStyle);
