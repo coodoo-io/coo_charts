@@ -275,11 +275,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     linechartDataSeries.clear();
     linechartDataSeries.add(LinechartDataSeries(
-      linechartDataPoints1,
+      dataPoints: linechartDataPoints1,
       label: 'Datenlinie 1',
     ));
     linechartDataSeries.add(LinechartDataSeries(
-      linechartDataPoints2,
+      dataPoints: linechartDataPoints2,
       label: 'Datenlinie 2',
     ));
   }
@@ -301,8 +301,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     }
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(linechartDataPoints1, label: '0 zu 10'));
-    linechartDataSeries.add(LinechartDataSeries(linechartDataPoints2, label: '-2 zu 8'));
+    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints1, label: '0 zu 10'));
+    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints2, label: '-2 zu 8'));
   }
 
   _create0To10To0WithNullValuesChartDataPoints() {
@@ -328,8 +328,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     }
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(linechartDataPoints1, label: '0 zu 10'));
-    linechartDataSeries.add(LinechartDataSeries(linechartDataPoints2, label: '-2 zu 8'));
+    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints1, label: '0 zu 10'));
+    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints2, label: '-2 zu 8'));
   }
 
   _createMinus5To5ValuesChartDataPoints() {
@@ -342,7 +342,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       linechartDataPoints.add(dataPoint);
     }
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(linechartDataPoints, label: '5 zu -5'));
+    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints, label: '5 zu -5'));
   }
 
   _genrateRandomLineChartDataPoints({int count = 30, int maxValue = 100}) {
@@ -356,7 +356,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       linechartDataPoints.add(dataPoint);
     }
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(linechartDataPoints, label: 'Random'));
+    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints, label: 'Random'));
   }
 
   // Zeichnet den Kachelmannchart "14 Tage Trend" ()
@@ -405,7 +405,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     hoechstTemperatur.add(LineChartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 22)));
 
     var linechartHoechstTemperatur = LinechartDataSeries(
-      hoechstTemperatur,
+      dataPoints: hoechstTemperatur,
       label: 'Voraussichtliche Tageshöchsttemperatur',
       showMinMaxArea: true,
       dataLineColor: Colors.red,
@@ -442,7 +442,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     tiefstTemperatur.add(LineChartDataPoint(minValue: 4, maxValue: 12, time: DateTime(2023, 4, 22)));
 
     var dataSeriesTiefsttemperatur = LinechartDataSeries(
-      tiefstTemperatur,
+      dataPoints: tiefstTemperatur,
       label: 'Voraussichtliche Tagestiefsttemperatur',
       showMinMaxArea: true,
       dataLineColor: Colors.blue,
@@ -545,6 +545,6 @@ class _LineChartDemoState extends State<LineChartDemo> {
     linechartDataPoints.add(LineChartDataPoint(value: 11.2, time: DateTime(2023, 4, 11, 20, 0)));
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(linechartDataPoints, label: 'Temperatur'));
+    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints, label: 'Temperatur'));
   }
 }
