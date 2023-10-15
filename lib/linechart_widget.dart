@@ -167,24 +167,20 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       ui.Image svgImg = pictureInfo.picture.toImageSync(imageHeight, imageWidth);
       if (imageHeight > widget.columnLegendsHeight) {
         // Größe muss umgerechnet werden damit es in die Legende passt
-        double percentTile = widget.columnLegendsHeight / imageHeight;
+        int percent20OfHeight = (widget.columnLegendsHeight * 0.5).toInt();
+        double percentTile = (widget.columnLegendsHeight - percent20OfHeight) / imageHeight;
+        // percentTile = -0.2; // Weiteren Puffer in Prozent aufaddieren, damit es in jedem Fall passt
         imageHeight = (imageHeight * percentTile).toInt();
         imageWidth = (imageWidth * percentTile).toInt();
 
-        // var i2 = await getUiImage3(assetImagePath, imageHeight, imageWidth);
-
         final ByteData? assetImageByteData = await svgImg.toByteData(format: ui.ImageByteFormat.png);
         if (assetImageByteData != null) {
-          image.Image? i = await image.decodeImage(assetImageByteData!.buffer.asUint8List());
-
           image.Image baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List())!;
           image.Image resizeImage = image.copyResize(baseSizeImage, height: imageHeight, width: imageWidth);
           ui.Codec codec = await ui.instantiateImageCodec(image.encodePng(resizeImage));
           ui.FrameInfo frameInfo = await codec.getNextFrame();
           svgImg = frameInfo.image;
         }
-
-        // image = await getUiImage(image, imageHeight, imageWidth);
       }
       widget.columLegendsAssetImages[assetImagePath] = svgImg;
     }

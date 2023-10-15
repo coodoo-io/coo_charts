@@ -1111,12 +1111,12 @@ class LineChartPainter extends CustomPainter {
           ui.Image image = columLegendsAssetImages[columnLegend.assetImage]!;
 
           // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-          final xPosCenter = (xOffsetInterval / 2) - (_columLegendTextPainter.width / 2);
+          final xPosCenter = (xOffsetInterval / 2) - (image.width / 2);
           // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
           final xPos = x - (xOffsetInterval / 2) + xPosCenter;
 
           // Center ist höhe der fläche / 2 + höhe des textes / 2
-          final double yPosCenter = (columnLegendsHeight / 2) + (_columLegendTextPainter.height / 2);
+          final double yPosCenter = (columnLegendsHeight / 2) + (image.height / 2);
           final yPos = chartHeight + padding.top.toDouble() - yPosCenter;
 
           canvas.drawImage(image, Offset(xPos, yPos), Paint());
