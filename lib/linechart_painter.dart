@@ -73,6 +73,8 @@ class LineChartPainter extends CustomPainter {
   final bool
       highlightPointsHorizontalLine; // Zeichnet eine horizontale Line über den Datenpunkt wenn die Maus in der Nähe ist.
 
+  final bool showDataPointLegend = true; // Zeichnet unterhalb der Datenspalte eine Legende
+
   /// Die Konfiguration für X- und Y-Achse
   final YAxisConfig yAxisConfig;
   final XAxisConfig xAxisConfig;
@@ -82,8 +84,10 @@ class LineChartPainter extends CustomPainter {
 
   /// Padding des Canvas um das der Graph eingerückt ist.
 
-  double chartWidth = 0.0;
-  double chartHeight = 0.0;
+  /// Werden im Constructor berechnet (canvasgrößte - padding)
+  late double chartWidth;
+  late double chartHeight;
+  double dataColumnLegendHeight = 40;
 
   // Anzahl aller Datenpunkte auf der X-Achse Chartübergreifend
   int maxAbsoluteValueCount = 0;
@@ -173,14 +177,15 @@ class LineChartPainter extends CustomPainter {
 
     _drawAxis(
       canvas: canvas,
-      chartWidth: chartWidth,
-      height: canvasHeight,
+      canvasWidth: canvasWidth,
+      canvasHeight: canvasHeight,
       showYAxis: yAxisConfig.showAxis,
       showXAxis: xAxisConfig.showAxis,
+      showFullRect: true,
     );
 
-    // Malt das Grid und setzt den Index welche Column für die darüberliegende Maus
-    // gerade aktiv ist.
+    // Berechnet die Spalten für alle Datenpunkte und setzt den Index welche Column für die
+    // darüberliegende Maus gerade aktiv ist.
     _drawBackgroundRect(
       canvas: canvas,
       chartWidth: chartWidth,
@@ -196,6 +201,13 @@ class LineChartPainter extends CustomPainter {
       linechartDataSeries: linechartDataSeries,
     );
     _drawYAxisLabelAndHorizontalGridLine(
+      canvas: canvas,
+      chartWidth: chartWidth,
+      chartHeight: chartHeight,
+      linechartDataSeries: linechartDataSeries,
+    );
+
+    _drawDataPointsLegend(
       canvas: canvas,
       chartWidth: chartWidth,
       chartHeight: chartHeight,
@@ -583,28 +595,45 @@ class LineChartPainter extends CustomPainter {
     canvas.drawCircle(mousePosition, 5, _mousePositionPaint);
   }
 
-  /// Draw both (x and y) lines.
+  /// Draw the chart border.
+  ///
+  /// If [showFullRect] is set to false only the x-axis bottom and y-axis left will be printed.
+  /// the flags [showYAxis] and [showXAxis] defines whether the axis (top and bottom, left and right)
+  /// will be printed.
   void _drawAxis({
     required Canvas canvas,
-    required double chartWidth,
-    required double height,
+    required double canvasWidth,
+    required double canvasHeight,
     required bool showYAxis,
     required bool showXAxis,
+    required bool showFullRect,
   }) {
+    double x0 = padding.left.toDouble(); // Links erste X-Pos
+    double x1 = canvasWidth - padding.right; // Rechts zweite X-Pos
+    double y0 = padding.top.toDouble(); // Oben erste Y-Pos
+    double y1 = canvasHeight - padding.bottom; // Unten zweite Y-Pos
+    Offset posX0Y0 = Offset(x0, y0);
+    Offset posX0Y1 = Offset(x0, y1);
+    Offset posX1Y0 = Offset(x1, y0);
+    Offset posX1Y1 = Offset(x1, y1);
     if (showXAxis) {
-      canvas.drawLine(
-        Offset(padding.left.toDouble(), height - padding.bottom),
-        Offset(chartWidth + padding.left, height - padding.bottom),
-        _axisPaint,
-      );
+      // X-Achse unten
+      canvas.drawLine(posX0Y1, posX1Y1, _axisPaint);
+
+      // auch die Gegenseite soll gezeichnet werden
+      if (showFullRect) {
+        // X-Achse oben
+        canvas.drawLine(posX0Y0, posX1Y0, _axisPaint);
+      }
     }
 
     if (showYAxis) {
-      canvas.drawLine(
-        Offset(padding.left.toDouble(), padding.top.toDouble()),
-        Offset(padding.left.toDouble(), height - padding.bottom),
-        _axisPaint,
-      );
+      // Y-Achse links
+      canvas.drawLine(posX0Y0, posX0Y1, _axisPaint);
+      // auch die Gegenseite soll gezeichnet werden
+      if (showFullRect) {
+        canvas.drawLine(posX1Y0, posX1Y1, _axisPaint);
+      }
     }
   }
 
@@ -992,13 +1021,19 @@ class LineChartPainter extends CustomPainter {
       }
     }
   }
+
+  void _drawDataPointsLegend(
+      {required ui.Canvas canvas,
+      required double chartWidth,
+      required double chartHeight,
+      required List<LinechartDataSeries> linechartDataSeries}) {}
 }
 
 // You can shift the painted chart area by setting padding values.
 class ChartPadding {
   const ChartPadding({
     this.top = 50, // Space for top labels
-    this.right = 0,
+    this.right = 50,
     this.bottom = 50, // Space for bottom labels
     this.left = 50, // Space for left labels
   });
