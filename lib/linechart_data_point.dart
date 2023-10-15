@@ -1,13 +1,6 @@
 import 'dart:ui';
 
 class LineChartDataPoint {
-  double? value;
-  double? minValue;
-  double? maxValue;
-  String? label;
-  DateTime? time;
-  Color? columnBackgroundColor;
-
   LineChartDataPoint({
     this.value, // Wert des Datenpunkts
     this.minValue, // kleinster Wert dieses Punktes
@@ -18,6 +11,13 @@ class LineChartDataPoint {
     /// Style Informationen
     this.columnBackgroundColor, // Hintergrundfarbe der Spalte des Datenpunkts
   });
+
+  double? value;
+  double? minValue;
+  double? maxValue;
+  String? label;
+  DateTime? time;
+  Color? columnBackgroundColor;
 
   @override
   String toString() {

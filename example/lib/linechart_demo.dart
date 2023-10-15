@@ -4,7 +4,11 @@ import 'package:coo_charts/linechart_data_serie.dart';
 import 'package:coo_charts/linechart_widget.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
+import 'package:coo_charts/linechart_column_legend.dart';
 import 'package:flutter/material.dart';
+
+const kIconWeatherCloudy = 'assets/sym_cloudy.svg';
+const kIconWeatherRain = 'assets/sym_rain.svg';
 
 class LineChartDemo extends StatefulWidget {
   const LineChartDemo({super.key});
@@ -15,6 +19,8 @@ class LineChartDemo extends StatefulWidget {
 
 class _LineChartDemoState extends State<LineChartDemo> {
   late List<LinechartDataSeries> linechartDataSeries = List.empty(growable: true);
+  late List<LineChartColumnLegend> linechartColumnLegends = List.empty(growable: true);
+  double columnLegendsHeight = 40; // wie hoch soll die Column Legend sein, sofern sie übergeben wird?
   bool curvedLine = false; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   bool crosshair = false; // Soll ein Fadenkreuz angezeigt werden?
   bool showGridHorizontal = true; // if true, grid horizontal lines are painted
@@ -88,6 +94,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
                 height: 500,
                 child: LineChartWidget(
                   linechartDataSeries: linechartDataSeries,
+                  columnLegends: linechartColumnLegends,
+                  columnLegendsHeight: columnLegendsHeight,
                   curvedLine: curvedLine,
                   crosshair: crosshair,
                   showGridHorizontal: showGridHorizontal,
@@ -273,11 +281,13 @@ class _LineChartDemoState extends State<LineChartDemo> {
     yAxisMinLabelValue = null;
     yAxisMaxLabelValue = null;
     yAxisLabelCount = 5;
+    linechartColumnLegends.clear();
   }
 
   _create0To10To0ValuesChartDataPoints() {
     _resetToDefault();
-    yAxisLabelCount = 6;
+    yAxisLabelCount = 20;
+
     xAxisValueType = XAxisValueType.number;
     var linechartDataPoints1 = List<LineChartDataPoint>.empty(growable: true);
     var linechartDataPoints2 = List<LineChartDataPoint>.empty(growable: true);
@@ -312,10 +322,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
     linechartDataSeries.add(LinechartDataSeries(
       dataPoints: linechartDataPoints1,
       label: 'Datenlinie 1',
+      showDataLabels: true,
     ));
     linechartDataSeries.add(LinechartDataSeries(
       dataPoints: linechartDataPoints2,
       label: 'Datenlinie 2',
+      showDataLabels: true,
     ));
   }
 
@@ -409,6 +421,47 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     linechartDataSeries.clear();
 
+    const colorLimitClear = Color(0xFFfde81a); // limit_clear >= 90
+    const colorLimitFew = Color(0xFFeddf58); // limit_few >= 78
+    const colorLimitScattered = Color(0xFFe3d97b); // limit_scattered >= 78
+    const colorLimitBroken = Color(0xFFd4d1ad); // limit_broken >= 30;
+    const colorSonst = Color(0xFFCCCCCC);
+
+    linechartColumnLegends.clear();
+    linechartColumnLegends.add(LineChartColumnLegend(
+        time: DateTime(2023, 4, 9),
+        text: 'a',
+        backgroundColor: colorLimitClear.withOpacity(1),
+        assetImage: kIconWeatherCloudy));
+    linechartColumnLegends.add(LineChartColumnLegend(
+        time: DateTime(2023, 4, 10), text: 'b', backgroundColor: colorLimitClear, assetImage: kIconWeatherRain));
+    linechartColumnLegends.add(LineChartColumnLegend(
+        time: DateTime(2023, 4, 11), text: 'c', backgroundColor: colorLimitFew, assetImage: kIconWeatherRain));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 12), text: 'd', backgroundColor: colorLimitScattered));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 13), text: 'e', backgroundColor: colorSonst));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 14), text: 'f', backgroundColor: colorLimitBroken));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 15), text: 'g', backgroundColor: colorLimitBroken));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 16), text: 'h', backgroundColor: colorSonst));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 17), text: 'i', backgroundColor: colorSonst));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 18), text: 'j', backgroundColor: colorLimitScattered));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 19), text: 'k', backgroundColor: colorLimitScattered));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 20), text: 'l', backgroundColor: colorLimitBroken));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 21), text: 'm', backgroundColor: colorSonst));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 22), text: 'n', backgroundColor: colorLimitClear));
+    linechartColumnLegends
+        .add(LineChartColumnLegend(time: DateTime(2023, 4, 23), text: 'o', backgroundColor: colorLimitClear));
+
     // Voraussichtliche Tageshöchsttemperatur
     var hoechstTemperatur = List<LineChartDataPoint>.empty(growable: true);
     hoechstTemperatur
@@ -443,6 +496,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       dataLineColor: const Color(0xffd85930),
       minMaxAreaColor: const Color.fromRGBO(216, 89, 48, .4),
       dataLabelColor: Colors.white,
+      showDataLabels: true,
     );
     linechartDataSeries.add(linechartHoechstTemperatur);
 
@@ -480,6 +534,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       dataLineColor: const Color(0xff0080b5),
       minMaxAreaColor: const Color.fromRGBO(84, 185, 233, .4),
       dataLabelColor: Colors.white,
+      showDataLabels: true,
     );
     linechartDataSeries.add(dataSeriesTiefsttemperatur);
   }
@@ -489,7 +544,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
   // 21 Uhr bis 6 Uhr Nacht
   _generateKachelmannVorhersageXL() {
     _resetToDefault();
-    yAxisLabelCount = 5;
+    yAxisLabelCount = 20;
     xAxisValueType = XAxisValueType.datetime;
     var linechartDataPoints = List<LineChartDataPoint>.empty(growable: true);
 
@@ -577,6 +632,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
     linechartDataPoints.add(LineChartDataPoint(value: 11.2, time: DateTime(2023, 4, 11, 20, 0)));
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints, label: 'Temperatur'));
+    linechartDataSeries.add(LinechartDataSeries(
+      dataPoints: linechartDataPoints,
+      label: 'Temperatur',
+      showDataLabels: true,
+    ));
   }
 }

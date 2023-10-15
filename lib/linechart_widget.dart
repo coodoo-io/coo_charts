@@ -1,14 +1,22 @@
+import 'dart:async';
+import 'dart:ui' as ui;
+import 'package:image/image.dart' as image;
+import 'package:coo_charts/linechart_column_legend.dart';
 import 'package:coo_charts/linechart_data_serie.dart';
 import 'package:coo_charts/linechart_painter.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 
 class LineChartWidget extends StatefulWidget {
-  const LineChartWidget({
+  LineChartWidget({
     super.key,
     required this.linechartDataSeries,
+    this.columnLegends = const [],
+    this.columnLegendsHeight = 0,
     this.curvedLine = false,
     this.crosshair = false,
     this.showGridHorizontal = false,
@@ -26,6 +34,8 @@ class LineChartWidget extends StatefulWidget {
   });
 
   final List<LinechartDataSeries> linechartDataSeries;
+  final List<LineChartColumnLegend> columnLegends;
+  final double columnLegendsHeight;
   final bool curvedLine; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   final bool crosshair; // Soll ein Fadenkreuz angezeigt werden?
   final bool showGridHorizontal; // if true, grid horizontal lines are painted
@@ -49,6 +59,8 @@ class LineChartWidget extends StatefulWidget {
 
   final ChartPadding padding;
 
+  final columLegendsAssetImages = <String, ui.Image>{};
+
   @override
   State<LineChartWidget> createState() => _LineChartWidgetState();
 }
@@ -56,8 +68,23 @@ class LineChartWidget extends StatefulWidget {
 class _LineChartWidgetState extends State<LineChartWidget> {
   Offset? _mousePointer;
 
+  bool initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // So werdenalle SVGs nur einmal vorbereitet und geladen
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   loadAssets(widget.columnLegends);
+    // });
+  }
+
   @override
   Widget build(BuildContext context) {
+    loadAssets(widget.columnLegends, () {
+      setState(() {});
+    });
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
       double width = MediaQuery.of(context).size.width;
       double height = MediaQuery.of(context).size.height;
@@ -88,6 +115,8 @@ class _LineChartWidgetState extends State<LineChartWidget> {
             child: CustomPaint(
               painter: LineChartPainter(
                 linechartDataSeries: widget.linechartDataSeries,
+                columnLegends: widget.columnLegends,
+                columnLegendsHeight: widget.columnLegendsHeight,
                 canvasWidth: width,
                 canvasHeight: height,
                 padding: widget.padding,
@@ -103,6 +132,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                 xAxisConfig: widget.xAxisConfig,
                 centerDataPointBetweenVerticalGrid: widget.centerDataPointBetweenVerticalGrid,
                 yAxisConfig: widget.yAxisConfig,
+                columLegendsAssetImages: widget.columLegendsAssetImages,
               ),
             ),
           ),
@@ -114,6 +144,48 @@ class _LineChartWidgetState extends State<LineChartWidget> {
         },
       );
     });
+  }
+
+  void loadAssets(
+    List<LineChartColumnLegend> columnLegends,
+    final VoidCallback onLoadingFinished,
+  ) async {
+    if (initialized) {
+      return;
+    }
+    for (var columnLegend in columnLegends) {
+      if (columnLegend.assetImage == null) {
+        continue;
+      }
+      final String assetImagePath = columnLegend.assetImage!;
+      PictureInfo pictureInfo = await vg.loadPicture(SvgAssetLoader(columnLegend.assetImage!), null);
+
+      // Change colum legend image size so that it fits into the legend column
+      // the legend column height is given
+      var imageHeight = pictureInfo.size.height.toInt();
+      var imageWidth = pictureInfo.size.width.toInt();
+      ui.Image svgImg = pictureInfo.picture.toImageSync(imageHeight, imageWidth);
+      if (imageHeight > widget.columnLegendsHeight) {
+        // Größe muss umgerechnet werden damit es in die Legende passt
+        int percent20OfHeight = (widget.columnLegendsHeight * 0.5).toInt();
+        double percentTile = (widget.columnLegendsHeight - percent20OfHeight) / imageHeight;
+        // percentTile = -0.2; // Weiteren Puffer in Prozent aufaddieren, damit es in jedem Fall passt
+        imageHeight = (imageHeight * percentTile).toInt();
+        imageWidth = (imageWidth * percentTile).toInt();
+
+        final ByteData? assetImageByteData = await svgImg.toByteData(format: ui.ImageByteFormat.png);
+        if (assetImageByteData != null) {
+          image.Image baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List())!;
+          image.Image resizeImage = image.copyResize(baseSizeImage, height: imageHeight, width: imageWidth);
+          ui.Codec codec = await ui.instantiateImageCodec(image.encodePng(resizeImage));
+          ui.FrameInfo frameInfo = await codec.getNextFrame();
+          svgImg = frameInfo.image;
+        }
+      }
+      widget.columLegendsAssetImages[assetImagePath] = svgImg;
+    }
+    initialized = true;
+    onLoadingFinished();
   }
 }
 
