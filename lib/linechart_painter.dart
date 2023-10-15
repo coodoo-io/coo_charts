@@ -28,9 +28,6 @@ class LineChartPainter extends CustomPainter {
     required this.xAxisConfig,
     required this.yAxisConfig,
     required this.padding,
-    required this.yAxisLabelPostfix,
-    required this.xAxisLabelBottomPostfix,
-    required this.xAxisLabelTopPostfix,
   }) {
     chartWidth = canvasWidth - padding.left - padding.right;
     chartHeight = canvasHeight - padding.bottom - padding.top;
@@ -79,17 +76,6 @@ class LineChartPainter extends CustomPainter {
   /// Die Konfiguration für X- und Y-Achse
   final YAxisConfig yAxisConfig;
   final XAxisConfig xAxisConfig;
-
-  /// This text will added to every label on y-axis
-  /// e.g. °C -> 2 °C, 4 °C, 6 °C ...
-  /// or cm -> 2 cm, 4 cm, 6 cm
-  final String? yAxisLabelPostfix;
-
-  /// This text will be added to every label on x-axis
-  /// e.g. °C -> 2 °C, 4 °C, 6 °C ...
-  /// or cm -> 2 cm, 4 cm, 6 cm
-  final String? xAxisLabelBottomPostfix;
-  final String? xAxisLabelTopPostfix;
 
   /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
   final bool centerDataPointBetweenVerticalGrid;
@@ -725,11 +711,11 @@ class LineChartPainter extends CustomPainter {
             break;
         }
 
-        if (xAxisLabelTopPostfix != null) {
-          topLabel = '$topLabel $xAxisLabelBottomPostfix';
+        if (xAxisConfig.labelTopPostfix != null) {
+          topLabel = '$topLabel ${xAxisConfig.labelTopPostfix}';
         }
-        if (xAxisLabelBottomPostfix != null) {
-          topLabel = '$topLabel $xAxisLabelBottomPostfix';
+        if (xAxisConfig.labelBottomPostfix != null) {
+          topLabel = '$topLabel ${xAxisConfig.labelBottomPostfix}';
         }
 
         startNumber++;
@@ -787,8 +773,8 @@ class LineChartPainter extends CustomPainter {
         label = yAxisLabelValue.toStringAsFixed(2);
       }
 
-      if (yAxisLabelPostfix != null) {
-        label = '$label $yAxisLabelPostfix';
+      if (yAxisConfig.labelPostfix != null) {
+        label = '$label ${yAxisConfig.labelPostfix}';
       }
 
       _axisLabelPainter.text = TextSpan(

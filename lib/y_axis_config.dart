@@ -7,6 +7,7 @@ class YAxisConfig {
     this.addValuePadding = true,
     this.showYAxisLables = true,
     this.showAxis = true,
+    this.labelPostfix,
   });
 
   /// Shoud the y-axis be printed. Default is true
@@ -33,4 +34,9 @@ class YAxisConfig {
   /// Wenn false, wird das Chart von den Grenzen gezeichnet. Es startet dann unten auf der Base-Line mit
   /// dem niedrigsten Wert und endet Oben mit dem Max-Wert.
   final bool addValuePadding;
+
+  /// This text will added to every label on y-axis
+  /// e.g. '°C' -> '2 °C', '4 °C', '6 °C' ...
+  /// or 'cm' -> '2 cm', '4 cm', '6 cm'
+  final String? labelPostfix;
 }
