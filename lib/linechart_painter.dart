@@ -1036,7 +1036,7 @@ class LineChartPainter extends CustomPainter {
       xGridLineCount -= 1;
     }
     double xOffsetInterval = chartWidth / (xGridLineCount);
-    for (int i = 0; i <= xGridLineCount; i++) {
+    for (int i = 0; i < xGridLineCount; i++) {
       final columnLegend = columnBottomDatas[i];
 
       double x = (xOffsetInterval * i) + padding.left;
