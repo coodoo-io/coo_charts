@@ -1,6 +1,5 @@
-import 'dart:async';
 import 'dart:ui' as ui;
-import 'package:image/image.dart' as image;
+
 import 'package:coo_charts/linechart_column_legend.dart';
 import 'package:coo_charts/linechart_data_serie.dart';
 import 'package:coo_charts/linechart_painter.dart';
@@ -10,13 +9,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image/image.dart' as image;
 
 class LineChartWidget extends StatefulWidget {
   LineChartWidget({
     super.key,
     required this.linechartDataSeries,
-    this.columnLegends = const [],
-    this.columnLegendsHeight = 0,
+    this.columnBottomDatas = const [],
+    this.columnTopDatas = const [],
+    this.columnBottomDatasHeight = 0,
     this.curvedLine = false,
     this.crosshair = false,
     this.showGridHorizontal = false,
@@ -34,8 +35,9 @@ class LineChartWidget extends StatefulWidget {
   });
 
   final List<LinechartDataSeries> linechartDataSeries;
-  final List<LineChartColumnLegend> columnLegends;
-  final double columnLegendsHeight;
+  final List<LineChartColumnData> columnBottomDatas;
+  final List<LineChartColumnData> columnTopDatas;
+  final double columnBottomDatasHeight;
   final bool curvedLine; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   final bool crosshair; // Soll ein Fadenkreuz angezeigt werden?
   final bool showGridHorizontal; // if true, grid horizontal lines are painted
@@ -82,7 +84,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
 
   @override
   Widget build(BuildContext context) {
-    loadAssets(widget.columnLegends, () {
+    loadColumnBottomDataImageAssets(widget.columnBottomDatas, () {
       setState(() {});
     });
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
@@ -115,8 +117,9 @@ class _LineChartWidgetState extends State<LineChartWidget> {
             child: CustomPaint(
               painter: LineChartPainter(
                 linechartDataSeries: widget.linechartDataSeries,
-                columnLegends: widget.columnLegends,
-                columnLegendsHeight: widget.columnLegendsHeight,
+                columnTopDatas: widget.columnTopDatas,
+                columnBottomDatas: widget.columnBottomDatas,
+                columnBottomDatasHeight: widget.columnBottomDatasHeight,
                 canvasWidth: width,
                 canvasHeight: height,
                 padding: widget.padding,
@@ -146,29 +149,29 @@ class _LineChartWidgetState extends State<LineChartWidget> {
     });
   }
 
-  void loadAssets(
-    List<LineChartColumnLegend> columnLegends,
+  void loadColumnBottomDataImageAssets(
+    List<LineChartColumnData> columnBottomDatas,
     final VoidCallback onLoadingFinished,
   ) async {
     if (initialized) {
       return;
     }
-    for (var columnLegend in columnLegends) {
-      if (columnLegend.assetImage == null) {
+    for (var columnBottomData in columnBottomDatas) {
+      if (columnBottomData.assetImage == null) {
         continue;
       }
-      final String assetImagePath = columnLegend.assetImage!;
-      PictureInfo pictureInfo = await vg.loadPicture(SvgAssetLoader(columnLegend.assetImage!), null);
+      final String assetImagePath = columnBottomData.assetImage!;
+      PictureInfo pictureInfo = await vg.loadPicture(SvgAssetLoader(columnBottomData.assetImage!), null);
 
       // Change colum legend image size so that it fits into the legend column
       // the legend column height is given
       var imageHeight = pictureInfo.size.height.toInt();
       var imageWidth = pictureInfo.size.width.toInt();
       ui.Image svgImg = pictureInfo.picture.toImageSync(imageHeight, imageWidth);
-      if (imageHeight > widget.columnLegendsHeight) {
+      if (imageHeight > widget.columnBottomDatasHeight) {
         // Größe muss umgerechnet werden damit es in die Legende passt
-        int percent20OfHeight = (widget.columnLegendsHeight * 0.5).toInt();
-        double percentTile = (widget.columnLegendsHeight - percent20OfHeight) / imageHeight;
+        int percent20OfHeight = (widget.columnBottomDatasHeight * 0.5).toInt();
+        double percentTile = (widget.columnBottomDatasHeight - percent20OfHeight) / imageHeight;
         // percentTile = -0.2; // Weiteren Puffer in Prozent aufaddieren, damit es in jedem Fall passt
         imageHeight = (imageHeight * percentTile).toInt();
         imageWidth = (imageWidth * percentTile).toInt();
