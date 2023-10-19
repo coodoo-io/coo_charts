@@ -19,8 +19,8 @@ class LineChartDemo extends StatefulWidget {
 
 class _LineChartDemoState extends State<LineChartDemo> {
   late List<LinechartDataSeries> linechartDataSeries = List.empty(growable: true);
-  late List<LineChartColumnLegend> linechartColumnLegends = List.empty(growable: true);
-  double columnLegendsHeight = 40; // wie hoch soll die Column Legend sein, sofern sie übergeben wird?
+  late List<LineChartColumnData> columnBottomDatas = List.empty(growable: true);
+  double columnBottomDatasHeight = 40; // wie hoch soll die Column Legend sein, sofern sie übergeben wird?
   bool curvedLine = false; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   bool crosshair = false; // Soll ein Fadenkreuz angezeigt werden?
   bool showGridHorizontal = true; // if true, grid horizontal lines are painted
@@ -94,8 +94,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
                 height: 500,
                 child: LineChartWidget(
                   linechartDataSeries: linechartDataSeries,
-                  columnLegends: linechartColumnLegends,
-                  columnLegendsHeight: columnLegendsHeight,
+                  columnBottomDatas: columnBottomDatas,
+                  columnBottomDatasHeight: columnBottomDatasHeight,
                   curvedLine: curvedLine,
                   crosshair: crosshair,
                   showGridHorizontal: showGridHorizontal,
@@ -281,7 +281,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     yAxisMinLabelValue = null;
     yAxisMaxLabelValue = null;
     yAxisLabelCount = 5;
-    linechartColumnLegends.clear();
+    columnBottomDatas.clear();
   }
 
   _create0To10To0ValuesChartDataPoints() {
@@ -427,40 +427,36 @@ class _LineChartDemoState extends State<LineChartDemo> {
     const colorLimitBroken = Color(0xFFd4d1ad); // limit_broken >= 30;
     const colorSonst = Color(0xFFCCCCCC);
 
-    linechartColumnLegends.clear();
-    linechartColumnLegends.add(LineChartColumnLegend(
+    columnBottomDatas.clear();
+    columnBottomDatas.add(LineChartColumnData(
         time: DateTime(2023, 4, 9),
         text: 'a',
         backgroundColor: colorLimitClear.withOpacity(1),
         assetImage: kIconWeatherCloudy));
-    linechartColumnLegends.add(LineChartColumnLegend(
+    columnBottomDatas.add(LineChartColumnData(
         time: DateTime(2023, 4, 10), text: 'b', backgroundColor: colorLimitClear, assetImage: kIconWeatherRain));
-    linechartColumnLegends.add(LineChartColumnLegend(
+    columnBottomDatas.add(LineChartColumnData(
         time: DateTime(2023, 4, 11), text: 'c', backgroundColor: colorLimitFew, assetImage: kIconWeatherRain));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 12), text: 'd', backgroundColor: colorLimitScattered));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 13), text: 'e', backgroundColor: colorSonst));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 14), text: 'f', backgroundColor: colorLimitBroken));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 15), text: 'g', backgroundColor: colorLimitBroken));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 16), text: 'h', backgroundColor: colorSonst));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 17), text: 'i', backgroundColor: colorSonst));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 18), text: 'j', backgroundColor: colorLimitScattered));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 19), text: 'k', backgroundColor: colorLimitScattered));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 20), text: 'l', backgroundColor: colorLimitBroken));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 21), text: 'm', backgroundColor: colorSonst));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 22), text: 'n', backgroundColor: colorLimitClear));
-    linechartColumnLegends
-        .add(LineChartColumnLegend(time: DateTime(2023, 4, 23), text: 'o', backgroundColor: colorLimitClear));
+    columnBottomDatas
+        .add(LineChartColumnData(time: DateTime(2023, 4, 12), text: 'd', backgroundColor: colorLimitScattered));
+    columnBottomDatas.add(LineChartColumnData(time: DateTime(2023, 4, 13), text: 'e', backgroundColor: colorSonst));
+    columnBottomDatas
+        .add(LineChartColumnData(time: DateTime(2023, 4, 14), text: 'f', backgroundColor: colorLimitBroken));
+    columnBottomDatas
+        .add(LineChartColumnData(time: DateTime(2023, 4, 15), text: 'g', backgroundColor: colorLimitBroken));
+    columnBottomDatas.add(LineChartColumnData(time: DateTime(2023, 4, 16), text: 'h', backgroundColor: colorSonst));
+    columnBottomDatas.add(LineChartColumnData(time: DateTime(2023, 4, 17), text: 'i', backgroundColor: colorSonst));
+    columnBottomDatas
+        .add(LineChartColumnData(time: DateTime(2023, 4, 18), text: 'j', backgroundColor: colorLimitScattered));
+    columnBottomDatas
+        .add(LineChartColumnData(time: DateTime(2023, 4, 19), text: 'k', backgroundColor: colorLimitScattered));
+    columnBottomDatas
+        .add(LineChartColumnData(time: DateTime(2023, 4, 20), text: 'l', backgroundColor: colorLimitBroken));
+    columnBottomDatas.add(LineChartColumnData(time: DateTime(2023, 4, 21), text: 'm', backgroundColor: colorSonst));
+    columnBottomDatas
+        .add(LineChartColumnData(time: DateTime(2023, 4, 22), text: 'n', backgroundColor: colorLimitClear));
+    columnBottomDatas
+        .add(LineChartColumnData(time: DateTime(2023, 4, 23), text: 'o', backgroundColor: colorLimitClear));
 
     // Voraussichtliche Tageshöchsttemperatur
     var hoechstTemperatur = List<LineChartDataPoint>.empty(growable: true);
