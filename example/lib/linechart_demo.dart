@@ -63,10 +63,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
   @override
   initState() {
     super.initState();
-    _create0To10To0ValuesChartDataPoints();
+    // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
     // _genrateRandomLineChartDataPoints();
-    // _generateKachelmann14TageWetterTrend();
+    _generateKachelmann14TageWetterTrend();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
   }
@@ -95,7 +95,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
               SizedBox(
                 height: 500,
                 child: LineChartWidget(
-                  linechartDataSeries: linechartDataSeries,
+                  dataSeries: linechartDataSeries,
                   columnBlocks: chartColumnBlocks,
                   curvedLine: curvedLine,
                   crosshair: crosshair,
@@ -419,6 +419,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisBottomDateFormat = 'E';
     xAxisShowTopLabels = true;
     yAxisLabelPostfix = '°C';
+    highlightPointsVerticalLine = false;
 
     linechartDataSeries.clear();
 
@@ -497,7 +498,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showMinMaxArea: true,
       dataLineColor: const Color(0xffd85930),
       minMaxAreaColor: const Color.fromRGBO(216, 89, 48, .4),
-      dataLabelColor: Colors.white,
+      dataPointLabelTextStyle: const TextStyle(color: Color(0xffd85930), fontWeight: FontWeight.bold, fontSize: 14),
+      dataPointLabelPosition: DataPointLabelPos.top,
       showDataLabels: true,
     );
     linechartDataSeries.add(linechartHoechstTemperatur);
@@ -535,7 +537,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showMinMaxArea: true,
       dataLineColor: const Color(0xff0080b5),
       minMaxAreaColor: const Color.fromRGBO(84, 185, 233, .4),
-      dataLabelColor: Colors.white,
+      dataPointLabelTextStyle: const TextStyle(color: Color(0xff0080b5), fontWeight: FontWeight.bold),
+      dataPointLabelPosition: DataPointLabelPos.bottom,
       showDataLabels: true,
     );
     linechartDataSeries.add(dataSeriesTiefsttemperatur);

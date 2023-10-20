@@ -14,7 +14,7 @@ import 'package:image/image.dart' as image;
 class LineChartWidget extends StatefulWidget {
   LineChartWidget({
     super.key,
-    required this.linechartDataSeries,
+    required this.dataSeries,
     this.columnBlocks,
     this.curvedLine = false,
     this.crosshair = false,
@@ -32,7 +32,7 @@ class LineChartWidget extends StatefulWidget {
     this.padding = const ChartPadding(),
   });
 
-  final List<LinechartDataSeries> linechartDataSeries;
+  final List<LinechartDataSeries> dataSeries;
   final ChartColumnBlocks? columnBlocks;
 
   final bool curvedLine; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
@@ -115,7 +115,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
             height: height,
             child: CustomPaint(
               painter: LineChartPainter(
-                linechartDataSeries: widget.linechartDataSeries,
+                linechartDataSeries: widget.dataSeries,
                 columnBlocks: widget.columnBlocks,
                 canvasWidth: width,
                 canvasHeight: height,

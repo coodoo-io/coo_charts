@@ -175,12 +175,6 @@ class LineChartPainter extends CustomPainter {
     textDirection: ui.TextDirection.ltr,
   );
 
-  var dataLabelTextStyle = const TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.bold,
-    color: Colors.white,
-  );
-
   @override
   void paint(Canvas canvas, Size size) {
     /// Chart canvas size to draw on
@@ -296,7 +290,7 @@ class LineChartPainter extends CustomPainter {
           continue dataPointsLoop;
         }
 
-        // Berechnen der Position zum Plotten
+        // Berechnen der Position zum Plotten der Linie
         double x;
         if (i == 0) {
           x = 0.0 + padding.left;
@@ -355,7 +349,6 @@ class LineChartPainter extends CustomPainter {
           // Falls die Linefarbe angegeben wurde wird diese als default für die Datenpunkte, Highlight und Font gesetzt.
           _pointPaint.color = localLinechartDataSeries.dataLineColor!;
           _pointPaintHighlight.color = localLinechartDataSeries.dataLineColor!;
-          dataLabelTextStyle = dataLabelTextStyle.copyWith(color: localLinechartDataSeries.dataLineColor!);
         }
         canvas.drawPath(
           lineChartDataPointsPath,
@@ -368,11 +361,6 @@ class LineChartPainter extends CustomPainter {
       }
       if (localLinechartDataSeries.dataPointHighlightColor != null) {
         _pointPaintHighlight.color = localLinechartDataSeries.dataPointHighlightColor!;
-      }
-
-      // check individual font color
-      if (localLinechartDataSeries.dataLabelColor != null) {
-        dataLabelTextStyle = dataLabelTextStyle.copyWith(color: localLinechartDataSeries.dataLabelColor!);
       }
 
       // Linechart Datenpunkte malen
@@ -389,14 +377,36 @@ class LineChartPainter extends CustomPainter {
           canvas.drawCircle(dataPointOffset, 4, _pointPaint);
         }
 
+        // Data Point Label malen
         if (localLinechartDataSeries.showDataLabels) {
           String? label = dataSeriesLabels[i];
           if (label != null) {
-            _dataLabelPainter.text = TextSpan(text: label, style: dataLabelTextStyle);
+            _dataLabelPainter.text = TextSpan(text: label, style: localLinechartDataSeries.dataPointLabelTextStyle);
             _dataLabelPainter.layout();
-            // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-            var xPosCenter = (dataPointOffset.dx) - (_dataLabelPainter.width / 2);
-            var yPos = dataPointOffset.dy - 20;
+
+            double xPosCenter;
+            double yPos;
+            switch (localLinechartDataSeries.dataPointLabelPosition) {
+              case DataPointLabelPos.top:
+                // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
+                xPosCenter = (dataPointOffset.dx) - (_dataLabelPainter.width / 2);
+                yPos = dataPointOffset.dy - 25 + (localLinechartDataSeries.dataPointLabelPadding * -1);
+                break;
+              case DataPointLabelPos.right:
+                xPosCenter = (dataPointOffset.dx) + 10 + localLinechartDataSeries.dataPointLabelPadding;
+                yPos = dataPointOffset.dy - (_dataLabelPainter.height / 2);
+                break;
+              case DataPointLabelPos.left:
+                xPosCenter = (dataPointOffset.dx) - 30 + (localLinechartDataSeries.dataPointLabelPadding * -1);
+                yPos = dataPointOffset.dy - (_dataLabelPainter.height / 2);
+                break;
+              case DataPointLabelPos.bottom:
+                // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
+                xPosCenter = (dataPointOffset.dx) - (_dataLabelPainter.width / 2);
+                yPos = dataPointOffset.dy + 10 + localLinechartDataSeries.dataPointLabelPadding;
+                break;
+            }
+
             _dataLabelPainter.paint(canvas, Offset(xPosCenter, yPos));
           }
         }

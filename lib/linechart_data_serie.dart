@@ -2,6 +2,7 @@
 import 'dart:ui';
 
 import 'package:coo_charts/linechart_data_point.dart';
+import 'package:flutter/material.dart';
 
 class LinechartDataSeries {
   LinechartDataSeries({
@@ -15,7 +16,13 @@ class LinechartDataSeries {
     this.dataPointHighlightColor,
     this.dataLineColor,
     this.minMaxAreaColor,
-    this.dataLabelColor,
+    this.dataPointLabelTextStyle = const TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
+      color: Colors.white,
+    ),
+    this.dataPointLabelPosition = DataPointLabelPos.top,
+    this.dataPointLabelPadding = 0,
   });
 
   /// Die Datenpunkte, die den Line-Chart beschreiben
@@ -41,7 +48,15 @@ class LinechartDataSeries {
   final Color? dataPointHighlightColor;
   final Color? dataLineColor;
   final Color? minMaxAreaColor;
-  final Color? dataLabelColor;
+
+  // Configure the text style of all data labels
+  final TextStyle dataPointLabelTextStyle;
+
+  // if true the label is printed above the data point, false below the datapoint
+  final DataPointLabelPos dataPointLabelPosition;
+
+  // Define the padding from the data point to the labels
+  final int dataPointLabelPadding;
 
   LinechartDataSeries copyWith({
     List<LineChartDataPoint>? dataPoints,
@@ -55,6 +70,8 @@ class LinechartDataSeries {
     Color? dataLineColor,
     Color? minMaxAreaColor,
     Color? dataLabelColor,
+    TextStyle? dataPointLabelTextStyle,
+    DataPointLabelPos? dataPointLabelPosition,
   }) {
     return LinechartDataSeries(
       dataPoints: dataPoints ?? this.dataPoints,
@@ -67,7 +84,16 @@ class LinechartDataSeries {
       dataPointHighlightColor: dataPointHighlightColor ?? this.dataPointHighlightColor,
       dataLineColor: dataLineColor ?? this.dataLineColor,
       minMaxAreaColor: minMaxAreaColor ?? this.minMaxAreaColor,
-      dataLabelColor: dataLabelColor ?? this.dataLabelColor,
+      dataPointLabelTextStyle: dataPointLabelTextStyle ?? this.dataPointLabelTextStyle,
+      dataPointLabelPosition: dataPointLabelPosition ?? this.dataPointLabelPosition,
     );
   }
+}
+
+// in wich direktction should the data point label be positioned
+enum DataPointLabelPos {
+  top,
+  right,
+  left,
+  bottom,
 }
