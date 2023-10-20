@@ -1,6 +1,8 @@
 import 'dart:ui' as ui;
 
 import 'package:coo_charts/chart_column_blocks.dart';
+import 'package:coo_charts/chart_tab_info.dart';
+import 'package:coo_charts/linechart_data_point.dart';
 import 'package:coo_charts/linechart_data_serie.dart';
 import 'package:coo_charts/linechart_painter.dart';
 import 'package:coo_charts/x_axis_config.dart';
@@ -30,6 +32,7 @@ class LineChartWidget extends StatefulWidget {
     this.yAxisConfig = const YAxisConfig(),
     this.xAxisConfig = const XAxisConfig(),
     this.padding = const ChartPadding(),
+    this.onDataPointTab,
   });
 
   final List<LinechartDataSeries> dataSeries;
@@ -52,6 +55,8 @@ class LineChartWidget extends StatefulWidget {
   /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
   final bool centerDataPointBetweenVerticalGrid;
 
+  Function(int, List<LineChartDataPoint>)? onDataPointTab;
+
   /// Die Konfiguration der Y-Achse
   final YAxisConfig yAxisConfig;
   final XAxisConfig xAxisConfig;
@@ -66,6 +71,7 @@ class LineChartWidget extends StatefulWidget {
 
 class _LineChartWidgetState extends State<LineChartWidget> {
   Offset? _mousePointer;
+  final chartTabInfo = ChartTabInfo();
 
   bool initialized = false;
 
@@ -121,6 +127,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                 canvasHeight: height,
                 padding: widget.padding,
                 mousePosition: _mousePointer,
+                chartTabInfo: chartTabInfo,
                 curvedLine: widget.curvedLine,
                 crosshair: widget.crosshair,
                 showGridHorizontal: widget.showGridHorizontal,
@@ -133,14 +140,15 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                 centerDataPointBetweenVerticalGrid: widget.centerDataPointBetweenVerticalGrid,
                 yAxisConfig: widget.yAxisConfig,
                 columLegendsAssetImages: widget.columLegendsAssetImages,
+                onDataPointTabCallback: widget.onDataPointTab,
               ),
             ),
           ),
         ),
         onTapDown: (detail) {
-          if (kDebugMode) {
-            print('tab');
-          }
+          chartTabInfo.tabDownDetails = detail;
+          chartTabInfo.tabCount = chartTabInfo.tabCount + 1;
+          setState(() {});
         },
       );
     });

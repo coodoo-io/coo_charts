@@ -107,6 +107,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   highlightPointsHorizontalLine: highlightPointsHorizontalLine,
                   highlightPointsVerticalLine: highlightPointsVerticalLine,
                   centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+                  onDataPointTab: (index, linechartDataPoints) => print('Tab $index - ${linechartDataPoints[0].value}'),
                   xAxisConfig: XAxisConfig(
                     startNumber: xAxisStartNumber,
                     valueType: xAxisValueType,
