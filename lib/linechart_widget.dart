@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:coo_charts/linechart_column_legend.dart';
+import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/linechart_data_serie.dart';
 import 'package:coo_charts/linechart_painter.dart';
 import 'package:coo_charts/x_axis_config.dart';
@@ -15,9 +15,7 @@ class LineChartWidget extends StatefulWidget {
   LineChartWidget({
     super.key,
     required this.linechartDataSeries,
-    this.columnBottomDatas = const [],
-    this.columnTopDatas = const [],
-    this.columnBottomDatasHeight = 0,
+    this.columnBlocks,
     this.curvedLine = false,
     this.crosshair = false,
     this.showGridHorizontal = false,
@@ -26,7 +24,7 @@ class LineChartWidget extends StatefulWidget {
     this.highlightMouseColumn = false,
     this.highlightPoints = true,
     this.highlightPointsHorizontalLine = false,
-    this.highlightPointsVerticalLine = true,
+    this.highlightPointsVerticalLine = false,
     this.addYAxisValueBuffer = true,
     this.centerDataPointBetweenVerticalGrid = false,
     this.yAxisConfig = const YAxisConfig(),
@@ -35,9 +33,8 @@ class LineChartWidget extends StatefulWidget {
   });
 
   final List<LinechartDataSeries> linechartDataSeries;
-  final List<LineChartColumnData> columnBottomDatas;
-  final List<LineChartColumnData> columnTopDatas;
-  final double columnBottomDatasHeight;
+  final ChartColumnBlocks? columnBlocks;
+
   final bool curvedLine; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   final bool crosshair; // Soll ein Fadenkreuz angezeigt werden?
   final bool showGridHorizontal; // if true, grid horizontal lines are painted
@@ -84,9 +81,11 @@ class _LineChartWidgetState extends State<LineChartWidget> {
 
   @override
   Widget build(BuildContext context) {
-    loadColumnBottomDataImageAssets(widget.columnBottomDatas, () {
-      setState(() {});
-    });
+    if (widget.columnBlocks != null) {
+      loadColumnDataImageAssets(widget.columnBlocks!, () {
+        setState(() {});
+      });
+    }
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
       double width = MediaQuery.of(context).size.width;
       double height = MediaQuery.of(context).size.height;
@@ -117,9 +116,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
             child: CustomPaint(
               painter: LineChartPainter(
                 linechartDataSeries: widget.linechartDataSeries,
-                columnTopDatas: widget.columnTopDatas,
-                columnBottomDatas: widget.columnBottomDatas,
-                columnBottomDatasHeight: widget.columnBottomDatasHeight,
+                columnBlocks: widget.columnBlocks,
                 canvasWidth: width,
                 canvasHeight: height,
                 padding: widget.padding,
@@ -149,14 +146,15 @@ class _LineChartWidgetState extends State<LineChartWidget> {
     });
   }
 
-  void loadColumnBottomDataImageAssets(
-    List<LineChartColumnData> columnBottomDatas,
+  void loadColumnDataImageAssets(
+    ChartColumnBlocks columnBlocks,
     final VoidCallback onLoadingFinished,
   ) async {
     if (initialized) {
       return;
     }
-    for (var columnBottomData in columnBottomDatas) {
+
+    for (var columnBottomData in columnBlocks.bottomDatas) {
       if (columnBottomData.assetImage == null) {
         continue;
       }
@@ -168,18 +166,13 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       var imageHeight = pictureInfo.size.height.toInt();
       var imageWidth = pictureInfo.size.width.toInt();
       ui.Image svgImg = pictureInfo.picture.toImageSync(imageHeight, imageWidth);
-      if (imageHeight > widget.columnBottomDatasHeight) {
+      final height = columnBlocks.bottomConfig.height;
+      if (imageHeight > height) {
         // Größe muss umgerechnet werden damit es in die Legende passt
-        int percent20OfHeight = (widget.columnBottomDatasHeight * 0.5).toInt();
-        double percentTile = (widget.columnBottomDatasHeight - percent20OfHeight) / imageHeight;
-        // percentTile = -0.2; // Weiteren Puffer in Prozent aufaddieren, damit es in jedem Fall passt
-        imageHeight = (imageHeight * percentTile).toInt();
-        imageWidth = (imageWidth * percentTile).toInt();
-
         final ByteData? assetImageByteData = await svgImg.toByteData(format: ui.ImageByteFormat.png);
         if (assetImageByteData != null) {
           image.Image baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List())!;
-          image.Image resizeImage = image.copyResize(baseSizeImage, height: imageHeight, width: imageWidth);
+          image.Image resizeImage = image.copyResize(baseSizeImage, height: columnBlocks.bottomConfig.imageHeight);
           ui.Codec codec = await ui.instantiateImageCodec(image.encodePng(resizeImage));
           ui.FrameInfo frameInfo = await codec.getNextFrame();
           svgImg = frameInfo.image;

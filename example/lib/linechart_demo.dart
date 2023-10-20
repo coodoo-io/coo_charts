@@ -1,10 +1,12 @@
+import 'package:coo_charts/chart_column_block_config.dart';
+import 'package:coo_charts/chart_column_block_data.dart';
+import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_util.dart';
 import 'package:coo_charts/linechart_data_point.dart';
 import 'package:coo_charts/linechart_data_serie.dart';
 import 'package:coo_charts/linechart_widget.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
-import 'package:coo_charts/linechart_column_legend.dart';
 import 'package:flutter/material.dart';
 
 const kIconWeatherCloudy = 'assets/sym_cloudy.svg';
@@ -19,7 +21,7 @@ class LineChartDemo extends StatefulWidget {
 
 class _LineChartDemoState extends State<LineChartDemo> {
   late List<LinechartDataSeries> linechartDataSeries = List.empty(growable: true);
-  late List<LineChartColumnData> columnBottomDatas = List.empty(growable: true);
+  ChartColumnBlocks? chartColumnBlocks;
   double columnBottomDatasHeight = 40; // wie hoch soll die Column Legend sein, sofern sie übergeben wird?
   bool curvedLine = false; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   bool crosshair = false; // Soll ein Fadenkreuz angezeigt werden?
@@ -61,10 +63,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
   @override
   initState() {
     super.initState();
-    // _create0To10To0ValuesChartDataPoints();
+    _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
     // _genrateRandomLineChartDataPoints();
-    _generateKachelmann14TageWetterTrend();
+    // _generateKachelmann14TageWetterTrend();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
   }
@@ -94,8 +96,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
                 height: 500,
                 child: LineChartWidget(
                   linechartDataSeries: linechartDataSeries,
-                  columnBottomDatas: columnBottomDatas,
-                  columnBottomDatasHeight: columnBottomDatasHeight,
+                  columnBlocks: chartColumnBlocks,
                   curvedLine: curvedLine,
                   crosshair: crosshair,
                   showGridHorizontal: showGridHorizontal,
@@ -224,11 +225,6 @@ class _LineChartDemoState extends State<LineChartDemo> {
                     onPressed: () => setState(() => xAxisShowBottomLabels = !xAxisShowBottomLabels),
                     child: Text('Bottom Labels ${xAxisShowBottomLabels ? '✅' : '❌'}'),
                   ),
-
-                  // ElevatedButton(
-                  //   onPressed: () => setState(() => highlightPointsHorizontalLine = !highlightPointsHorizontalLine),
-                  //   child: Text('Highlight points horizontal line ${highlightPointsHorizontalLine ? '✅' : '❌'}'),
-                  // ),
                 ],
               ),
               Row(
@@ -244,6 +240,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   ElevatedButton(
                     onPressed: () => setState(() => highlightPointsVerticalLine = !highlightPointsVerticalLine),
                     child: Text('Highlight points vertical line ${highlightPointsVerticalLine ? '✅' : '❌'}'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => highlightPointsHorizontalLine = !highlightPointsHorizontalLine),
+                    child: Text('Highlight points horizontal line ${highlightPointsHorizontalLine ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
                     onPressed: () =>
@@ -281,7 +281,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     yAxisMinLabelValue = null;
     yAxisMaxLabelValue = null;
     yAxisLabelCount = 5;
-    columnBottomDatas.clear();
+
+    chartColumnBlocks = null;
   }
 
   _create0To10To0ValuesChartDataPoints() {
@@ -427,36 +428,41 @@ class _LineChartDemoState extends State<LineChartDemo> {
     const colorLimitBroken = Color(0xFFd4d1ad); // limit_broken >= 30;
     const colorSonst = Color(0xFFCCCCCC);
 
-    columnBottomDatas.clear();
-    columnBottomDatas.add(LineChartColumnData(
+    final columnBottomDatas = List<ChartColumnBlockData>.empty(growable: true);
+    columnBottomDatas.add(ChartColumnBlockData(
         time: DateTime(2023, 4, 9),
         text: 'a',
         backgroundColor: colorLimitClear.withOpacity(1),
         assetImage: kIconWeatherCloudy));
-    columnBottomDatas.add(LineChartColumnData(
+    columnBottomDatas.add(ChartColumnBlockData(
         time: DateTime(2023, 4, 10), text: 'b', backgroundColor: colorLimitClear, assetImage: kIconWeatherRain));
-    columnBottomDatas.add(LineChartColumnData(
+    columnBottomDatas.add(ChartColumnBlockData(
         time: DateTime(2023, 4, 11), text: 'c', backgroundColor: colorLimitFew, assetImage: kIconWeatherRain));
     columnBottomDatas
-        .add(LineChartColumnData(time: DateTime(2023, 4, 12), text: 'd', backgroundColor: colorLimitScattered));
-    columnBottomDatas.add(LineChartColumnData(time: DateTime(2023, 4, 13), text: 'e', backgroundColor: colorSonst));
+        .add(ChartColumnBlockData(time: DateTime(2023, 4, 12), text: 'd', backgroundColor: colorLimitScattered));
+    columnBottomDatas.add(ChartColumnBlockData(time: DateTime(2023, 4, 13), text: 'e', backgroundColor: colorSonst));
     columnBottomDatas
-        .add(LineChartColumnData(time: DateTime(2023, 4, 14), text: 'f', backgroundColor: colorLimitBroken));
+        .add(ChartColumnBlockData(time: DateTime(2023, 4, 14), text: 'f', backgroundColor: colorLimitBroken));
     columnBottomDatas
-        .add(LineChartColumnData(time: DateTime(2023, 4, 15), text: 'g', backgroundColor: colorLimitBroken));
-    columnBottomDatas.add(LineChartColumnData(time: DateTime(2023, 4, 16), text: 'h', backgroundColor: colorSonst));
-    columnBottomDatas.add(LineChartColumnData(time: DateTime(2023, 4, 17), text: 'i', backgroundColor: colorSonst));
+        .add(ChartColumnBlockData(time: DateTime(2023, 4, 15), text: 'g', backgroundColor: colorLimitBroken));
+    columnBottomDatas.add(ChartColumnBlockData(time: DateTime(2023, 4, 16), text: 'h', backgroundColor: colorSonst));
+    columnBottomDatas.add(ChartColumnBlockData(time: DateTime(2023, 4, 17), text: 'i', backgroundColor: colorSonst));
     columnBottomDatas
-        .add(LineChartColumnData(time: DateTime(2023, 4, 18), text: 'j', backgroundColor: colorLimitScattered));
+        .add(ChartColumnBlockData(time: DateTime(2023, 4, 18), text: 'j', backgroundColor: colorLimitScattered));
     columnBottomDatas
-        .add(LineChartColumnData(time: DateTime(2023, 4, 19), text: 'k', backgroundColor: colorLimitScattered));
+        .add(ChartColumnBlockData(time: DateTime(2023, 4, 19), text: 'k', backgroundColor: colorLimitScattered));
     columnBottomDatas
-        .add(LineChartColumnData(time: DateTime(2023, 4, 20), text: 'l', backgroundColor: colorLimitBroken));
-    columnBottomDatas.add(LineChartColumnData(time: DateTime(2023, 4, 21), text: 'm', backgroundColor: colorSonst));
+        .add(ChartColumnBlockData(time: DateTime(2023, 4, 20), text: 'l', backgroundColor: colorLimitBroken));
+    columnBottomDatas.add(ChartColumnBlockData(time: DateTime(2023, 4, 21), text: 'm', backgroundColor: colorSonst));
     columnBottomDatas
-        .add(LineChartColumnData(time: DateTime(2023, 4, 22), text: 'n', backgroundColor: colorLimitClear));
+        .add(ChartColumnBlockData(time: DateTime(2023, 4, 22), text: 'n', backgroundColor: colorLimitClear));
     columnBottomDatas
-        .add(LineChartColumnData(time: DateTime(2023, 4, 23), text: 'o', backgroundColor: colorLimitClear));
+        .add(ChartColumnBlockData(time: DateTime(2023, 4, 23), text: 'o', backgroundColor: colorLimitClear));
+    chartColumnBlocks = ChartColumnBlocks(
+      showBottomBlocks: true,
+      bottomDatas: columnBottomDatas,
+      bottomConfig: const ChartColumnBlockConfig(),
+    );
 
     // Voraussichtliche Tageshöchsttemperatur
     var hoechstTemperatur = List<LineChartDataPoint>.empty(growable: true);
@@ -533,6 +539,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showDataLabels: true,
     );
     linechartDataSeries.add(dataSeriesTiefsttemperatur);
+
+    setState(() {});
   }
 
   // Zeichnet den Kachelmannchart "Vorhersage XL" (Vorhersage-Modell-Super-HD.png nach.

@@ -2,8 +2,8 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/coo_chart_painter.dart';
-import 'package:coo_charts/linechart_column_legend.dart';
 import 'package:coo_charts/linechart_data_point.dart';
 import 'package:coo_charts/linechart_data_serie.dart';
 import 'package:coo_charts/linechart_widget.dart';
@@ -15,8 +15,7 @@ import 'package:intl/intl.dart';
 class LineChartPainter extends CustomPainter {
   LineChartPainter({
     required this.linechartDataSeries,
-    required this.columnTopDatas,
-    required this.columnBottomDatas,
+    this.columnBlocks,
     required this.canvasWidth,
     required this.canvasHeight,
     required this.curvedLine,
@@ -32,7 +31,6 @@ class LineChartPainter extends CustomPainter {
     required this.xAxisConfig,
     required this.yAxisConfig,
     required this.padding,
-    required this.columnBottomDatasHeight,
     required this.columLegendsAssetImages,
   }) {
     chartWidth = canvasWidth - padding.left - padding.right;
@@ -60,9 +58,11 @@ class LineChartPainter extends CustomPainter {
     xSegementWidthHalf = xSegmentWidth / 2;
   }
 
+  final List<LinechartDataSeries> linechartDataSeries;
+
+  final ChartColumnBlocks? columnBlocks;
   final Map<String, ui.Image> columLegendsAssetImages;
 
-  final List<LinechartDataSeries> linechartDataSeries;
   final double canvasHeight;
   final double canvasWidth;
   final ChartPadding padding;
@@ -80,13 +80,6 @@ class LineChartPainter extends CustomPainter {
       highlightPointsVerticalLine; // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
   final bool
       highlightPointsHorizontalLine; // Zeichnet eine horizontale Line über den Datenpunkt wenn die Maus in der Nähe ist.
-
-  final List<LineChartColumnData> columnBottomDatas;
-  final List<LineChartColumnData> columnTopDatas;
-  final bool showColumnBottomDatas = true; // Zeichnet unterhalb der Datenspalte eine Legende
-  final bool showColumnTopDatas = true; // Zeichnet oberhalb der Datenspalte eine Legende
-  late double columnBottomDatasHeight;
-  late double columnTopDatasHeight;
 
   /// Die Konfiguration für X- und Y-Achse
   final YAxisConfig yAxisConfig;
@@ -226,17 +219,15 @@ class LineChartPainter extends CustomPainter {
       chartHeight: chartHeight,
       linechartDataSeries: linechartDataSeries,
       showYAxisLables: yAxisConfig.showYAxisLables,
-      showColumnBottomDatas: showColumnBottomDatas,
-      dataPointColumnLegendHeight: columnBottomDatasHeight,
+      columnBlocks: columnBlocks,
     );
 
-    _drawColumnBottomDatas(
+    _drawColumnBottomBlocks(
       canvas: canvas,
       chartWidth: chartWidth,
       chartHeight: chartHeight,
       linechartDataSeries: linechartDataSeries,
-      columnBottomDatas: columnBottomDatas,
-      columnBottomDatasHeight: columnBottomDatasHeight,
+      columnBlocks: columnBlocks,
     );
 
     _drawDataPointsAndLine(
@@ -245,8 +236,7 @@ class LineChartPainter extends CustomPainter {
       chartHeigt: chartHeight,
       mousePosition: mousePosition,
       linechartDataSeries: linechartDataSeries,
-      showColumnBottomDatas: showColumnBottomDatas,
-      columnBottomDatasHeight: columnBottomDatasHeight,
+      columnBlocks: columnBlocks,
     );
 
     if (crosshair) {
@@ -265,9 +255,9 @@ class LineChartPainter extends CustomPainter {
     required double chartHeigt,
     required Offset? mousePosition,
     required List<LinechartDataSeries> linechartDataSeries,
-    required bool showColumnBottomDatas,
-    required double columnBottomDatasHeight,
+    ChartColumnBlocks? columnBlocks,
   }) {
+    final columnBottomDatasHeight = columnBlocks != null ? columnBlocks.bottomConfig.height.toDouble() : 0;
     // Die Segment-width muss über alle vorhandenen Datenpunkte aller Reihen berechnet werden.
     for (var i = 0; i < linechartDataSeries.length; i++) {
       LinechartDataSeries localLinechartDataSeries = linechartDataSeries[i];
@@ -772,9 +762,11 @@ class LineChartPainter extends CustomPainter {
     required double chartHeight,
     required List<LinechartDataSeries> linechartDataSeries,
     required bool showYAxisLables,
-    required bool showColumnBottomDatas,
-    required double dataPointColumnLegendHeight,
+    ChartColumnBlocks? columnBlocks,
   }) {
+    bool showColumnBottomDatas = columnBlocks != null;
+    double dataPointColumnLegendHeight = showColumnBottomDatas ? columnBlocks.bottomConfig.height.toDouble() : 0;
+
     final double yOffsetInterval = (chartHeight - dataPointColumnLegendHeight) / (yAxisConfig.labelCount - 1);
 
     for (int i = 0; i < yAxisConfig.labelCount; i++) {
@@ -1016,20 +1008,22 @@ class LineChartPainter extends CustomPainter {
     }
   }
 
-  void _drawColumnBottomDatas({
+  void _drawColumnBottomBlocks({
     required ui.Canvas canvas,
     required double chartWidth,
     required double chartHeight,
     required List<LinechartDataSeries> linechartDataSeries,
-    required List<LineChartColumnData> columnBottomDatas,
-    required double columnBottomDatasHeight,
+    ChartColumnBlocks? columnBlocks,
   }) {
-    if (columnBottomDatas.isEmpty) {
+    if (columnBlocks == null || !columnBlocks.showBottomBlocks) {
       return;
     }
 
+    final columnBottomDatasHeight = columnBlocks.bottomConfig.height.toDouble();
+    final columnBottomDatas = columnBlocks.bottomDatas;
+
     // Wenn padding für die Legende verwendet werden soll kann angegben werden wie breit sie ist.
-    const double backgroundPaddingSize = 5;
+    double backgroundPaddingSize = columnBlocks.bottomConfig.backgroundColorPadding.toDouble();
 
     int xGridLineCount = maxAbsoluteValueCount;
     if (!centerDataPointBetweenVerticalGrid) {

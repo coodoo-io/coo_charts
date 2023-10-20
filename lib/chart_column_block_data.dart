@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 /// If data points column legends are enabled this data class is needed for every column
-class LineChartColumnData {
-  LineChartColumnData({
+class ChartColumnBlockData {
+  ChartColumnBlockData({
     this.time,
     this.text,
     this.backgroundColor,
