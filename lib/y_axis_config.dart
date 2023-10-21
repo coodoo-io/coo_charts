@@ -1,12 +1,14 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
 /// Alle möglichen Konfigurationen, die direkten Bezug auf die Y-Achse haben.
 class YAxisConfig {
   const YAxisConfig({
+    this.showAxis = true,
+    this.showYAxisLables = true,
     this.labelCount = 5,
     this.minLabelValue,
     this.maxLabelValue,
     this.addValuePadding = true,
-    this.showYAxisLables = true,
-    this.showAxis = true,
     this.labelPostfix,
   });
 
@@ -39,4 +41,24 @@ class YAxisConfig {
   /// e.g. '°C' -> '2 °C', '4 °C', '6 °C' ...
   /// or 'cm' -> '2 cm', '4 cm', '6 cm'
   final String? labelPostfix;
+
+  YAxisConfig copyWith({
+    bool? showAxis,
+    bool? showYAxisLables,
+    int? labelCount,
+    double? minLabelValue,
+    double? maxLabelValue,
+    bool? addValuePadding,
+    String? labelPostfix,
+  }) {
+    return YAxisConfig(
+      showAxis: showAxis ?? this.showAxis,
+      showYAxisLables: showYAxisLables ?? this.showYAxisLables,
+      labelCount: labelCount ?? this.labelCount,
+      minLabelValue: minLabelValue ?? this.minLabelValue,
+      maxLabelValue: maxLabelValue ?? this.maxLabelValue,
+      addValuePadding: addValuePadding ?? this.addValuePadding,
+      labelPostfix: labelPostfix ?? this.labelPostfix,
+    );
+  }
 }

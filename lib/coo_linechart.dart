@@ -2,10 +2,12 @@ import 'dart:ui' as ui;
 
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_config.dart';
+import 'package:coo_charts/chart_padding.enum.dart';
 import 'package:coo_charts/chart_tab_info.dart';
+import 'package:coo_charts/coo_chart_type.enum.dart';
 import 'package:coo_charts/coo_linechart_data_point.dart';
-import 'package:coo_charts/coo_linechart_data_serie.dart';
-import 'package:coo_charts/linechart_painter.dart';
+import 'package:coo_charts/coo_linechart_data_series.dart';
+import 'package:coo_charts/coo_chart_painter.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
 import 'package:flutter/material.dart';
@@ -91,8 +93,10 @@ class _CooLinechartState extends State<CooLinechart> {
             width: width,
             height: height,
             child: CustomPaint(
-              painter: LineChartPainter(
+              painter: CooChartPainter(
+                chartType: CooChartType.line,
                 linechartDataSeries: widget.dataSeries,
+                barchartDataSeries: [],
                 columnBlocks: widget.columnBlocks,
                 canvasWidth: width,
                 canvasHeight: height,
@@ -175,16 +179,3 @@ class _CooLinechartState extends State<CooLinechart> {
     onLoadingFinished();
   }
 }
-
-/// Welchen Datentyp hat die X-Achse?
-enum XAxisValueType {
-  number, // Einfache Durchnummerierung 1,2,3.. (es kann ein Startwert angegeben werden)
-  datetime, // Datum mit Zeitangabe
-  date, // Datum ohne Zeitangabe
-}
-
-/// In welchem Range sollen die Labels angebracht werden?
-/// Mo 13.4., Di 14.4., Do 15.4., ...
-/// Jan, Feb, Mar, ...
-/// 2023, 2024, 2025
-enum XAxisDateTimeLabelSpan { hour, day, month, year }

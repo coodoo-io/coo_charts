@@ -4,10 +4,16 @@ import 'package:coo_charts/chart_column_block_data.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_config.dart';
 import 'package:coo_charts/chart_util.dart';
+import 'package:coo_charts/coo_barchart_data_point.dart';
+import 'package:coo_charts/coo_chart_type.enum.dart';
+import 'package:coo_charts/coo_barchart.dart';
 import 'package:coo_charts/coo_linechart.dart';
 import 'package:coo_charts/coo_linechart_data_point.dart';
-import 'package:coo_charts/coo_linechart_data_serie.dart';
+import 'package:coo_charts/coo_linechart_data_series.dart';
+import 'package:coo_charts/coo_barchart_data_series.dart';
+import 'package:coo_charts/data_point_label_pos.enum.dart';
 import 'package:coo_charts/x_axis_config.dart';
+import 'package:coo_charts/x_axis_value_type.enum.dart';
 import 'package:coo_charts/y_axis_config.dart';
 import 'package:flutter/material.dart';
 
@@ -25,39 +31,35 @@ class LineChartDemo extends StatefulWidget {
 
 class _LineChartDemoState extends State<LineChartDemo> {
   late List<CooLinechartDataSeries> linechartDataSeries = List.empty(growable: true);
+  late List<CooBarchartDataSeries> barchartDataSeries = List.empty(growable: true);
+
   ChartColumnBlocks? chartColumnBlocks;
   ChartConfig chartConfig = const ChartConfig();
   double columnBottomDatasHeight = 40; // wie hoch soll die Column Legend sein, sofern sie übergeben wird?
   bool calcYAxisValuePadding = true;
+
+  var xAxisConfig = const XAxisConfig();
+  var yAxisConfig = const YAxisConfig();
+
+  bool chartBackgroundColorBlack = false;
+
+  CooChartType chartType = CooChartType.bar;
 
   // TMP Variablen
   bool showDataPoints = false;
   bool showDataLabels = false;
   bool showDataLine = false;
 
-  double? yAxisMinLabelValue;
-  double? yAxisMaxLabelValue;
-  int yAxisLabelCount = 5;
-
   /// X-Achse Config
-  int xAxisStartNumber = 0;
-  XAxisValueType xAxisValueType = XAxisValueType.number; // Konfiguriert den X-Achsen Wert (Zahlen oder Datum usw.)
-  String xAxisBottomDateFormat = 'dd.MM';
-
-  bool xAxisShowTopLabels = false;
-  bool xAxisShowBottomLabels = true;
-
-  String? yAxisLabelPostfix;
-  String? xAxisLabelTopPostfix;
-  String? xAxisLabelBottomPostfix;
 
   @override
   initState() {
     super.initState();
+    // _generateKachelmann14TageWetterTrend();
+    _generateKachelmannSonnenscheindauerTrend();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
     // _genrateRandomCooLinechartDataPoints();
-    _generateKachelmann14TageWetterTrend();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
   }
@@ -83,31 +85,27 @@ class _LineChartDemoState extends State<LineChartDemo> {
               //     height: 500,
               //   ),
               // ),
-              SizedBox(
-                height: 500,
-                child: CooLinechart(
-                  dataSeries: linechartDataSeries,
-                  columnBlocks: chartColumnBlocks,
-                  chartConfig: chartConfig,
-                  onDataPointTab: (index, cooLinechartDataPoints) =>
-                      print('Tab $index - ${cooLinechartDataPoints[0].value}'),
-                  xAxisConfig: XAxisConfig(
-                    startNumber: xAxisStartNumber,
-                    valueType: xAxisValueType,
-                    showTopLabels: xAxisShowTopLabels,
-                    showBottomLabels: xAxisShowBottomLabels,
-                    bottomDateFormat: xAxisBottomDateFormat,
-                    labelBottomPostfix: xAxisLabelBottomPostfix,
-                    labelTopPostfix: xAxisLabelTopPostfix,
-                  ),
-                  yAxisConfig: YAxisConfig(
-                    addValuePadding: calcYAxisValuePadding,
-                    minLabelValue: yAxisMinLabelValue,
-                    maxLabelValue: yAxisMaxLabelValue,
-                    labelCount: yAxisLabelCount,
-                    labelPostfix: yAxisLabelPostfix,
-                  ),
-                ),
+              Container(
+                color: chartBackgroundColorBlack ? Colors.black : Colors.white,
+                child: SizedBox(
+                    height: 500,
+                    child: switch (chartType) {
+                      CooChartType.line => CooLinechart(
+                          dataSeries: linechartDataSeries,
+                          columnBlocks: chartColumnBlocks,
+                          chartConfig: chartConfig,
+                          onDataPointTab: (index, cooLinechartDataPoints) =>
+                              print('Tab $index - ${cooLinechartDataPoints[0].value}'),
+                          xAxisConfig: xAxisConfig,
+                          yAxisConfig: yAxisConfig,
+                        ),
+                      CooChartType.bar => CooBarchart(
+                          dataSeries: barchartDataSeries,
+                          chartConfig: chartConfig,
+                          xAxisConfig: xAxisConfig,
+                          yAxisConfig: yAxisConfig,
+                        ),
+                    }),
               ),
               // Container(
               //   color: Colors.red,
@@ -206,12 +204,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
                     child: Text('Crosshair ${chartConfig.crosshair ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => xAxisShowTopLabels = !xAxisShowTopLabels),
-                    child: Text('Top Labels ${xAxisShowTopLabels ? '✅' : '❌'}'),
+                    onPressed: () =>
+                        setState(() => xAxisConfig = xAxisConfig.copyWith(showTopLabels: !xAxisConfig.showTopLabels)),
+                    child: Text('Top Labels ${xAxisConfig.showTopLabels ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => xAxisShowBottomLabels = !xAxisShowBottomLabels),
-                    child: Text('Bottom Labels ${xAxisShowBottomLabels ? '✅' : '❌'}'),
+                    onPressed: () => setState(
+                        () => xAxisConfig = xAxisConfig.copyWith(showBottomLabels: !xAxisConfig.showBottomLabels)),
+                    child: Text('Bottom Labels ${xAxisConfig.showBottomLabels ? '✅' : '❌'}'),
                   ),
                 ],
               ),
@@ -262,13 +262,19 @@ class _LineChartDemoState extends State<LineChartDemo> {
               ),
               Row(
                 children: [
-                  Text('Anzahl Labels Y-Achse: $yAxisLabelCount '),
                   ElevatedButton(
-                    onPressed: () => setState(() => yAxisLabelCount -= 1),
+                    onPressed: () => setState(() => chartBackgroundColorBlack = !chartBackgroundColorBlack),
+                    child: Text('Schwarzer Hintergrund ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
+                  ),
+                  Text('Anzahl Labels Y-Achse: ${yAxisConfig.labelCount} '),
+                  ElevatedButton(
+                    onPressed: () =>
+                        setState(() => yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisConfig.labelCount - 1)),
                     child: const Text('-'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => yAxisLabelCount += 1),
+                    onPressed: () =>
+                        setState(() => yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisConfig.labelCount + 1)),
                     child: const Text('+'),
                   ),
                 ],
@@ -281,18 +287,18 @@ class _LineChartDemoState extends State<LineChartDemo> {
   }
 
   _resetToDefault() {
-    yAxisMinLabelValue = null;
-    yAxisMaxLabelValue = null;
-    yAxisLabelCount = 5;
+    yAxisConfig = const YAxisConfig();
+    xAxisConfig = const XAxisConfig();
 
     chartColumnBlocks = null;
   }
 
   _create0To10To0ValuesChartDataPoints() {
     _resetToDefault();
-    yAxisLabelCount = 20;
+    chartType = CooChartType.line;
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 20);
+    xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
 
-    xAxisValueType = XAxisValueType.number;
     var cooLinechartDataPoints1 = List<CooLinechartDataPoint>.empty(growable: true);
     var cooLinechartDataPoints2 = List<CooLinechartDataPoint>.empty(growable: true);
     var j = 0;
@@ -337,7 +343,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   _create0To10ValuesChartDataPoints() {
     _resetToDefault();
-    xAxisValueType = XAxisValueType.number;
+    chartType = CooChartType.line;
+    xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
     var cooLinechartDataPoints1 = List<CooLinechartDataPoint>.empty(growable: true);
     var cooLinechartDataPoints2 = List<CooLinechartDataPoint>.empty(growable: true);
     var j = -2;
@@ -358,7 +365,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   _create0To10To0WithNullValuesChartDataPoints() {
     _resetToDefault();
-    xAxisValueType = XAxisValueType.number;
+    chartType = CooChartType.line;
+    xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
     var cooLinechartDataPoints1 = List<CooLinechartDataPoint>.empty(growable: true);
     var cooLinechartDataPoints2 = List<CooLinechartDataPoint>.empty(growable: true);
     var j = -2;
@@ -385,8 +393,9 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   _createMinus5To5ValuesChartDataPoints() {
     _resetToDefault();
-    yAxisLabelCount = 5;
-    xAxisValueType = XAxisValueType.number;
+    chartType = CooChartType.line;
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 5);
+    xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
     var cooLinechartDataPoints = List<CooLinechartDataPoint>.empty(growable: true);
     for (int i = 5; i >= -5; i--) {
       CooLinechartDataPoint dataPoint = CooLinechartDataPoint(value: i.toDouble(), label: 'L: ${i.toString()}');
@@ -398,7 +407,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   _genrateRandomCooLinechartDataPoints({int count = 30, int maxValue = 100}) {
     _resetToDefault();
-    xAxisValueType = XAxisValueType.number;
+    xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
     var cooLinechartDataPoints = List<CooLinechartDataPoint>.empty(growable: true);
 
     var generatedValues = ChartUtil.generateRandomDataPoints(count: count, maxValue: maxValue);
@@ -410,19 +419,68 @@ class _LineChartDemoState extends State<LineChartDemo> {
     linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints, label: 'Random'));
   }
 
+  /// https://kachelmannwetter.com/de/vorhersage/2874225-mainz/14-tage-trend
+  _generateKachelmannSonnenscheindauerTrend() {
+    _resetToDefault();
+    chartType = CooChartType.bar;
+
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 12);
+    yAxisConfig = yAxisConfig.copyWith(minLabelValue: 0);
+    yAxisConfig = yAxisConfig.copyWith(maxLabelValue: 11);
+
+    const colorBar = Color(0xFFfde81a);
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+    );
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.date,
+      bottomDateFormat: 'dd.MM.',
+    );
+
+    barchartDataSeries.clear();
+
+    var sonnenscheindauer = List<CooBarchartDataPoint>.empty(growable: true);
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 22)));
+    sonnenscheindauer
+        .add(CooBarchartDataPoint(value: 03.3, minValue: 0.3, maxValue: 6.4, time: DateTime(2023, 10, 23)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 24)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 25)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 26)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 27)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 28)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 29)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 30)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 31)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 11, 01)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 11, 02)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 11, 03)));
+    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 11, 04)));
+
+    CooBarchartDataSeries serie = CooBarchartDataSeries(
+      dataPoints: sonnenscheindauer,
+      barColor: const Color(0xFFfde81a),
+    );
+    barchartDataSeries.add(serie);
+  }
+
   // Zeichnet den Kachelmannchart "14 Tage Trend" ()
   // https://kachelmannwetter.com/de/vorhersage/2874225-mainz/14-tage-trend
   _generateKachelmann14TageWetterTrend() {
     _resetToDefault();
 
+    chartType = CooChartType.line;
+
     // yAxisMinLabelValue = -5;
     // yAxisMaxLabelValue = 30;
-    yAxisLabelCount = 8;
-    xAxisValueType = XAxisValueType.date;
-    xAxisBottomDateFormat = 'E';
-    xAxisShowTopLabels = true;
-    yAxisLabelPostfix = '°C';
     chartConfig = chartConfig.copyWith(highlightPointsVerticalLine: false);
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 8, labelPostfix: '°C');
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.date,
+      bottomDateFormat: 'E',
+      showTopLabels: true,
+    );
 
     linechartDataSeries.clear();
 
@@ -569,8 +627,13 @@ class _LineChartDemoState extends State<LineChartDemo> {
   // 21 Uhr bis 6 Uhr Nacht
   _generateKachelmannVorhersageXL() {
     _resetToDefault();
-    yAxisLabelCount = 20;
-    xAxisValueType = XAxisValueType.datetime;
+    chartType = CooChartType.line;
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 20, labelPostfix: '°C');
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'E',
+      showTopLabels: true,
+    );
     var cooLinechartDataPoints = List<CooLinechartDataPoint>.empty(growable: true);
 
     cooLinechartDataPoints.add(CooLinechartDataPoint(value: 3.9, time: DateTime(2023, 4, 9, 7, 0)));

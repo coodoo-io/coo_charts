@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:coo_charts/linechart_painter.dart';
+import 'package:coo_charts/chart_padding.enum.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
 
@@ -11,7 +11,7 @@ class ChartConfig {
     this.showGridHorizontal = false,
     this.showGridVertical = false,
     this.showDataPath = true,
-    this.highlightMouseColumn = false,
+    this.highlightMouseColumn = true,
     this.highlightPoints = true,
     this.addYAxisValueBuffer = true,
     this.highlightPointsVerticalLine = false,

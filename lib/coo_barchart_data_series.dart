@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:coo_charts/coo_barchart_data_point.dart';
+import 'package:coo_charts/data_point_label_pos.enum.dart';
 import 'package:flutter/material.dart';
 
 class CooBarchartDataSeries {
@@ -40,17 +41,8 @@ class CooBarchartDataSeries {
   // Configure the text style of all data labels
   final TextStyle dataPointLabelTextStyle;
 
-  // if true the label is printed above the data point, false below the datapoint
   final DataPointLabelPos dataPointLabelPosition;
 
   // Define the padding from the data point to the labels
   final int dataPointLabelPadding;
-}
-
-// in wich direktction should the data point label be positioned
-enum DataPointLabelPos {
-  top,
-  right,
-  left,
-  bottom,
 }

@@ -1,14 +1,16 @@
-import 'package:coo_charts/coo_linechart.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:coo_charts/x_axis_value_type.enum.dart';
+import 'package:intl/intl.dart';
 
 class XAxisConfig {
   const XAxisConfig({
-    this.valueType = XAxisValueType.number,
     this.showAxis = true,
+    this.valueType = XAxisValueType.number,
     this.showTopLabels = false,
     this.showBottomLabels = true,
+    this.topDateFormat,
+    this.bottomDateFormat,
     this.startNumber = 0, // If value type is number -> startnumber
-    this.topDateFormat, // If value type is date - date formatter for top labels
-    this.bottomDateFormat, // If value type is date - date formatter for bottom labels
     this.labelBottomPostfix,
     this.labelTopPostfix,
   });
@@ -37,4 +39,28 @@ class XAxisConfig {
   /// or cm -> 2 cm, 4 cm, 6 cm
   final String? labelBottomPostfix;
   final String? labelTopPostfix;
+
+  XAxisConfig copyWith({
+    bool? showAxis,
+    XAxisValueType? valueType,
+    bool? showTopLabels,
+    bool? showBottomLabels,
+    String? topDateFormat,
+    String? bottomDateFormat,
+    int? startNumber,
+    String? labelBottomPostfix,
+    String? labelTopPostfix,
+  }) {
+    return XAxisConfig(
+      showAxis: showAxis ?? this.showAxis,
+      valueType: valueType ?? this.valueType,
+      showTopLabels: showTopLabels ?? this.showTopLabels,
+      showBottomLabels: showBottomLabels ?? this.showBottomLabels,
+      topDateFormat: topDateFormat ?? this.topDateFormat,
+      bottomDateFormat: bottomDateFormat ?? this.bottomDateFormat,
+      startNumber: startNumber ?? this.startNumber,
+      labelBottomPostfix: labelBottomPostfix ?? this.labelBottomPostfix,
+      labelTopPostfix: labelTopPostfix ?? this.labelTopPostfix,
+    );
+  }
 }
