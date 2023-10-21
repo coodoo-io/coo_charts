@@ -1,12 +1,13 @@
 import 'dart:ui';
 
-class LineChartDataPoint<T> {
-  LineChartDataPoint({
+class CooBarchartDataPoint<T> {
+  CooBarchartDataPoint({
     this.value, // Wert des Datenpunkts
     this.minValue, // kleinster Wert dieses Punktes
     this.maxValue, // größter Wert dieses Punktes
     this.label, // Optionaler individueller Label des Datenpunkts
     this.time, // Zeitstempel des Datenpunkts (Optional für Datetime Serien)
+    this.color, // Die Farbe dieses bars
 
     /// Style Informationen
     this.columnBackgroundColor, // Hintergrundfarbe der Spalte des Datenpunkts
@@ -22,6 +23,8 @@ class LineChartDataPoint<T> {
   double? maxValue;
   String? label;
   DateTime? time;
+  Color? color;
+
   Color? columnBackgroundColor;
 
   @override

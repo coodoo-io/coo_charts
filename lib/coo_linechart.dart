@@ -1,9 +1,10 @@
 import 'dart:ui' as ui;
 
 import 'package:coo_charts/chart_column_blocks.dart';
+import 'package:coo_charts/chart_config.dart';
 import 'package:coo_charts/chart_tab_info.dart';
-import 'package:coo_charts/linechart_data_point.dart';
-import 'package:coo_charts/linechart_data_serie.dart';
+import 'package:coo_charts/coo_linechart_data_point.dart';
+import 'package:coo_charts/coo_linechart_data_serie.dart';
 import 'package:coo_charts/linechart_painter.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
@@ -12,49 +13,22 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image/image.dart' as image;
 
-class LineChartWidget extends StatefulWidget {
-  LineChartWidget({
+class CooLinechart extends StatefulWidget {
+  const CooLinechart({
     super.key,
     required this.dataSeries,
     this.columnBlocks,
-    this.curvedLine = false,
-    this.crosshair = false,
-    this.showGridHorizontal = false,
-    this.showGridVertical = false,
-    this.showDataPath = true,
-    this.highlightMouseColumn = false,
-    this.highlightPoints = true,
-    this.highlightPointsHorizontalLine = false,
-    this.highlightPointsVerticalLine = false,
-    this.addYAxisValueBuffer = true,
-    this.centerDataPointBetweenVerticalGrid = false,
+    this.chartConfig = const ChartConfig(),
     this.yAxisConfig = const YAxisConfig(),
     this.xAxisConfig = const XAxisConfig(),
     this.padding = const ChartPadding(),
     this.onDataPointTab,
   });
 
-  final List<LinechartDataSeries> dataSeries;
+  final List<CooLinechartDataSeries> dataSeries;
   final ChartColumnBlocks? columnBlocks;
 
-  final bool curvedLine; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
-  final bool crosshair; // Soll ein Fadenkreuz angezeigt werden?
-  final bool showGridHorizontal; // if true, grid horizontal lines are painted
-  final bool showGridVertical; // if true, grid vertical lines are painted
-
-  final bool showDataPath; // Soll der path auf der Kurve angezeigt werden?
-  final bool highlightMouseColumn; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
-  final bool highlightPoints; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
-  final bool
-      highlightPointsVerticalLine; // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
-
-  final bool
-      highlightPointsHorizontalLine; // Zeichnet eine horizontale Line über den Datenpunkt wenn die Maus in der Nähe ist.
-  final bool addYAxisValueBuffer; // Fügt einen Puffer auf der Y-Achse vor dem Min-Wert und nach dem Max-Wert hinzu
-  /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
-  final bool centerDataPointBetweenVerticalGrid;
-
-  final Function(int, List<LineChartDataPoint>)? onDataPointTab;
+  final ChartConfig chartConfig;
 
   /// Die Konfiguration der Y-Achse
   final YAxisConfig yAxisConfig;
@@ -62,27 +36,24 @@ class LineChartWidget extends StatefulWidget {
 
   final ChartPadding padding;
 
-  final columLegendsAssetImages = <String, ui.Image>{};
-  final columLegendsAssetSvgPictureInfos = <String, PictureInfo>{};
+  final Function(int, List<CooLinechartDataPoint>)? onDataPointTab;
 
   @override
-  State<LineChartWidget> createState() => _LineChartWidgetState();
+  State<CooLinechart> createState() => _CooLinechartState();
 }
 
-class _LineChartWidgetState extends State<LineChartWidget> {
+class _CooLinechartState extends State<CooLinechart> {
   Offset? _mousePointer;
   final chartTabInfo = ChartTabInfo();
 
   bool initialized = false;
 
+  final columLegendsAssetImages = <String, ui.Image>{};
+  final columLegendsAssetSvgPictureInfos = <String, PictureInfo>{};
+
   @override
   void initState() {
     super.initState();
-
-    // So werdenalle SVGs nur einmal vorbereitet und geladen
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   loadAssets(widget.columnLegends);
-    // });
   }
 
   @override
@@ -128,19 +99,19 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                 padding: widget.padding,
                 mousePosition: _mousePointer,
                 chartTabInfo: chartTabInfo,
-                curvedLine: widget.curvedLine,
-                crosshair: widget.crosshair,
-                showGridHorizontal: widget.showGridHorizontal,
-                showGridVertical: widget.showGridVertical,
-                highlightMouseColumn: widget.highlightMouseColumn,
-                highlightPoints: widget.highlightPoints,
-                highlightPointsVerticalLine: widget.highlightPointsVerticalLine,
-                highlightPointsHorizontalLine: widget.highlightPointsHorizontalLine,
+                curvedLine: widget.chartConfig.curvedLine,
+                crosshair: widget.chartConfig.crosshair,
+                showGridHorizontal: widget.chartConfig.showGridHorizontal,
+                showGridVertical: widget.chartConfig.showGridVertical,
+                highlightMouseColumn: widget.chartConfig.highlightMouseColumn,
+                highlightPoints: widget.chartConfig.highlightPoints,
+                highlightPointsVerticalLine: widget.chartConfig.highlightPointsVerticalLine,
+                highlightPointsHorizontalLine: widget.chartConfig.highlightPointsHorizontalLine,
                 xAxisConfig: widget.xAxisConfig,
-                centerDataPointBetweenVerticalGrid: widget.centerDataPointBetweenVerticalGrid,
+                centerDataPointBetweenVerticalGrid: widget.chartConfig.centerDataPointBetweenVerticalGrid,
                 yAxisConfig: widget.yAxisConfig,
-                columLegendsAssetImages: widget.columLegendsAssetImages,
-                columLegendsAssetSvgPictureInfos: widget.columLegendsAssetSvgPictureInfos,
+                columLegendsAssetImages: columLegendsAssetImages,
+                columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
                 onDataPointTabCallback: widget.onDataPointTab,
               ),
             ),
@@ -170,7 +141,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       blockAssetImageLoop:
       for (var blockAssetImage in columnBottomData.assetImages) {
         final String assetImagePath = blockAssetImage.path;
-        if (widget.columLegendsAssetImages[assetImagePath] != null) {
+        if (columLegendsAssetImages[assetImagePath] != null) {
           continue blockAssetImageLoop;
         }
         try {
@@ -193,8 +164,8 @@ class _LineChartWidgetState extends State<LineChartWidget> {
               svgImg = frameInfo.image;
             }
           }
-          widget.columLegendsAssetImages[assetImagePath] = svgImg;
-          widget.columLegendsAssetSvgPictureInfos[assetImagePath] = pictureInfo;
+          columLegendsAssetImages[assetImagePath] = svgImg;
+          columLegendsAssetSvgPictureInfos[assetImagePath] = pictureInfo;
         } catch (e) {
           /// Image could not be processed..
         }

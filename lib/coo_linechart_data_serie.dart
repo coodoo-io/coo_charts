@@ -1,11 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:ui';
-
-import 'package:coo_charts/linechart_data_point.dart';
+import 'package:coo_charts/coo_linechart_data_point.dart';
 import 'package:flutter/material.dart';
 
-class LinechartDataSeries {
-  LinechartDataSeries({
+class CooLinechartDataSeries {
+  CooLinechartDataSeries({
     required this.dataPoints,
     this.label,
     this.showDataLine = true,
@@ -26,7 +24,7 @@ class LinechartDataSeries {
   });
 
   /// Die Datenpunkte, die den Line-Chart beschreiben
-  final List<LineChartDataPoint> dataPoints;
+  final List<CooLinechartDataPoint> dataPoints;
 
   /// Titel der Datenreihe
   final String? label;
@@ -58,8 +56,8 @@ class LinechartDataSeries {
   // Define the padding from the data point to the labels
   final int dataPointLabelPadding;
 
-  LinechartDataSeries copyWith({
-    List<LineChartDataPoint>? dataPoints,
+  CooLinechartDataSeries copyWith({
+    List<CooLinechartDataPoint>? dataPoints,
     String? label,
     bool? showDataLine,
     bool? showDataPoints,
@@ -73,7 +71,7 @@ class LinechartDataSeries {
     TextStyle? dataPointLabelTextStyle,
     DataPointLabelPos? dataPointLabelPosition,
   }) {
-    return LinechartDataSeries(
+    return CooLinechartDataSeries(
       dataPoints: dataPoints ?? this.dataPoints,
       label: label ?? this.label,
       showDataLine: showDataLine ?? this.showDataLine,

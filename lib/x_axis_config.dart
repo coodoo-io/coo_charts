@@ -1,4 +1,4 @@
-import 'package:coo_charts/linechart_widget.dart';
+import 'package:coo_charts/coo_linechart.dart';
 
 class XAxisConfig {
   const XAxisConfig({

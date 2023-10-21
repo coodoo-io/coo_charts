@@ -5,9 +5,9 @@ import 'dart:ui' as ui;
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_tab_info.dart';
 import 'package:coo_charts/coo_chart_painter.dart';
-import 'package:coo_charts/linechart_data_point.dart';
-import 'package:coo_charts/linechart_data_serie.dart';
-import 'package:coo_charts/linechart_widget.dart';
+import 'package:coo_charts/coo_linechart.dart';
+import 'package:coo_charts/coo_linechart_data_point.dart';
+import 'package:coo_charts/coo_linechart_data_serie.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +63,7 @@ class LineChartPainter extends CustomPainter {
     xSegementWidthHalf = xSegmentWidth / 2;
   }
 
-  final List<LinechartDataSeries> linechartDataSeries;
+  final List<CooLinechartDataSeries> linechartDataSeries;
 
   final ChartColumnBlocks? columnBlocks;
   final Map<String, ui.Image> columLegendsAssetImages;
@@ -119,7 +119,7 @@ class LineChartPainter extends CustomPainter {
   double xSegmentWidth = 0.0;
   double xSegementWidthHalf = 0.0; // Convenient var so it don't have to be calculated by all data points.
 
-  Function(int, List<LineChartDataPoint>)? onDataPointTabCallback;
+  Function(int, List<CooLinechartDataPoint>)? onDataPointTabCallback;
 
 // Hält alle Punkte die zu einer Axe Vertikal liegen. Das rect bestimmt den Maus-Hover-Bereich
   int mouseInRectYIndex = -1; // In welchem Y-Index befindet sich die Maus gerade?
@@ -127,7 +127,7 @@ class LineChartPainter extends CustomPainter {
   // All sich auf diesem Index befindenden LineChart Datenpunkte
   // Die exakte Punkt (X,Y) eines LineChart DataPoint Objekts müsste man in Verbidung dises Objektes noch in einem
   // eigenen Objekt halten. Dann könnte man auch den nächstgelegenen Punkt zum Maus Pointer herausfinden
-  final Map<int, List<LineChartDataPoint>> lineChartDataPointsByColumnIndex = {};
+  final Map<int, List<CooLinechartDataPoint>> lineChartDataPointsByColumnIndex = {};
 
   final Map<Rect, int> chartRectYPos = {}; // Merken welches Rect bei welcher Y-Pos liegt
 
@@ -263,13 +263,13 @@ class LineChartPainter extends CustomPainter {
     required double chartWidth,
     required double chartHeigt,
     required Offset? mousePosition,
-    required List<LinechartDataSeries> linechartDataSeries,
+    required List<CooLinechartDataSeries> linechartDataSeries,
     ChartColumnBlocks? columnBlocks,
   }) {
     final columnBottomDatasHeight = columnBlocks != null ? columnBlocks.bottomConfig.height.toDouble() : 0;
     // Die Segment-width muss über alle vorhandenen Datenpunkte aller Reihen berechnet werden.
     for (var i = 0; i < linechartDataSeries.length; i++) {
-      LinechartDataSeries localLinechartDataSeries = linechartDataSeries[i];
+      CooLinechartDataSeries localLinechartDataSeries = linechartDataSeries[i];
       List<String?> dataSeriesLabels = List.empty(growable: true);
       List<double?> dataPointValues = localLinechartDataSeries.dataPoints.map((e) => e.value).toList();
 
@@ -288,7 +288,7 @@ class LineChartPainter extends CustomPainter {
       dataPointsLoop:
       for (var i = 0; i < dataSeriesNormalizedValues.length; i++) {
         // Lables für den späteren plotten parsen
-        LineChartDataPoint dataPoint = localLinechartDataSeries.dataPoints[i];
+        CooLinechartDataPoint dataPoint = localLinechartDataSeries.dataPoints[i];
         if (localLinechartDataSeries.showDataLabels) {
           if (dataPoint.label != null) {
             dataSeriesLabels.add(dataPoint.label!.trim());
@@ -435,8 +435,8 @@ class LineChartPainter extends CustomPainter {
     required double chartWidth,
     required double chartHeigt,
     required Offset? mousePosition,
-    required LinechartDataSeries dataSeries,
-    required List<LineChartDataPoint> minMaxPoints,
+    required CooLinechartDataSeries dataSeries,
+    required List<CooLinechartDataPoint> minMaxPoints,
     required dataPointColumnLegendHeight,
   }) {
     // Min- Max-Datenpunkte in eine Reihe bringen um eine Form zu bilden
@@ -565,7 +565,7 @@ class LineChartPainter extends CustomPainter {
     required double chartWidth,
     required double chartHeigt,
     required Offset? mousePosition,
-    required List<LinechartDataSeries> linechartDataSeries,
+    required List<CooLinechartDataSeries> linechartDataSeries,
   }) {
     mouseInRectYIndex = -1; // Reset
 
@@ -660,7 +660,7 @@ class LineChartPainter extends CustomPainter {
     required Canvas canvas,
     required double chartWidth,
     required double chartHeight,
-    required List<LinechartDataSeries> linechartDataSeries,
+    required List<CooLinechartDataSeries> linechartDataSeries,
   }) {
     int xGridLineCount = maxAbsoluteValueCount;
     if (!centerDataPointBetweenVerticalGrid) {
@@ -796,7 +796,7 @@ class LineChartPainter extends CustomPainter {
     required Canvas canvas,
     required double chartWidth,
     required double chartHeight,
-    required List<LinechartDataSeries> linechartDataSeries,
+    required List<CooLinechartDataSeries> linechartDataSeries,
     required bool showYAxisLables,
     ChartColumnBlocks? columnBlocks,
   }) {
@@ -903,7 +903,7 @@ class LineChartPainter extends CustomPainter {
       }
 
       for (var i = 0; i < dataSeries.dataPoints.length; i++) {
-        LineChartDataPoint dataPoint = dataSeries.dataPoints[i];
+        CooLinechartDataPoint dataPoint = dataSeries.dataPoints[i];
         if (lineChartDataPointsByColumnIndex[i] == null) {
           lineChartDataPointsByColumnIndex[i] = [];
         }
@@ -927,7 +927,7 @@ class LineChartPainter extends CustomPainter {
       }
 
       for (var i = 0; i < dataSeries.dataPoints.length; i++) {
-        LineChartDataPoint dataPoint = dataSeries.dataPoints[i];
+        CooLinechartDataPoint dataPoint = dataSeries.dataPoints[i];
         if (lineChartDataPointsByColumnIndex[i] == null) {
           lineChartDataPointsByColumnIndex[i] = [];
         }
@@ -1064,7 +1064,7 @@ class LineChartPainter extends CustomPainter {
     required ui.Canvas canvas,
     required double chartWidth,
     required double chartHeight,
-    required List<LinechartDataSeries> linechartDataSeries,
+    required List<CooLinechartDataSeries> linechartDataSeries,
     ChartColumnBlocks? columnBlocks,
   }) {
     if (columnBlocks == null || !columnBlocks.showBottomBlocks) {
