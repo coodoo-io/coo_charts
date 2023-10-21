@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-class LineChartDataPoint {
+class LineChartDataPoint<T> {
   LineChartDataPoint({
     this.value, // Wert des Datenpunkts
     this.minValue, // kleinster Wert dieses Punktes
@@ -10,7 +10,12 @@ class LineChartDataPoint {
 
     /// Style Informationen
     this.columnBackgroundColor, // Hintergrundfarbe der Spalte des Datenpunkts
+
+    this.valueObject,
   });
+
+  /// Items can have the original value object attached to them `T`
+  final T? valueObject;
 
   double? value;
   double? minValue;
