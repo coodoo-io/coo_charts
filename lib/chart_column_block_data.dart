@@ -1,12 +1,14 @@
 import 'dart:ui';
 
+import 'package:coo_charts/chart_column_block_config_image.dart';
+
 /// If data points column legends are enabled this data class is needed for every column
 class ChartColumnBlockData {
   ChartColumnBlockData({
     this.time,
     this.text,
     this.backgroundColor,
-    this.assetImage,
+    this.assetImages = const [],
   });
 
   /// if the data points belong to datetime.
@@ -17,6 +19,5 @@ class ChartColumnBlockData {
 
   Color? backgroundColor;
 
-  /// Must be a svg image which is available in the asset folder,
-  String? assetImage;
+  List<BlockAssetImage> assetImages;
 }

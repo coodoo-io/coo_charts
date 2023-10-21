@@ -1150,19 +1150,25 @@ class LineChartPainter extends CustomPainter {
         }
 
         // Asset Image rendern, sofern angegeben und als Bild vorhanden
-        if (columnLegend.assetImage != null && columLegendsAssetImages[columnLegend.assetImage] != null) {
-          ui.Image image = columLegendsAssetImages[columnLegend.assetImage]!;
+        if (columnLegend.assetImages.isNotEmpty) {
+          assetImageLoop:
+          for (var blockAssetImage in columnLegend.assetImages) {
+            final ui.Image? image = columLegendsAssetImages[blockAssetImage.path];
+            if (image == null) {
+              continue assetImageLoop;
+            }
 
-          // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-          final xPosCenter = (xOffsetInterval / 2) - (image.width / 2);
-          // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
-          final xPos = x - (xOffsetInterval / 2) + xPosCenter;
+            // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
+            final xPosCenter = (xOffsetInterval / 2) - (image.width / 2);
+            // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
+            final xPos = x - (xOffsetInterval / 2) + xPosCenter;
 
-          // Center ist höhe der fläche / 2 + höhe des textes / 2
-          final double yPosCenter = (columnBottomDatasHeight / 2) + (image.height / 2);
-          final yPos = chartHeight + padding.top.toDouble() - yPosCenter;
+            // Center ist höhe der fläche / 2 + höhe des textes / 2
+            final double yPosCenter = (columnBottomDatasHeight / 2) + (image.height / 2);
+            final yPos = chartHeight + padding.top.toDouble() - yPosCenter - blockAssetImage.offsetTop;
 
-          canvas.drawImage(image, Offset(xPos, yPos), Paint());
+            canvas.drawImage(image, Offset(xPos, yPos), Paint());
+          }
         }
       }
     }

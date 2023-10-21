@@ -1,4 +1,5 @@
 import 'package:coo_charts/chart_column_block_config.dart';
+import 'package:coo_charts/chart_column_block_config_image.dart';
 import 'package:coo_charts/chart_column_block_data.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_util.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 
 const kIconWeatherCloudy = 'assets/sym_cloudy.svg';
 const kIconWeatherRain = 'assets/sym_rain.svg';
+const kIconWindOver50 = 'assets/wind_over50.svg';
 
 class LineChartDemo extends StatefulWidget {
   const LineChartDemo({super.key});
@@ -432,14 +434,26 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     final columnBottomDatas = List<ChartColumnBlockData>.empty(growable: true);
     columnBottomDatas.add(ChartColumnBlockData(
-        time: DateTime(2023, 4, 9),
-        text: 'a',
-        backgroundColor: colorLimitClear.withOpacity(1),
-        assetImage: kIconWeatherCloudy));
+      time: DateTime(2023, 4, 9),
+      text: 'a',
+      backgroundColor: colorLimitClear.withOpacity(1),
+      assetImages: [
+        const BlockAssetImage(path: kIconWeatherCloudy),
+        const BlockAssetImage(path: kIconWindOver50, offsetTop: 50),
+      ],
+    ));
     columnBottomDatas.add(ChartColumnBlockData(
-        time: DateTime(2023, 4, 10), text: 'b', backgroundColor: colorLimitClear, assetImage: kIconWeatherRain));
+      time: DateTime(2023, 4, 10),
+      text: 'b',
+      backgroundColor: colorLimitClear,
+      assetImages: [const BlockAssetImage(path: kIconWeatherRain)],
+    ));
     columnBottomDatas.add(ChartColumnBlockData(
-        time: DateTime(2023, 4, 11), text: 'c', backgroundColor: colorLimitFew, assetImage: kIconWeatherRain));
+      time: DateTime(2023, 4, 11),
+      text: 'c',
+      backgroundColor: colorLimitFew,
+      assetImages: [const BlockAssetImage(path: kIconWeatherRain)],
+    ));
     columnBottomDatas
         .add(ChartColumnBlockData(time: DateTime(2023, 4, 12), text: 'd', backgroundColor: colorLimitScattered));
     columnBottomDatas.add(ChartColumnBlockData(time: DateTime(2023, 4, 13), text: 'e', backgroundColor: colorSonst));

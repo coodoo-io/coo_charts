@@ -7,7 +7,6 @@ import 'package:coo_charts/linechart_data_serie.dart';
 import 'package:coo_charts/linechart_painter.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -55,7 +54,7 @@ class LineChartWidget extends StatefulWidget {
   /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
   final bool centerDataPointBetweenVerticalGrid;
 
-  Function(int, List<LineChartDataPoint>)? onDataPointTab;
+  final Function(int, List<LineChartDataPoint>)? onDataPointTab;
 
   /// Die Konfiguration der Y-Achse
   final YAxisConfig yAxisConfig;
@@ -163,30 +162,36 @@ class _LineChartWidgetState extends State<LineChartWidget> {
     }
 
     for (var columnBottomData in columnBlocks.bottomDatas) {
-      if (columnBottomData.assetImage == null) {
+      if (columnBottomData.assetImages.isEmpty) {
         continue;
       }
-      final String assetImagePath = columnBottomData.assetImage!;
-      PictureInfo pictureInfo = await vg.loadPicture(SvgAssetLoader(columnBottomData.assetImage!), null);
-
-      // Change colum legend image size so that it fits into the legend column
-      // the legend column height is given
-      var imageHeight = pictureInfo.size.height.toInt();
-      var imageWidth = pictureInfo.size.width.toInt();
-      ui.Image svgImg = pictureInfo.picture.toImageSync(imageHeight, imageWidth);
-      final height = columnBlocks.bottomConfig.height;
-      if (imageHeight > height) {
-        // Größe muss umgerechnet werden damit es in die Legende passt
-        final ByteData? assetImageByteData = await svgImg.toByteData(format: ui.ImageByteFormat.png);
-        if (assetImageByteData != null) {
-          image.Image baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List())!;
-          image.Image resizeImage = image.copyResize(baseSizeImage, height: columnBlocks.bottomConfig.imageHeight);
-          ui.Codec codec = await ui.instantiateImageCodec(image.encodePng(resizeImage));
-          ui.FrameInfo frameInfo = await codec.getNextFrame();
-          svgImg = frameInfo.image;
+      blockAssetImageLoop:
+      for (var blockAssetImage in columnBottomData.assetImages) {
+        final String assetImagePath = blockAssetImage.path;
+        if (widget.columLegendsAssetImages[assetImagePath] != null) {
+          continue blockAssetImageLoop;
         }
+        PictureInfo pictureInfo = await vg.loadPicture(SvgAssetLoader(assetImagePath), null);
+
+        // Change colum legend image size so that it fits into the legend column
+        // the legend column height is given
+        var imageHeight = pictureInfo.size.height.toInt();
+        var imageWidth = pictureInfo.size.width.toInt();
+        ui.Image svgImg = pictureInfo.picture.toImageSync(imageHeight, imageWidth);
+        final height = columnBlocks.bottomConfig.height;
+        if (imageHeight > height) {
+          // Größe muss umgerechnet werden damit es in die Legende passt
+          final ByteData? assetImageByteData = await svgImg.toByteData(format: ui.ImageByteFormat.png);
+          if (assetImageByteData != null) {
+            image.Image baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List())!;
+            image.Image resizeImage = image.copyResize(baseSizeImage, height: blockAssetImage.height);
+            ui.Codec codec = await ui.instantiateImageCodec(image.encodePng(resizeImage));
+            ui.FrameInfo frameInfo = await codec.getNextFrame();
+            svgImg = frameInfo.image;
+          }
+        }
+        widget.columLegendsAssetImages[assetImagePath] = svgImg;
       }
-      widget.columLegendsAssetImages[assetImagePath] = svgImg;
     }
     initialized = true;
     onLoadingFinished();
