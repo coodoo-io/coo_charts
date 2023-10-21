@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:coo_charts/chart_column_blocks.dart';
+import 'package:coo_charts/chart_tab_info.dart';
 import 'package:coo_charts/coo_chart_painter.dart';
 import 'package:coo_charts/linechart_data_point.dart';
 import 'package:coo_charts/linechart_data_serie.dart';
@@ -20,6 +21,7 @@ class LineChartPainter extends CustomPainter {
     required this.canvasHeight,
     required this.curvedLine,
     required this.mousePosition,
+    required this.chartTabInfo,
     required this.crosshair,
     required this.showGridHorizontal,
     required this.showGridVertical,
@@ -32,6 +34,7 @@ class LineChartPainter extends CustomPainter {
     required this.yAxisConfig,
     required this.padding,
     required this.columLegendsAssetImages,
+    this.onDataPointTabCallback,
   }) {
     chartWidth = canvasWidth - padding.left - padding.right;
     chartHeight = canvasHeight - padding.bottom - padding.top;
@@ -66,7 +69,9 @@ class LineChartPainter extends CustomPainter {
   final double canvasHeight;
   final double canvasWidth;
   final ChartPadding padding;
+
   final Offset? mousePosition; // Position des Mauszeigers - wird für das Fadenkreuz benötigt (interne Variable)
+  final ChartTabInfo chartTabInfo;
 
   /// Externe Konfigurationsmöglichkeiten
   final bool curvedLine; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
@@ -111,9 +116,16 @@ class LineChartPainter extends CustomPainter {
   double xSegmentWidth = 0.0;
   double xSegementWidthHalf = 0.0; // Convenient var so it don't have to be calculated by all data points.
 
+  Function(int, List<LineChartDataPoint>)? onDataPointTabCallback;
+
 // Hält alle Punkte die zu einer Axe Vertikal liegen. Das rect bestimmt den Maus-Hover-Bereich
-  int mouseInRectYIndex = -1;
-  final Map<int, Offset> datapointsOnYRect = {};
+  int mouseInRectYIndex = -1; // In welchem Y-Index befindet sich die Maus gerade?
+
+  // All sich auf diesem Index befindenden LineChart Datenpunkte
+  // Die exakte Punkt (X,Y) eines LineChart DataPoint Objekts müsste man in Verbidung dises Objektes noch in einem
+  // eigenen Objekt halten. Dann könnte man auch den nächstgelegenen Punkt zum Maus Pointer herausfinden
+  final Map<int, List<LineChartDataPoint>> lineChartDataPointsByColumnIndex = {};
+
   final Map<Rect, int> chartRectYPos = {}; // Merken welches Rect bei welcher Y-Pos liegt
 
   final Paint _gridPaint = Paint()
@@ -273,8 +285,8 @@ class LineChartPainter extends CustomPainter {
       dataPointsLoop:
       for (var i = 0; i < dataSeriesNormalizedValues.length; i++) {
         // Lables für den späteren plotten parsen
+        LineChartDataPoint dataPoint = localLinechartDataSeries.dataPoints[i];
         if (localLinechartDataSeries.showDataLabels) {
-          var dataPoint = localLinechartDataSeries.dataPoints[i];
           if (dataPoint.label != null) {
             dataSeriesLabels.add(dataPoint.label!.trim());
           } else if (dataPoint.value != null) {
@@ -323,7 +335,6 @@ class LineChartPainter extends CustomPainter {
 
         var chartPoint = Offset(x, y);
         lineDataPoints.add(chartPoint);
-        datapointsOnYRect[i] = chartPoint;
 
         lastX = x;
         lastY = y;
@@ -363,7 +374,7 @@ class LineChartPainter extends CustomPainter {
         _pointPaintHighlight.color = localLinechartDataSeries.dataPointHighlightColor!;
       }
 
-      // Linechart Datenpunkte malen
+      // Linechart Datenpunkte malen und Punkt Highlighten, wenn maus Datenzeile trifft
       drawLineDataPointsLoop:
       for (var i = 0; i < lineDataPoints.length; i++) {
         Offset? dataPointOffset = lineDataPoints[i];
@@ -371,6 +382,8 @@ class LineChartPainter extends CustomPainter {
           // gibt nichts zu sehen..
           continue drawLineDataPointsLoop;
         }
+
+        // Wird der Punkt gerade mit der Maus angeklickt?
         if (highlightPoints && mouseInRectYIndex == i) {
           canvas.drawCircle(dataPointOffset, 8, _pointPaintHighlight);
         } else if (localLinechartDataSeries.showDataPoints) {
@@ -482,7 +495,6 @@ class LineChartPainter extends CustomPainter {
 
       var chartPoint = Offset(x, y);
       lineDataPoints.add(chartPoint);
-      datapointsOnYRect[i] = chartPoint;
 
       lastX = x;
       lastY = y;
@@ -527,7 +539,6 @@ class LineChartPainter extends CustomPainter {
 
       var chartPoint = Offset(x, y);
       lineDataPoints.add(chartPoint);
-      datapointsOnYRect[i] = chartPoint;
 
       lastX = x;
       lastY = y;
@@ -585,6 +596,18 @@ class LineChartPainter extends CustomPainter {
         }
       } else {
         canvas.drawRect(rect, _backgroundRectPaint);
+      }
+
+      // Tab Callback der gesamten Spalte
+      if (chartTabInfo.tabDownDetails != null && onDataPointTabCallback != null) {
+        final tabDownDetails = chartTabInfo.tabDownDetails!;
+        bool contains = rect.contains(Offset(tabDownDetails.globalPosition.dx, tabDownDetails.globalPosition.dy));
+        if (contains && chartTabInfo.tabCount != chartTabInfo.tabCountCallbackInvocation) {
+          chartTabInfo.tabCountCallbackInvocation = chartTabInfo.tabCountCallbackInvocation + 1;
+          var selectedDataPoints = lineChartDataPointsByColumnIndex[i];
+          selectedDataPoints ??= List.empty(growable: false);
+          onDataPointTabCallback!(i, selectedDataPoints);
+        }
       }
 
       // Merken bei welcher Y-Pos das Re
@@ -875,6 +898,14 @@ class LineChartPainter extends CustomPainter {
       for (var dt in allDateTimeValues) {
         allDateTimesTmp.add(dt!);
       }
+
+      for (var i = 0; i < dataSeries.dataPoints.length; i++) {
+        LineChartDataPoint dataPoint = dataSeries.dataPoints[i];
+        if (lineChartDataPointsByColumnIndex[i] == null) {
+          lineChartDataPointsByColumnIndex[i] = [];
+        }
+        lineChartDataPointsByColumnIndex[i]!.add(dataPoint);
+      }
     }
 
     // Die absolute Anzahl an Datenpunkten ist die Länge des Sets
@@ -887,9 +918,17 @@ class LineChartPainter extends CustomPainter {
 
   /// Initialisiert die Rahmendaten anhand der übergebenen Werte numerisch
   void _initializeNumberLineChartValues() {
-    for (var linechartDataSerie in linechartDataSeries) {
-      if (linechartDataSerie.dataPoints.length > maxAbsoluteValueCount) {
-        maxAbsoluteValueCount = linechartDataSerie.dataPoints.length;
+    for (var dataSeries in linechartDataSeries) {
+      if (dataSeries.dataPoints.length > maxAbsoluteValueCount) {
+        maxAbsoluteValueCount = dataSeries.dataPoints.length;
+      }
+
+      for (var i = 0; i < dataSeries.dataPoints.length; i++) {
+        LineChartDataPoint dataPoint = dataSeries.dataPoints[i];
+        if (lineChartDataPointsByColumnIndex[i] == null) {
+          lineChartDataPointsByColumnIndex[i] = [];
+        }
+        lineChartDataPointsByColumnIndex[i]!.add(dataPoint);
       }
     }
   }
