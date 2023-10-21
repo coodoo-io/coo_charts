@@ -601,7 +601,7 @@ class LineChartPainter extends CustomPainter {
       // Tab Callback der gesamten Spalte
       if (chartTabInfo.tabDownDetails != null && onDataPointTabCallback != null) {
         final tabDownDetails = chartTabInfo.tabDownDetails!;
-        bool contains = rect.contains(Offset(tabDownDetails.globalPosition.dx, tabDownDetails.globalPosition.dy));
+        bool contains = rect.contains(Offset(tabDownDetails.localPosition.dx, tabDownDetails.localPosition.dy));
         if (contains && chartTabInfo.tabCount != chartTabInfo.tabCountCallbackInvocation) {
           chartTabInfo.tabCountCallbackInvocation = chartTabInfo.tabCountCallbackInvocation + 1;
           var selectedDataPoints = lineChartDataPointsByColumnIndex[i];
