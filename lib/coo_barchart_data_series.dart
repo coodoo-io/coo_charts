@@ -19,9 +19,9 @@ class CooBarchartDataSeries {
     ),
     this.dataPointLabelPosition = DataPointLabelPos.top,
     this.dataPointLabelPadding = 0,
-    this.minBarWidth,
-    this.maxBarWidth,
-    this.barWidthPercentColumn,
+    this.minBarWidth, // Not implemented yet
+    this.maxBarWidth, // Not implemented yet
+    this.barWidthPercentColumn, // Not implemented yet
   });
 
   /// Die Datenpunkte, die den Line-Chart beschreiben

@@ -2,6 +2,8 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:collection/collection.dart';
+import 'package:coo_charts/chart_column_block_config.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_padding.enum.dart';
 import 'package:coo_charts/chart_tab_info.dart';
@@ -236,7 +238,7 @@ class CooChartPainter extends CustomPainter {
       columnBlocks: columnBlocks,
     );
 
-    _drawColumnBottomBlocks(
+    _drawColumnBlocks(
       canvas: canvas,
       chartWidth: chartWidth,
       chartHeight: chartHeight,
@@ -246,12 +248,12 @@ class CooChartPainter extends CustomPainter {
 
     if (chartType == CooChartType.line) {
       _drawDataLinechartDataPointsAndPath(
+        linechartDataSeries: linechartDataSeries,
+        columnBlocks: columnBlocks,
         canvas: canvas,
         chartWidth: chartWidth,
         chartHeigt: chartHeight,
         mousePosition: mousePosition,
-        linechartDataSeries: linechartDataSeries,
-        columnBlocks: columnBlocks,
         minDataPointValue: minDataPointValue!,
         yAxisConfig: yAxisConfig,
         yAxisMaxValue: yAxisMaxValue!,
@@ -261,11 +263,11 @@ class CooChartPainter extends CustomPainter {
     if (chartType == CooChartType.bar) {
       _drawDataBarchartBars(
         barchartDataSeries: barchartDataSeries,
+        columnBlocks: columnBlocks,
         canvas: canvas,
         chartWidth: chartWidth,
         chartHeigt: chartHeight,
         mousePosition: mousePosition,
-        columnBlocks: columnBlocks,
         minDataPointValue: minDataPointValue!,
         yAxisConfig: yAxisConfig,
         yAxisMaxValue: yAxisMaxValue!,
@@ -298,7 +300,8 @@ class CooChartPainter extends CustomPainter {
     required double minDataPointValue,
     ChartColumnBlocks? columnBlocks,
   }) {
-    final columnBottomDatasHeight = columnBlocks != null ? columnBlocks.bottomConfig.height.toDouble() : 0;
+    final columnBottomDatasHeight =
+        columnBlocks != null && columnBlocks.showBottomBlocks ? columnBlocks.bottomConfig.height.toDouble() : 0;
     // Die Segment-width muss über alle vorhandenen Datenpunkte aller Reihen berechnet werden.
     for (var i = 0; i < linechartDataSeries.length; i++) {
       CooLinechartDataSeries localLinechartDataSeries = linechartDataSeries[i];
@@ -483,7 +486,22 @@ class CooChartPainter extends CustomPainter {
     required List<CooBarchartDataSeries> barchartDataSeries,
     ChartColumnBlocks? columnBlocks,
   }) {
-    final columnBottomDatasHeight = columnBlocks != null ? columnBlocks.bottomConfig.height.toDouble() : 0;
+    bool showColumnBottomDatas = false;
+    double bottomColumnHeight = 0;
+    bool showColumnTopDatas = false;
+    double topColumnHeight = 0;
+    if (columnBlocks != null) {
+      showColumnBottomDatas = columnBlocks.showBottomBlocks && columnBlocks.bottomDatas.isNotEmpty;
+      if (showColumnBottomDatas) {
+        bottomColumnHeight = columnBlocks.bottomConfig.height.toDouble();
+      }
+
+      showColumnTopDatas = columnBlocks.showTopBlocks && columnBlocks.topDatas.isNotEmpty;
+      if (showColumnTopDatas) {
+        topColumnHeight = columnBlocks.topConfig.height.toDouble();
+      }
+    }
+
     // Die Segment-width muss über alle vorhandenen Datenpunkte aller Reihen berechnet werden.
     for (var i = 0; i < barchartDataSeries.length; i++) {
       CooBarchartDataSeries localLinechartDataSeries = barchartDataSeries[i];
@@ -559,11 +577,11 @@ class CooChartPainter extends CustomPainter {
         if (centerDataPointBetweenVerticalGrid) {
           x += xSegementWidthHalf; // add center offset
         }
-        final startYPos = canvasHeight - padding.bottom - padding.top - columnBottomDatasHeight;
+        final startYPos = canvasHeight - padding.bottom - padding.top - bottomColumnHeight - topColumnHeight;
         final dataValue = dataSeriesNormalizedValues[i];
         if (dataValue != null) {
           // Berechnen der Position zum Plotten der Linie
-          final y = startYPos - (dataValue * (startYPos)) + padding.top;
+          final y = startYPos - (dataValue * (startYPos)) + padding.top + topColumnHeight;
 
           /// Pos(x0,y0) - Pos(x1,y0)
           ///     |                |
@@ -572,10 +590,10 @@ class CooChartPainter extends CustomPainter {
           ///     |                |
           ///     |                |
           /// Pos(x0,y1)  -  Pos(x1,y1)
-          double x0 = x - 10;
+          double x0 = x - (xSegementWidthHalf / 1.5);
           double y0 = y;
-          double x1 = x + 10;
-          double y1 = startYPos + padding.top;
+          double x1 = x + (xSegementWidthHalf / 1.5);
+          double y1 = startYPos + padding.top + topColumnHeight;
 
           var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
 
@@ -605,26 +623,26 @@ class CooChartPainter extends CustomPainter {
           // Horizontale Linie für MAX
           double maxDataValue = maxPointsNormalized[i]!;
           final yMax = startYPos - (maxDataValue * (startYPos)) + padding.top;
-          double xMax0 = x - 10;
-          double yMax0 = yMax;
-          double xMax1 = x + 10;
-          double yMax1 = yMax;
+          double xMax0 = x - (xSegementWidthHalf / 3);
+          double yMax0 = yMax + topColumnHeight;
+          double xMax1 = x + (xSegementWidthHalf / 3);
+          double yMax1 = yMax + topColumnHeight;
           canvas.drawLine(Offset(xMax0, yMax0), Offset(xMax1, yMax1), minMaxRangePaint);
 
           // Horizontale Linie für MIN
           double minDataValue = minPointsNormalized[i]!;
           final yMin = startYPos - (minDataValue * (startYPos)) + padding.top;
-          double xMin0 = x - 10;
-          double yMin0 = yMin;
-          double xMin1 = x + 10;
-          double yMin1 = yMin;
+          double xMin0 = x - (xSegementWidthHalf / 3);
+          double yMin0 = yMin + topColumnHeight;
+          double xMin1 = x + (xSegementWidthHalf / 3);
+          double yMin1 = yMin + topColumnHeight;
           canvas.drawLine(Offset(xMin0, yMin0), Offset(xMin1, yMin1), minMaxRangePaint);
 
           // Linie von Min zu Max
           double xLinie0 = x;
-          double yLinie0 = yMax;
+          double yLinie0 = yMax + topColumnHeight;
           double xLinie1 = x;
-          double yLinie1 = yMin;
+          double yLinie1 = yMin + topColumnHeight;
           canvas.drawLine(Offset(xLinie0, yLinie0), Offset(xLinie1, yLinie1), minMaxRangePaint);
         }
       }
@@ -773,6 +791,7 @@ class CooChartPainter extends CustomPainter {
     );
   }
 
+  ///
   void _drawBackgroundRect({
     required Canvas canvas,
     required double chartWidth,
@@ -806,13 +825,24 @@ class CooChartPainter extends CustomPainter {
       }
 
       var rect = Rect.fromPoints(Offset(x1, y1), Offset(x2, y2));
+
+      bool mouseOverBarHiglight = false;
       if (mousePosition != null) {
         bool contains = rect.contains(Offset(mousePosition.dx, mousePosition.dy));
-        if (contains) {
-          if (highlightMouseColumn) {
-            canvas.drawRect(rect, backgroundRectHighlightPaint);
-          }
-          mouseInRectYIndex = i;
+        mouseOverBarHiglight = contains && highlightMouseColumn;
+      }
+
+      if (mouseOverBarHiglight) {
+        canvas.drawRect(rect, backgroundRectHighlightPaint);
+      } else if (barChartDataPointsByColumnIndex[i] != null) {
+        List<CooBarchartDataPoint> barchartDataPoints = barChartDataPointsByColumnIndex[i]!;
+        // get first background color
+        final dataPoint = barchartDataPoints.firstWhereOrNull((element) => element.columnBackgroundColor != null);
+        if (dataPoint != null) {
+          final Paint columnBackgroundColor = Paint()
+            ..color = dataPoint.columnBackgroundColor!
+            ..strokeWidth = 0;
+          canvas.drawRect(rect, columnBackgroundColor);
         }
       }
 
@@ -1014,17 +1044,30 @@ class CooChartPainter extends CustomPainter {
     required bool showYAxisLables,
     ChartColumnBlocks? columnBlocks,
   }) {
-    bool showColumnBottomDatas = columnBlocks != null;
-    double dataPointColumnLegendHeight = showColumnBottomDatas ? columnBlocks.bottomConfig.height.toDouble() : 0;
+    bool showColumnBottomDatas = false;
+    double bottomColumnHeight = 0;
+    bool showColumnTopDatas = false;
+    double topColumnHeight = 0;
+    if (columnBlocks != null) {
+      showColumnBottomDatas = columnBlocks.showBottomBlocks && columnBlocks.bottomDatas.isNotEmpty;
+      if (showColumnBottomDatas) {
+        bottomColumnHeight = columnBlocks.bottomConfig.height.toDouble();
+      }
 
-    final double yOffsetInterval = (chartHeight - dataPointColumnLegendHeight) / (yAxisConfig.labelCount - 1);
+      showColumnTopDatas = columnBlocks.showTopBlocks && columnBlocks.topDatas.isNotEmpty;
+      if (showColumnTopDatas) {
+        topColumnHeight = columnBlocks.topConfig.height.toDouble();
+      }
+    }
+
+    final double yOffsetInterval = (chartHeight - bottomColumnHeight - topColumnHeight) / (yAxisConfig.labelCount - 1);
 
     for (int i = 0; i < yAxisConfig.labelCount; i++) {
-      double y = chartHeight - (i * yOffsetInterval) + padding.top - dataPointColumnLegendHeight;
+      double y = chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
 
       // Don't draw the first horizontal grid line because there is already the x-Axis line
       // Falls die Column Legende angezeigt werden soll dann die erste Line auch zeichnen
-      if (i != 0 && showGridHorizontal || showColumnBottomDatas) {
+      if ((i != 0 && showGridHorizontal) || showColumnBottomDatas) {
         canvas.drawLine(Offset(padding.left.toDouble(), y), Offset(chartWidth + padding.left, y), _gridPaint);
       }
 
@@ -1287,20 +1330,40 @@ class CooChartPainter extends CustomPainter {
     }
   }
 
-  void _drawColumnBottomBlocks({
+  void _drawColumnBlocks({
     required ui.Canvas canvas,
     required double chartWidth,
     required double chartHeight,
     required List<CooLinechartDataSeries> linechartDataSeries,
     ChartColumnBlocks? columnBlocks,
   }) {
-    if (columnBlocks == null || !columnBlocks.showBottomBlocks) {
+    if (columnBlocks == null) {
+      return;
+    }
+    if (!columnBlocks.showBottomBlocks && !columnBlocks.showTopBlocks) {
+      // Beide Blocks sollen nicht angezeigt werden.
+      return;
+    }
+    if (columnBlocks.bottomDatas.isEmpty && columnBlocks.topDatas.isEmpty) {
+      // Sollen zwar angezeigt werden, sind aber leer..
       return;
     }
 
-    final columnBottomDatasHeight = columnBlocks.bottomConfig.height.toDouble();
-    final columnBottomDatas = columnBlocks.bottomDatas;
+    // Bottom Blocks
+    if (columnBlocks.showTopBlocks && columnBlocks.topDatas.isNotEmpty) {
+      paintColumnBlocks(canvas, columnBlocks, chartWidth, chartHeight, true);
+    }
+    if (columnBlocks.showBottomBlocks && columnBlocks.bottomDatas.isNotEmpty) {
+      paintColumnBlocks(canvas, columnBlocks, chartWidth, chartHeight, false);
+    }
+  }
 
+  void paintColumnBlocks(
+      ui.Canvas canvas, ChartColumnBlocks columnBlocks, double chartWidth, double chartHeight, bool topBlocks) {
+    ChartColumnBlockConfig config = topBlocks ? columnBlocks.topConfig : columnBlocks.bottomConfig;
+    final columnDatas = topBlocks ? columnBlocks.topDatas : columnBlocks.bottomDatas;
+
+    final columnDatasHeight = config.height.toDouble();
     // Wenn padding für die Legende verwendet werden soll kann angegben werden wie breit sie ist.
     double backgroundPaddingSize = columnBlocks.bottomConfig.backgroundColorPadding.toDouble();
 
@@ -1310,7 +1373,7 @@ class CooChartPainter extends CustomPainter {
     }
     double xOffsetInterval = chartWidth / (xGridLineCount);
     for (int i = 0; i < xGridLineCount; i++) {
-      final columnLegend = columnBottomDatas[i];
+      final columnData = columnDatas[i];
 
       double x = (xOffsetInterval * i) + padding.left;
       if (centerDataPointBetweenVerticalGrid) {
@@ -1336,16 +1399,19 @@ class CooChartPainter extends CustomPainter {
       // nicht, denn das wäre ein nicht vorhandener Datenpunkt zu viel
       if (!centerDataPointBetweenVerticalGrid || i != xGridLineCount) {
         // Hintergrundfarbe rendern
-        if (columnLegend.backgroundColor != null) {
+        if (columnData.backgroundColor != null) {
           final Paint columnLegendBackground = Paint()
-            ..color = columnLegend.backgroundColor!
+            ..color = columnData.backgroundColor!
             ..strokeWidth = 0;
 
           // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
           final rectX0 = x - (xOffsetInterval / 2) + backgroundPaddingSize;
-          final rectY0 = chartHeight + padding.top.toDouble() - columnBottomDatasHeight + backgroundPaddingSize;
+          final rectY0 = (topBlocks ? config.height : chartHeight) +
+              padding.top.toDouble() -
+              columnDatasHeight +
+              backgroundPaddingSize;
           final rectX1 = rectX0 + xOffsetInterval - (backgroundPaddingSize * 2);
-          final rectY1 = rectY0 + columnBottomDatasHeight - (backgroundPaddingSize * 2);
+          final rectY1 = rectY0 + columnDatasHeight - (backgroundPaddingSize * 2);
 
           var rect = Rect.fromPoints(Offset(rectX0, rectY0), Offset(rectX1, rectY1));
           canvas.drawRect(rect, columnLegendBackground);
@@ -1363,8 +1429,8 @@ class CooChartPainter extends CustomPainter {
           // }
         }
         // Text rendern
-        if (columnLegend.text != null) {
-          _columLegendTextPainter.text = TextSpan(text: columnLegend.text, style: textStyle);
+        if (columnData.text != null) {
+          _columLegendTextPainter.text = TextSpan(text: columnData.text, style: textStyle);
           _columLegendTextPainter.layout();
 
           // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
@@ -1373,16 +1439,16 @@ class CooChartPainter extends CustomPainter {
           final xPos = x - (xOffsetInterval / 2) + xPosCenter;
 
           // Center ist höhe der fläche / 2 + höhe des textes / 2
-          final double yPosCenter = (columnBottomDatasHeight / 2) + (_columLegendTextPainter.height / 2);
-          final yPos = chartHeight + padding.top.toDouble() - yPosCenter;
+          final double yPosCenter = (columnDatasHeight / 2) + (_columLegendTextPainter.height / 2);
+          final yPos = (topBlocks ? config.height : chartHeight) + padding.top.toDouble() - yPosCenter;
 
           _columLegendTextPainter.paint(canvas, Offset(xPos, yPos));
         }
 
         // Asset Image rendern, sofern angegeben und als Bild vorhanden
-        if (columnLegend.assetImages.isNotEmpty) {
+        if (columnData.assetImages.isNotEmpty) {
           assetImageLoop:
-          for (var blockAssetImage in columnLegend.assetImages) {
+          for (var blockAssetImage in columnData.assetImages) {
             final ui.Image? image = columLegendsAssetImages[blockAssetImage.path];
             if (image == null) {
               continue assetImageLoop;
@@ -1394,8 +1460,11 @@ class CooChartPainter extends CustomPainter {
             final xPos = x - (xOffsetInterval / 2) + xPosCenter;
 
             // Center ist höhe der fläche / 2 + höhe des textes / 2
-            final double yPosCenter = (columnBottomDatasHeight / 2) + (image.height / 2);
-            final yPos = chartHeight + padding.top.toDouble() - yPosCenter - blockAssetImage.offsetTop;
+            final double yPosCenter = (columnDatasHeight / 2) + (image.height / 2);
+            final yPos = (topBlocks ? config.height : chartHeight) +
+                padding.top.toDouble() -
+                yPosCenter -
+                blockAssetImage.offsetTop;
 
             // Es ist aktuell nicht möglich ein SVG zu positionieren oder in der Größe zu verändern.
             // Deswegen wird das schlechtere von SVG zu PNG transformierte Bild gezeichnet

@@ -102,6 +102,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
                         ),
                       CooChartType.bar => CooBarchart(
                           dataSeries: barchartDataSeries,
+                          columnBlocks: chartColumnBlocks,
                           chartConfig: chartConfig,
                           xAxisConfig: xAxisConfig,
                           yAxisConfig: yAxisConfig,
@@ -432,27 +433,34 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateKachelmannSonnenscheindauerTrend() {
     _resetToDefault();
     chartType = CooChartType.bar;
-
-    yAxisConfig = yAxisConfig.copyWith(labelCount: 11, minLabelValue: 0, maxLabelValue: 10, labelPostfix: '°C');
-
     chartConfig = chartConfig.copyWith(
       showGridHorizontal: true,
       showGridVertical: true,
     );
+
+    yAxisConfig = yAxisConfig.copyWith(
+      labelCount: 12,
+      minLabelValue: 0,
+      maxLabelValue: 11,
+      labelPostfix: 'h',
+    );
+
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.date,
       bottomDateFormat: 'dd.MM.',
+      showTopLabels: true,
+      topDateFormat: 'E',
     );
 
     barchartDataSeries.clear();
 
     var sonnenscheindauer = List<CooBarchartDataPoint>.empty(growable: true);
     sonnenscheindauer.add(CooBarchartDataPoint(
-      value: 0.4,
-      minValue: 0,
-      maxValue: 1.2,
-      time: DateTime(2023, 10, 22),
-    ));
+        value: 0.4,
+        minValue: 0,
+        maxValue: 1.2,
+        time: DateTime(2023, 10, 22),
+        columnBackgroundColor: Colors.grey.withOpacity(0.2)));
     sonnenscheindauer.add(CooBarchartDataPoint(
       value: 03.3,
       minValue: 0.3,
@@ -502,7 +510,6 @@ class _LineChartDemoState extends State<LineChartDemo> {
       time: DateTime(2023, 10, 30),
     ));
     sonnenscheindauer.add(CooBarchartDataPoint(
-      value: 1,
       minValue: 0,
       maxValue: 1.2,
       time: DateTime(2023, 10, 31),
@@ -535,8 +542,53 @@ class _LineChartDemoState extends State<LineChartDemo> {
     CooBarchartDataSeries serie = CooBarchartDataSeries(
       dataPoints: sonnenscheindauer,
       barColor: const Color(0xFFfde81a),
+      minMaxLineColor: Colors.black,
     );
     barchartDataSeries.add(serie);
+
+    final bgColor = Colors.grey.withOpacity(0.2);
+    final bgColorBottom = Colors.blue.withOpacity(0.2);
+    final columnTopDatas = List<ChartColumnBlockData>.empty(growable: true);
+    columnTopDatas.add(ChartColumnBlockData(
+        text: 'a', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRain)]));
+    columnTopDatas.add(ChartColumnBlockData(text: 'b', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'c', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'd', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(
+        text: 'e', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRain)]));
+    columnTopDatas.add(ChartColumnBlockData(text: 'f', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'g', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'h', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'i', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'j', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'k', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'l', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'm', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'n', backgroundColor: bgColor));
+
+    final columnBottomDatas = List<ChartColumnBlockData>.empty(growable: true);
+    columnBottomDatas.add(ChartColumnBlockData(text: '0', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '2', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '6', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '2', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '4', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '1', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '7', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '4', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '3', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '6', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '0', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '2', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '1', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '4', backgroundColor: bgColorBottom));
+
+    chartColumnBlocks = ChartColumnBlocks(
+      showTopBlocks: true,
+      topDatas: columnTopDatas,
+      topConfig: ChartColumnBlockConfig(height: 40),
+      showBottomBlocks: true,
+      bottomDatas: columnBottomDatas,
+    );
   }
 
   /// Barchart 1-10

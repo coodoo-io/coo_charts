@@ -1,12 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
+import 'package:coo_charts/chart_column_block_config_image.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_padding.enum.dart';
-import 'package:coo_charts/coo_barchart_data_point.dart';
-import 'package:coo_charts/coo_barchart_data_series.dart';
-import 'package:coo_charts/coo_linechart_data_point.dart';
-import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:image/image.dart' as image;
 
 class CooChartPainterUtil {
   /// Draw the chart border.
@@ -57,6 +60,70 @@ class CooChartPainterUtil {
       // auch die Gegenseite soll gezeichnet werden
       if (showFullRect) {
         canvas.drawLine(posX1Y0, posX1Y1, axisPaint);
+      }
+    }
+  }
+
+  Future<void> loadColumnDataImageAssets({
+    required ChartColumnBlocks columnBlocks,
+    required Map<String, ui.Image> columLegendsAssetImages,
+    required Map<String, PictureInfo> columLegendsAssetSvgPictureInfos,
+  }) async {
+    if (!columnBlocks.showBottomBlocks && !columnBlocks.showTopBlocks) {
+      // Beide Blocks sollen nicht angezeigt werden.
+      return;
+    }
+    if (columnBlocks.bottomDatas.isEmpty && columnBlocks.topDatas.isEmpty) {
+      // Sollen zwar angezeigt werden, sind aber leer..
+      return;
+    }
+    // Alle Bilder sammeln
+
+    List<BlockAssetImage> assetImages = [];
+    for (var columnData in columnBlocks.bottomDatas) {
+      for (var blockAssetImage in columnData.assetImages) {
+        assetImages.add(blockAssetImage);
+      }
+    }
+    for (var columnData in columnBlocks.topDatas) {
+      for (var blockAssetImage in columnData.assetImages) {
+        assetImages.add(blockAssetImage);
+      }
+    }
+    if (assetImages.isEmpty) {
+      return;
+    }
+
+    blockAssetImageLoop:
+    for (var blockAssetImage in assetImages) {
+      final String assetImagePath = blockAssetImage.path;
+      if (columLegendsAssetImages[assetImagePath] != null) {
+        continue blockAssetImageLoop;
+      }
+      try {
+        PictureInfo pictureInfo = await vg.loadPicture(SvgAssetLoader(assetImagePath), null);
+
+        // Change colum legend image size so that it fits into the legend column
+        // the legend column height is given
+        var imageHeight = pictureInfo.size.height.toInt();
+        var imageWidth = pictureInfo.size.width.toInt();
+        ui.Image svgImg = pictureInfo.picture.toImageSync(imageHeight, imageWidth);
+        final height = columnBlocks.bottomConfig.height;
+        if (imageHeight > height) {
+          // Größe muss umgerechnet werden damit es in die Legende passt
+          final ByteData? assetImageByteData = await svgImg.toByteData(format: ui.ImageByteFormat.png);
+          if (assetImageByteData != null) {
+            image.Image baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List())!;
+            image.Image resizeImage = image.copyResize(baseSizeImage, height: blockAssetImage.height);
+            ui.Codec codec = await ui.instantiateImageCodec(image.encodePng(resizeImage));
+            ui.FrameInfo frameInfo = await codec.getNextFrame();
+            svgImg = frameInfo.image;
+          }
+        }
+        columLegendsAssetImages[assetImagePath] = svgImg;
+        columLegendsAssetSvgPictureInfos[assetImagePath] = pictureInfo;
+      } catch (e) {
+        /// Image could not be processed..
       }
     }
   }

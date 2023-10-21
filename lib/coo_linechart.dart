@@ -4,6 +4,7 @@ import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_config.dart';
 import 'package:coo_charts/chart_padding.enum.dart';
 import 'package:coo_charts/chart_tab_info.dart';
+import 'package:coo_charts/coo_chart_painter_util.dart';
 import 'package:coo_charts/coo_chart_type.enum.dart';
 import 'package:coo_charts/coo_linechart_data_point.dart';
 import 'package:coo_charts/coo_linechart_data_series.dart';
@@ -137,44 +138,10 @@ class _CooLinechartState extends State<CooLinechart> {
     if (initialized) {
       return;
     }
-
-    for (var columnBottomData in columnBlocks.bottomDatas) {
-      if (columnBottomData.assetImages.isEmpty) {
-        continue;
-      }
-      blockAssetImageLoop:
-      for (var blockAssetImage in columnBottomData.assetImages) {
-        final String assetImagePath = blockAssetImage.path;
-        if (columLegendsAssetImages[assetImagePath] != null) {
-          continue blockAssetImageLoop;
-        }
-        try {
-          PictureInfo pictureInfo = await vg.loadPicture(SvgAssetLoader(assetImagePath), null);
-
-          // Change colum legend image size so that it fits into the legend column
-          // the legend column height is given
-          var imageHeight = pictureInfo.size.height.toInt();
-          var imageWidth = pictureInfo.size.width.toInt();
-          ui.Image svgImg = pictureInfo.picture.toImageSync(imageHeight, imageWidth);
-          final height = columnBlocks.bottomConfig.height;
-          if (imageHeight > height) {
-            // Größe muss umgerechnet werden damit es in die Legende passt
-            final ByteData? assetImageByteData = await svgImg.toByteData(format: ui.ImageByteFormat.png);
-            if (assetImageByteData != null) {
-              image.Image baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List())!;
-              image.Image resizeImage = image.copyResize(baseSizeImage, height: blockAssetImage.height);
-              ui.Codec codec = await ui.instantiateImageCodec(image.encodePng(resizeImage));
-              ui.FrameInfo frameInfo = await codec.getNextFrame();
-              svgImg = frameInfo.image;
-            }
-          }
-          columLegendsAssetImages[assetImagePath] = svgImg;
-          columLegendsAssetSvgPictureInfos[assetImagePath] = pictureInfo;
-        } catch (e) {
-          /// Image could not be processed..
-        }
-      }
-    }
+    await CooChartPainterUtil().loadColumnDataImageAssets(
+        columnBlocks: columnBlocks,
+        columLegendsAssetImages: columLegendsAssetImages,
+        columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos);
     initialized = true;
     onLoadingFinished();
   }
