@@ -12,12 +12,25 @@ class CooChartConstants {
 
   CooChartConstants._internal();
 
-  Color columnHighlightColor = Colors.blue.withOpacity(0.3);
+  Color columnHighlightColor = Colors.grey.withOpacity(0.3);
+
   List<CooChartColorSchema> colorShemas = [
-    CooChartColorSchema(dataPointColor: Colors.blue, dataPointHighlightColor: Colors.lightBlue),
-    CooChartColorSchema(dataPointColor: Colors.green, dataPointHighlightColor: Colors.blueGrey),
-    CooChartColorSchema(dataPointColor: Colors.deepPurple, dataPointHighlightColor: Colors.purple),
-    CooChartColorSchema(dataPointColor: Colors.yellow, dataPointHighlightColor: Colors.orange),
+    CooChartColorSchema(
+      dataPointColor: Colors.blue,
+      dataPointHighlightColor: Colors.lightBlue,
+    ),
+    CooChartColorSchema(
+      dataPointColor: Colors.green,
+      dataPointHighlightColor: Colors.blueGrey,
+    ),
+    CooChartColorSchema(
+      dataPointColor: Colors.deepPurple,
+      dataPointHighlightColor: Colors.purple,
+    ),
+    CooChartColorSchema(
+      dataPointColor: Colors.orange,
+      dataPointHighlightColor: Colors.yellow,
+    ),
   ];
 }
 

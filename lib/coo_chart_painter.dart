@@ -35,6 +35,7 @@ class CooChartPainter extends CustomPainter {
     required this.showGridHorizontal,
     required this.showGridVertical,
     required this.highlightMouseColumn,
+    this.highlightColumnColor,
     required this.highlightPoints,
     required this.highlightPointsVerticalLine,
     required this.highlightPointsHorizontalLine,
@@ -94,6 +95,7 @@ class CooChartPainter extends CustomPainter {
   final bool showGridVertical; // if true, grid vertical lines are painted
 
   final bool highlightMouseColumn; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
+  final Color? highlightColumnColor;
   final bool highlightPoints; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
   final bool
       highlightPointsVerticalLine; // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
@@ -154,14 +156,6 @@ class CooChartPainter extends CustomPainter {
   final Paint _axisPaint = Paint()
     ..color = Colors.grey
     ..strokeWidth = 1;
-
-  final Paint _backgroundRectPaint = Paint()
-    ..color = Colors.blue.withOpacity(0)
-    ..strokeWidth = 0;
-
-  final Paint _backgroundRectHighlightPaint = Paint()
-    ..color = Colors.blue.withOpacity(0.3)
-    ..strokeWidth = 0;
 
   final Paint _mousePositionPaint = Paint()
     ..color = Colors.red
@@ -728,6 +722,10 @@ class CooChartPainter extends CustomPainter {
   }) {
     mouseInRectYIndex = -1; // Reset
 
+    final Paint backgroundRectHighlightPaint = Paint()
+      ..color = highlightColumnColor ?? CooChartConstants().columnHighlightColor
+      ..strokeWidth = 0;
+
     // das erste und das letzte Rect sind nur halb so groß, wenn der Punkt direkt bei 0 auf der Y-Achse liegt
     for (var i = 0; i < maxAbsoluteValueCount; i++) {
       var x1 = (i * xSegmentWidth) + padding.left - xSegementWidthHalf;
@@ -752,12 +750,10 @@ class CooChartPainter extends CustomPainter {
         bool contains = rect.contains(Offset(mousePosition.dx, mousePosition.dy));
         if (contains) {
           if (highlightMouseColumn) {
-            canvas.drawRect(rect, _backgroundRectHighlightPaint);
+            canvas.drawRect(rect, backgroundRectHighlightPaint);
           }
           mouseInRectYIndex = i;
         }
-      } else {
-        canvas.drawRect(rect, _backgroundRectPaint);
       }
 
       // Tab Callback der gesamten Spalte

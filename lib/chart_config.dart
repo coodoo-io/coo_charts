@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:ui';
+
 import 'package:coo_charts/chart_padding.enum.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
@@ -12,6 +14,7 @@ class ChartConfig {
     this.showGridVertical = false,
     this.showDataPath = true,
     this.highlightMouseColumn = true,
+    this.hightlightColumnColor,
     this.highlightPoints = true,
     this.addYAxisValueBuffer = true,
     this.highlightPointsVerticalLine = false,
@@ -29,6 +32,7 @@ class ChartConfig {
 
   final bool showDataPath; // Soll der path auf der Kurve angezeigt werden?
   final bool highlightMouseColumn; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
+  final Color? hightlightColumnColor;
   final bool highlightPoints; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
   final bool
       highlightPointsVerticalLine; // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
