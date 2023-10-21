@@ -355,7 +355,7 @@ class CooChartPainter extends CustomPainter {
         }
 
         final startYPos = canvasHeight - padding.top - padding.bottom - columnBottomDatasHeight;
-        final y = startYPos - (dataValue * (startYPos)) + padding.top;
+        final y = startYPos - (dataValue * startYPos) + padding.top;
 
         if (!startPointAdded) {
           lineChartDataPointsPath.moveTo(x, y);
@@ -488,11 +488,29 @@ class CooChartPainter extends CustomPainter {
     for (var i = 0; i < barchartDataSeries.length; i++) {
       CooBarchartDataSeries localLinechartDataSeries = barchartDataSeries[i];
       List<String?> dataSeriesLabels = List.empty(growable: true);
-      List<double?> dataPointValues = localLinechartDataSeries.dataPoints.map((e) => e.value).toList();
 
       // Alle Punkte auf einen Bereich zwischen 0.0 und 1.0 bringen um sie in der Fläche relativ berechnen zu können
+      List<double?> dataPointValues = localLinechartDataSeries.dataPoints.map((e) => e.value).toList();
       List<double?> dataSeriesNormalizedValues = CooChartPainterUtil.normalizeChartDataPoints(
         linechartDataPoints: dataPointValues,
+        minDataPointValue: minDataPointValue,
+        yAxisMinValue: yAxisMinValue,
+        yAxisMaxValue: yAxisMaxValue,
+        yAxisConfig: yAxisConfig,
+      );
+
+      List<double?> dataPointMaxValues = localLinechartDataSeries.dataPoints.map((e) => e.maxValue).toList();
+      List<double?> maxPointsNormalized = CooChartPainterUtil.normalizeChartDataPoints(
+        linechartDataPoints: dataPointMaxValues,
+        minDataPointValue: minDataPointValue,
+        yAxisMinValue: yAxisMinValue,
+        yAxisMaxValue: yAxisMaxValue,
+        yAxisConfig: yAxisConfig,
+      );
+
+      List<double?> dataPointMinalues = localLinechartDataSeries.dataPoints.map((e) => e.minValue).toList();
+      List<double?> minPointsNormalized = CooChartPainterUtil.normalizeChartDataPoints(
+        linechartDataPoints: dataPointMinalues,
         minDataPointValue: minDataPointValue,
         yAxisMinValue: yAxisMinValue,
         yAxisMaxValue: yAxisMaxValue,
@@ -510,6 +528,12 @@ class CooChartPainter extends CustomPainter {
         ..color = barColorHighlight
         ..strokeWidth = 1;
 
+      final Color minMaxRangeLineColor =
+          localLinechartDataSeries.minMaxLineColor ?? CooChartConstants().minMaxRangeColor;
+      final Paint minMaxRangePaint = Paint()
+        ..color = minMaxRangeLineColor
+        ..strokeWidth = 1;
+
       dataPointsLoop:
       for (var i = 0; i < dataSeriesNormalizedValues.length; i++) {
         // Lables für den späteren plotten parsen
@@ -524,12 +548,8 @@ class CooChartPainter extends CustomPainter {
           }
         }
 
-        final dataValue = dataSeriesNormalizedValues[i];
-        if (dataValue == null) {
-          continue dataPointsLoop;
-        }
-
-        // Berechnen der Position zum Plotten der Linie
+        // Vorberechneter X-Wert, der dann für das Bar oder die Linie angepasst werden muss
+        // Mittiger X-Wert anhand der Positon der gerade durchlaufenden Data Point
         double x;
         if (i == 0) {
           x = 0.0 + padding.left;
@@ -539,33 +559,73 @@ class CooChartPainter extends CustomPainter {
         if (centerDataPointBetweenVerticalGrid) {
           x += xSegementWidthHalf; // add center offset
         }
-        final startYPos = canvasHeight - padding.top - padding.bottom - columnBottomDatasHeight;
-        final y = startYPos - (dataValue * (startYPos)) + padding.top;
+        final startYPos = canvasHeight - padding.bottom - padding.top - columnBottomDatasHeight;
+        final dataValue = dataSeriesNormalizedValues[i];
+        if (dataValue != null) {
+          // Berechnen der Position zum Plotten der Linie
+          final y = startYPos - (dataValue * (startYPos)) + padding.top;
 
-        /// Pos(x0,y0) - Pos(x1,y0)
-        ///     |                |
-        ///     |                |
-        ///     |                |
-        ///     |                |
-        ///     |                |
-        /// Pos(x0,y1)  -  Pos(x1,y1)
-        double x0 = x - 10;
-        double y0 = y;
-        double x1 = x + 10;
-        double y1 = startYPos + padding.top;
+          /// Pos(x0,y0) - Pos(x1,y0)
+          ///     |                |
+          ///     |                |
+          ///     |                |
+          ///     |                |
+          ///     |                |
+          /// Pos(x0,y1)  -  Pos(x1,y1)
+          double x0 = x - 10;
+          double y0 = y;
+          double x1 = x + 10;
+          double y1 = startYPos + padding.top;
 
-        var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
+          var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
 
-        bool mouseOverBarHiglight = false;
-        if (mousePosition != null) {
-          bool contains = rect.contains(Offset(mousePosition.dx, mousePosition.dy));
-          mouseOverBarHiglight = contains && highlightMouseColumn;
+          bool mouseOverBarHiglight = false;
+          if (mousePosition != null) {
+            bool contains = rect.contains(Offset(mousePosition.dx, mousePosition.dy));
+            mouseOverBarHiglight = contains && highlightMouseColumn;
+          }
+
+          if (mouseOverBarHiglight) {
+            canvas.drawRect(rect, barHightlightPaint);
+          } else {
+            canvas.drawRect(rect, barPaint);
+          }
         }
 
-        if (mouseOverBarHiglight) {
-          canvas.drawRect(rect, barPaint);
-        } else {
-          canvas.drawRect(rect, barPaint);
+        /// Draw Min-Max-Range Line
+        ///
+        /// ----- (Max)
+        ///   |
+        ///   |
+        ///   |
+        ///   |
+        /// ----- (Min)
+        if (dataPoint.minValue != null && dataPoint.maxValue != null) {
+          // Der normalisierte Wert muss da sein, weil der min und max Wert nicht null sind
+          // Horizontale Linie für MAX
+          double maxDataValue = maxPointsNormalized[i]!;
+          final yMax = startYPos - (maxDataValue * (startYPos)) + padding.top;
+          double xMax0 = x - 10;
+          double yMax0 = yMax;
+          double xMax1 = x + 10;
+          double yMax1 = yMax;
+          canvas.drawLine(Offset(xMax0, yMax0), Offset(xMax1, yMax1), minMaxRangePaint);
+
+          // Horizontale Linie für MIN
+          double minDataValue = minPointsNormalized[i]!;
+          final yMin = startYPos - (minDataValue * (startYPos)) + padding.top;
+          double xMin0 = x - 10;
+          double yMin0 = yMin;
+          double xMin1 = x + 10;
+          double yMin1 = yMin;
+          canvas.drawLine(Offset(xMin0, yMin0), Offset(xMin1, yMin1), minMaxRangePaint);
+
+          // Linie von Min zu Max
+          double xLinie0 = x;
+          double yLinie0 = yMax;
+          double xLinie1 = x;
+          double yLinie1 = yMin;
+          canvas.drawLine(Offset(xLinie0, yLinie0), Offset(xLinie1, yLinie1), minMaxRangePaint);
         }
       }
     }

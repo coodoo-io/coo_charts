@@ -57,6 +57,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     super.initState();
     // _generateKachelmann14TageWetterTrend();
     _generateKachelmannSonnenscheindauerTrend();
+    // _generateBarchart1Bis10();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
     // _genrateRandomCooLinechartDataPoints();
@@ -121,6 +122,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
             child: Column(children: [
               Row(
                 children: [
+                  ElevatedButton(
+                    onPressed: () => setState(() => _generateBarchart1Bis10()),
+                    child: const Text('Barchart 1-10'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => _generateKachelmannSonnenscheindauerTrend()),
+                    child: const Text('Kachelmann Sonnenschein'),
+                  ),
                   ElevatedButton(
                     onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
                     child: const Text('Random Daten generieren'),
@@ -424,9 +433,120 @@ class _LineChartDemoState extends State<LineChartDemo> {
     _resetToDefault();
     chartType = CooChartType.bar;
 
-    yAxisConfig = yAxisConfig.copyWith(labelCount: 12);
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 11, minLabelValue: 0, maxLabelValue: 10, labelPostfix: '°C');
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+    );
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.date,
+      bottomDateFormat: 'dd.MM.',
+    );
+
+    barchartDataSeries.clear();
+
+    var sonnenscheindauer = List<CooBarchartDataPoint>.empty(growable: true);
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 0.4,
+      minValue: 0,
+      maxValue: 1.2,
+      time: DateTime(2023, 10, 22),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 03.3,
+      minValue: 0.3,
+      maxValue: 6.4,
+      time: DateTime(2023, 10, 23),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 2,
+      minValue: 0,
+      maxValue: 5,
+      time: DateTime(2023, 10, 24),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 6,
+      minValue: 2,
+      maxValue: 9,
+      time: DateTime(2023, 10, 25),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 3,
+      minValue: 1,
+      maxValue: 10,
+      time: DateTime(2023, 10, 26),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1,
+      minValue: 0.5,
+      maxValue: 2,
+      time: DateTime(2023, 10, 27),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 2,
+      minValue: 1,
+      maxValue: 3,
+      time: DateTime(2023, 10, 28),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1,
+      minValue: 0,
+      maxValue: 3,
+      time: DateTime(2023, 10, 29),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1,
+      minValue: 0,
+      maxValue: 4,
+      time: DateTime(2023, 10, 30),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1,
+      minValue: 0,
+      maxValue: 1.2,
+      time: DateTime(2023, 10, 31),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1,
+      minValue: 0,
+      maxValue: 5,
+      time: DateTime(2023, 11, 01),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 2,
+      minValue: 0,
+      maxValue: 6,
+      time: DateTime(2023, 11, 02),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 3,
+      minValue: 0,
+      maxValue: 7,
+      time: DateTime(2023, 11, 03),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 4,
+      minValue: 0,
+      maxValue: 8,
+      time: DateTime(2023, 11, 04),
+    ));
+
+    CooBarchartDataSeries serie = CooBarchartDataSeries(
+      dataPoints: sonnenscheindauer,
+      barColor: const Color(0xFFfde81a),
+    );
+    barchartDataSeries.add(serie);
+  }
+
+  /// Barchart 1-10
+  _generateBarchart1Bis10() {
+    _resetToDefault();
+    chartType = CooChartType.bar;
+
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 11);
     yAxisConfig = yAxisConfig.copyWith(minLabelValue: 0);
-    yAxisConfig = yAxisConfig.copyWith(maxLabelValue: 11);
+    yAxisConfig = yAxisConfig.copyWith(maxLabelValue: 10);
 
     const colorBar = Color(0xFFfde81a);
 
@@ -442,21 +562,62 @@ class _LineChartDemoState extends State<LineChartDemo> {
     barchartDataSeries.clear();
 
     var sonnenscheindauer = List<CooBarchartDataPoint>.empty(growable: true);
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 22)));
-    sonnenscheindauer
-        .add(CooBarchartDataPoint(value: 03.3, minValue: 0.3, maxValue: 6.4, time: DateTime(2023, 10, 23)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 24)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 25)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 26)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 27)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 28)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 29)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 30)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 10, 31)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 11, 01)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 11, 02)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 11, 03)));
-    sonnenscheindauer.add(CooBarchartDataPoint(value: 0.4, minValue: 0, maxValue: 1.2, time: DateTime(2023, 11, 04)));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 0.5,
+      time: DateTime(2023, 10, 22),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1,
+      time: DateTime(2023, 10, 23),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1.5,
+      time: DateTime(2023, 10, 24),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 2,
+      time: DateTime(2023, 10, 25),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 2.5,
+      time: DateTime(2023, 10, 26),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 3,
+      time: DateTime(2023, 10, 27),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 3.5,
+      time: DateTime(2023, 10, 28),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 4,
+      time: DateTime(2023, 10, 29),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 5,
+      time: DateTime(2023, 10, 30),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 6,
+      time: DateTime(2023, 10, 31),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 7,
+      time: DateTime(2023, 11, 01),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 8,
+      time: DateTime(2023, 11, 02),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 9,
+      time: DateTime(2023, 11, 03),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 10,
+      time: DateTime(2023, 11, 04),
+    ));
 
     CooBarchartDataSeries serie = CooBarchartDataSeries(
       dataPoints: sonnenscheindauer,

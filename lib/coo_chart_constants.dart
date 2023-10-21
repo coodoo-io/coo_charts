@@ -13,6 +13,7 @@ class CooChartConstants {
   CooChartConstants._internal();
 
   Color columnHighlightColor = Colors.grey.withOpacity(0.3);
+  Color minMaxRangeColor = Colors.blueGrey;
 
   List<CooChartColorSchema> colorShemas = [
     CooChartColorSchema(

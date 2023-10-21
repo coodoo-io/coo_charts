@@ -19,6 +19,9 @@ class CooBarchartDataSeries {
     ),
     this.dataPointLabelPosition = DataPointLabelPos.top,
     this.dataPointLabelPadding = 0,
+    this.minBarWidth,
+    this.maxBarWidth,
+    this.barWidthPercentColumn,
   });
 
   /// Die Datenpunkte, die den Line-Chart beschreiben
@@ -37,6 +40,11 @@ class CooBarchartDataSeries {
   final Color? barColor;
   final Color? barHighlightColor;
   final Color? minMaxLineColor;
+
+  // Wie breit darf der Bar maximal sein?
+  final int? minBarWidth;
+  final int? maxBarWidth;
+  final int? barWidthPercentColumn; // Wieviel Prozent der Column darf der Barchart breit sein?
 
   // Configure the text style of all data labels
   final TextStyle dataPointLabelTextStyle;
