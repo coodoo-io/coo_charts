@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 const kIconWeatherCloudy = 'assets/sym_cloudy.svg';
 const kIconWeatherRain = 'assets/sym_rain.svg';
 const kIconWindOver50 = 'assets/wind_over50.svg';
+const kIconWindOver90 = 'assets/wind_over90.svg';
 
 class LineChartDemo extends StatefulWidget {
   const LineChartDemo({super.key});
@@ -446,7 +447,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
       time: DateTime(2023, 4, 10),
       text: 'b',
       backgroundColor: colorLimitClear,
-      assetImages: [const BlockAssetImage(path: kIconWeatherRain)],
+      assetImages: [
+        const BlockAssetImage(path: kIconWeatherRain),
+        const BlockAssetImage(path: kIconWindOver90, offsetTop: 50),
+      ],
     ));
     columnBottomDatas.add(ChartColumnBlockData(
       time: DateTime(2023, 4, 11),

@@ -11,6 +11,7 @@ import 'package:coo_charts/linechart_widget.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
 class LineChartPainter extends CustomPainter {
@@ -34,6 +35,7 @@ class LineChartPainter extends CustomPainter {
     required this.yAxisConfig,
     required this.padding,
     required this.columLegendsAssetImages,
+    required this.columLegendsAssetSvgPictureInfos,
     this.onDataPointTabCallback,
   }) {
     chartWidth = canvasWidth - padding.left - padding.right;
@@ -65,6 +67,7 @@ class LineChartPainter extends CustomPainter {
 
   final ChartColumnBlocks? columnBlocks;
   final Map<String, ui.Image> columLegendsAssetImages;
+  final Map<String, PictureInfo> columLegendsAssetSvgPictureInfos;
 
   final double canvasHeight;
   final double canvasWidth;
@@ -1166,6 +1169,10 @@ class LineChartPainter extends CustomPainter {
             // Center ist höhe der fläche / 2 + höhe des textes / 2
             final double yPosCenter = (columnBottomDatasHeight / 2) + (image.height / 2);
             final yPos = chartHeight + padding.top.toDouble() - yPosCenter - blockAssetImage.offsetTop;
+
+            // Es ist aktuell nicht möglich ein SVG zu positionieren oder in der Größe zu verändern.
+            // Deswegen wird das schlechtere von SVG zu PNG transformierte Bild gezeichnet
+            // canvas.drawPicture(columLegendsAssetSvgPictureInfos[blockAssetImage.path]!.picture);
 
             canvas.drawImage(image, Offset(xPos, yPos), Paint());
           }
