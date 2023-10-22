@@ -1,4 +1,4 @@
-import 'package:example/linechart_demo.dart';
+import 'package:coo_charts_example/linechart_demo.dart';
 import 'package:flutter/material.dart';
 
 void main() {

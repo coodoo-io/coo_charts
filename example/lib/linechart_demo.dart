@@ -4,13 +4,13 @@ import 'package:coo_charts/chart_column_block_data.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_config.dart';
 import 'package:coo_charts/chart_util.dart';
-import 'package:coo_charts/coo_barchart_data_point.dart';
+import 'package:coo_charts/coo_bar_chart_data_point.dart';
 import 'package:coo_charts/coo_chart_type.enum.dart';
-import 'package:coo_charts/coo_barchart.dart';
-import 'package:coo_charts/coo_linechart.dart';
-import 'package:coo_charts/coo_linechart_data_point.dart';
-import 'package:coo_charts/coo_linechart_data_series.dart';
-import 'package:coo_charts/coo_barchart_data_series.dart';
+import 'package:coo_charts/coo_bar_chart.dart';
+import 'package:coo_charts/coo_line_chart.dart';
+import 'package:coo_charts/coo_line_chart_data_point.dart';
+import 'package:coo_charts/coo_line_chart_data_series.dart';
+import 'package:coo_charts/coo_bar_chart_data_series.dart';
 import 'package:coo_charts/data_point_label_pos.enum.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/x_axis_value_type.enum.dart';
@@ -30,8 +30,8 @@ class LineChartDemo extends StatefulWidget {
 }
 
 class _LineChartDemoState extends State<LineChartDemo> {
-  late List<CooLinechartDataSeries> linechartDataSeries = List.empty(growable: true);
-  late List<CooBarchartDataSeries> barchartDataSeries = List.empty(growable: true);
+  late List<CooLineChartDataSeries> linechartDataSeries = List.empty(growable: true);
+  late List<CooBarChartDataSeries> barchartDataSeries = List.empty(growable: true);
 
   ChartColumnBlocks? chartColumnBlocks;
   ChartConfig chartConfig = const ChartConfig();
@@ -309,24 +309,24 @@ class _LineChartDemoState extends State<LineChartDemo> {
     yAxisConfig = yAxisConfig.copyWith(labelCount: 20);
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
 
-    var cooLinechartDataPoints1 = List<CooLinechartDataPoint>.empty(growable: true);
-    var cooLinechartDataPoints2 = List<CooLinechartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints1 = List<CooLineChartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints2 = List<CooLineChartDataPoint>.empty(growable: true);
     var j = 0;
     var k = 10;
     for (int i = 0; i <= 20; i++) {
       if (i % 5 == 1) {
-        cooLinechartDataPoints1.add(CooLinechartDataPoint(label: '-'));
-        cooLinechartDataPoints1.add(CooLinechartDataPoint(label: '-'));
-        cooLinechartDataPoints1.add(CooLinechartDataPoint(label: '-'));
-        cooLinechartDataPoints1.add(CooLinechartDataPoint(label: '-'));
+        cooLinechartDataPoints1.add(CooLineChartDataPoint(label: '-'));
+        cooLinechartDataPoints1.add(CooLineChartDataPoint(label: '-'));
+        cooLinechartDataPoints1.add(CooLineChartDataPoint(label: '-'));
+        cooLinechartDataPoints1.add(CooLineChartDataPoint(label: '-'));
       } else {
-        CooLinechartDataPoint dataPoint = CooLinechartDataPoint(value: j.toDouble());
+        CooLineChartDataPoint dataPoint = CooLineChartDataPoint(value: j.toDouble());
         cooLinechartDataPoints1.add(dataPoint);
-        CooLinechartDataPoint dataPoint2 = CooLinechartDataPoint(value: k.toDouble());
+        CooLineChartDataPoint dataPoint2 = CooLineChartDataPoint(value: k.toDouble());
         cooLinechartDataPoints1.add(dataPoint2);
-        CooLinechartDataPoint dataPoint3 = CooLinechartDataPoint(value: (i + 2).toDouble());
+        CooLineChartDataPoint dataPoint3 = CooLineChartDataPoint(value: (i + 2).toDouble());
         cooLinechartDataPoints2.add(dataPoint3);
-        CooLinechartDataPoint dataPoint4 = CooLinechartDataPoint(value: (i + 1).toDouble());
+        CooLineChartDataPoint dataPoint4 = CooLineChartDataPoint(value: (i + 1).toDouble());
         cooLinechartDataPoints2.add(dataPoint4);
       }
       if (i < 10) {
@@ -339,12 +339,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
     }
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(CooLinechartDataSeries(
+    linechartDataSeries.add(CooLineChartDataSeries(
       dataPoints: cooLinechartDataPoints1,
       label: 'Datenlinie 1',
       showDataLabels: true,
     ));
-    linechartDataSeries.add(CooLinechartDataSeries(
+    linechartDataSeries.add(CooLineChartDataSeries(
       dataPoints: cooLinechartDataPoints2,
       label: 'Datenlinie 2',
       showDataLabels: true,
@@ -355,50 +355,50 @@ class _LineChartDemoState extends State<LineChartDemo> {
     _resetToDefault();
     chartType = CooChartType.line;
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
-    var cooLinechartDataPoints1 = List<CooLinechartDataPoint>.empty(growable: true);
-    var cooLinechartDataPoints2 = List<CooLinechartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints1 = List<CooLineChartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints2 = List<CooLineChartDataPoint>.empty(growable: true);
     var j = -2;
     for (int i = 0; i <= 10; i++) {
-      CooLinechartDataPoint dataPoint = CooLinechartDataPoint(value: i.toDouble());
+      CooLineChartDataPoint dataPoint = CooLineChartDataPoint(value: i.toDouble());
       cooLinechartDataPoints1.add(dataPoint);
 
-      CooLinechartDataPoint dataPoint2 = CooLinechartDataPoint(value: j.toDouble());
+      CooLineChartDataPoint dataPoint2 = CooLineChartDataPoint(value: j.toDouble());
       cooLinechartDataPoints2.add(dataPoint2);
 
       j++;
     }
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints1, label: '0 zu 10'));
-    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints2, label: '-2 zu 8'));
+    linechartDataSeries.add(CooLineChartDataSeries(dataPoints: cooLinechartDataPoints1, label: '0 zu 10'));
+    linechartDataSeries.add(CooLineChartDataSeries(dataPoints: cooLinechartDataPoints2, label: '-2 zu 8'));
   }
 
   _create0To10To0WithNullValuesChartDataPoints() {
     _resetToDefault();
     chartType = CooChartType.line;
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
-    var cooLinechartDataPoints1 = List<CooLinechartDataPoint>.empty(growable: true);
-    var cooLinechartDataPoints2 = List<CooLinechartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints1 = List<CooLineChartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints2 = List<CooLineChartDataPoint>.empty(growable: true);
     var j = -2;
     for (int i = 0; i <= 20; i++) {
       if (i % 3 == 0) {
         // Null Value
-        CooLinechartDataPoint dataPoint = CooLinechartDataPoint(label: '-');
+        CooLineChartDataPoint dataPoint = CooLineChartDataPoint(label: '-');
         cooLinechartDataPoints1.add(dataPoint);
       } else {
-        CooLinechartDataPoint dataPoint = CooLinechartDataPoint(value: i.toDouble());
+        CooLineChartDataPoint dataPoint = CooLineChartDataPoint(value: i.toDouble());
         cooLinechartDataPoints1.add(dataPoint);
       }
 
-      CooLinechartDataPoint dataPoint2 = CooLinechartDataPoint(value: j.toDouble());
+      CooLineChartDataPoint dataPoint2 = CooLineChartDataPoint(value: j.toDouble());
       cooLinechartDataPoints2.add(dataPoint2);
 
       j++;
     }
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints1, label: '0 zu 10'));
-    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints2, label: '-2 zu 8'));
+    linechartDataSeries.add(CooLineChartDataSeries(dataPoints: cooLinechartDataPoints1, label: '0 zu 10'));
+    linechartDataSeries.add(CooLineChartDataSeries(dataPoints: cooLinechartDataPoints2, label: '-2 zu 8'));
   }
 
   _createMinus5To5ValuesChartDataPoints() {
@@ -406,27 +406,27 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartType = CooChartType.line;
     yAxisConfig = yAxisConfig.copyWith(labelCount: 5);
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
-    var cooLinechartDataPoints = List<CooLinechartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints = List<CooLineChartDataPoint>.empty(growable: true);
     for (int i = 5; i >= -5; i--) {
-      CooLinechartDataPoint dataPoint = CooLinechartDataPoint(value: i.toDouble(), label: 'L: ${i.toString()}');
+      CooLineChartDataPoint dataPoint = CooLineChartDataPoint(value: i.toDouble(), label: 'L: ${i.toString()}');
       cooLinechartDataPoints.add(dataPoint);
     }
     linechartDataSeries.clear();
-    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints, label: '5 zu -5'));
+    linechartDataSeries.add(CooLineChartDataSeries(dataPoints: cooLinechartDataPoints, label: '5 zu -5'));
   }
 
   _genrateRandomCooLinechartDataPoints({int count = 30, int maxValue = 100}) {
     _resetToDefault();
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
-    var cooLinechartDataPoints = List<CooLinechartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints = List<CooLineChartDataPoint>.empty(growable: true);
 
     var generatedValues = ChartUtil.generateRandomDataPoints(count: count, maxValue: maxValue);
     for (double value in generatedValues) {
-      CooLinechartDataPoint dataPoint = CooLinechartDataPoint(value: value, label: value.toString());
+      CooLineChartDataPoint dataPoint = CooLineChartDataPoint(value: value, label: value.toString());
       cooLinechartDataPoints.add(dataPoint);
     }
     linechartDataSeries.clear();
-    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints, label: 'Random'));
+    linechartDataSeries.add(CooLineChartDataSeries(dataPoints: cooLinechartDataPoints, label: 'Random'));
   }
 
   /// https://kachelmannwetter.com/de/vorhersage/2874225-mainz/14-tage-trend
@@ -454,92 +454,92 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     barchartDataSeries.clear();
 
-    var sonnenscheindauer = List<CooBarchartDataPoint>.empty(growable: true);
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    var sonnenscheindauer = List<CooBarChartDataPoint>.empty(growable: true);
+    sonnenscheindauer.add(CooBarChartDataPoint(
         value: 0.4,
         minValue: 0,
         maxValue: 1.2,
         time: DateTime(2023, 10, 22),
         columnBackgroundColor: Colors.grey.withOpacity(0.2)));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 03.3,
       minValue: 0.3,
       maxValue: 6.4,
       time: DateTime(2023, 10, 23),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 2,
       minValue: 0,
       maxValue: 5,
       time: DateTime(2023, 10, 24),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 6,
       minValue: 2,
       maxValue: 9,
       time: DateTime(2023, 10, 25),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 3,
       minValue: 1,
       maxValue: 10,
       time: DateTime(2023, 10, 26),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 1,
       minValue: 0.5,
       maxValue: 2,
       time: DateTime(2023, 10, 27),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 2,
       minValue: 1,
       maxValue: 3,
       time: DateTime(2023, 10, 28),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 1,
       minValue: 0,
       maxValue: 3,
       time: DateTime(2023, 10, 29),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 1,
       minValue: 0,
       maxValue: 4,
       time: DateTime(2023, 10, 30),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       minValue: 0,
       maxValue: 1.2,
       time: DateTime(2023, 10, 31),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 1,
       minValue: 0,
       maxValue: 5,
       time: DateTime(2023, 11, 01),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 2,
       minValue: 0,
       maxValue: 6,
       time: DateTime(2023, 11, 02),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 3,
       minValue: 0,
       maxValue: 7,
       time: DateTime(2023, 11, 03),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 4,
       minValue: 0,
       maxValue: 8,
       time: DateTime(2023, 11, 04),
     ));
 
-    CooBarchartDataSeries serie = CooBarchartDataSeries(
+    CooBarChartDataSeries serie = CooBarChartDataSeries(
       dataPoints: sonnenscheindauer,
       barColor: const Color(0xFFfde81a),
       minMaxLineColor: Colors.black,
@@ -600,8 +600,6 @@ class _LineChartDemoState extends State<LineChartDemo> {
     yAxisConfig = yAxisConfig.copyWith(minLabelValue: 0);
     yAxisConfig = yAxisConfig.copyWith(maxLabelValue: 10);
 
-    const colorBar = Color(0xFFfde81a);
-
     chartConfig = chartConfig.copyWith(
       showGridHorizontal: true,
       showGridVertical: true,
@@ -613,65 +611,65 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     barchartDataSeries.clear();
 
-    var sonnenscheindauer = List<CooBarchartDataPoint>.empty(growable: true);
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    var sonnenscheindauer = List<CooBarChartDataPoint>.empty(growable: true);
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 0.5,
       time: DateTime(2023, 10, 22),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 1,
       time: DateTime(2023, 10, 23),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 1.5,
       time: DateTime(2023, 10, 24),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 2,
       time: DateTime(2023, 10, 25),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 2.5,
       time: DateTime(2023, 10, 26),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 3,
       time: DateTime(2023, 10, 27),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 3.5,
       time: DateTime(2023, 10, 28),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 4,
       time: DateTime(2023, 10, 29),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 5,
       time: DateTime(2023, 10, 30),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 6,
       time: DateTime(2023, 10, 31),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 7,
       time: DateTime(2023, 11, 01),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 8,
       time: DateTime(2023, 11, 02),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 9,
       time: DateTime(2023, 11, 03),
     ));
-    sonnenscheindauer.add(CooBarchartDataPoint(
+    sonnenscheindauer.add(CooBarChartDataPoint(
       value: 10,
       time: DateTime(2023, 11, 04),
     ));
 
-    CooBarchartDataSeries serie = CooBarchartDataSeries(
+    CooBarChartDataSeries serie = CooBarChartDataSeries(
       dataPoints: sonnenscheindauer,
       barColor: const Color(0xFFfde81a),
     );
@@ -755,33 +753,33 @@ class _LineChartDemoState extends State<LineChartDemo> {
     );
 
     // Voraussichtliche Tageshöchsttemperatur
-    var hoechstTemperatur = List<CooLinechartDataPoint>.empty(growable: true);
+    var hoechstTemperatur = List<CooLineChartDataPoint>.empty(growable: true);
     hoechstTemperatur
-        .add(CooLinechartDataPoint(value: 14, minValue: 12, maxValue: 14, label: '14°', time: DateTime(2023, 4, 9)));
+        .add(CooLineChartDataPoint(value: 14, minValue: 12, maxValue: 14, label: '14°', time: DateTime(2023, 4, 9)));
     hoechstTemperatur
-        .add(CooLinechartDataPoint(value: 16, minValue: 14, maxValue: 17, label: '16°', time: DateTime(2023, 4, 10)));
+        .add(CooLineChartDataPoint(value: 16, minValue: 14, maxValue: 17, label: '16°', time: DateTime(2023, 4, 10)));
     hoechstTemperatur
-        .add(CooLinechartDataPoint(value: 14, minValue: 12, maxValue: 15, label: '14°', time: DateTime(2023, 4, 11)));
+        .add(CooLineChartDataPoint(value: 14, minValue: 12, maxValue: 15, label: '14°', time: DateTime(2023, 4, 11)));
     hoechstTemperatur
-        .add(CooLinechartDataPoint(value: 12, minValue: 10, maxValue: 16, label: '12°', time: DateTime(2023, 4, 12)));
+        .add(CooLineChartDataPoint(value: 12, minValue: 10, maxValue: 16, label: '12°', time: DateTime(2023, 4, 12)));
     hoechstTemperatur
-        .add(CooLinechartDataPoint(value: 11, minValue: 9, maxValue: 12, label: '11°', time: DateTime(2023, 4, 13)));
+        .add(CooLineChartDataPoint(value: 11, minValue: 9, maxValue: 12, label: '11°', time: DateTime(2023, 4, 13)));
     hoechstTemperatur
-        .add(CooLinechartDataPoint(value: 11, minValue: 9, maxValue: 12, label: '11°', time: DateTime(2023, 4, 14)));
+        .add(CooLineChartDataPoint(value: 11, minValue: 9, maxValue: 12, label: '11°', time: DateTime(2023, 4, 14)));
     hoechstTemperatur
-        .add(CooLinechartDataPoint(value: 13, minValue: 10, maxValue: 15, label: '13°', time: DateTime(2023, 4, 15)));
+        .add(CooLineChartDataPoint(value: 13, minValue: 10, maxValue: 15, label: '13°', time: DateTime(2023, 4, 15)));
     hoechstTemperatur
-        .add(CooLinechartDataPoint(value: 13, minValue: 10, maxValue: 17, label: '13°', time: DateTime(2023, 4, 16)));
+        .add(CooLineChartDataPoint(value: 13, minValue: 10, maxValue: 17, label: '13°', time: DateTime(2023, 4, 16)));
     hoechstTemperatur
-        .add(CooLinechartDataPoint(value: 17, minValue: 11, maxValue: 20, label: '17°', time: DateTime(2023, 4, 17)));
+        .add(CooLineChartDataPoint(value: 17, minValue: 11, maxValue: 20, label: '17°', time: DateTime(2023, 4, 17)));
     hoechstTemperatur
-        .add(CooLinechartDataPoint(value: 16, minValue: 12, maxValue: 21, label: '16°', time: DateTime(2023, 4, 18)));
-    hoechstTemperatur.add(CooLinechartDataPoint(minValue: 12, maxValue: 23, time: DateTime(2023, 4, 19)));
-    hoechstTemperatur.add(CooLinechartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 20)));
-    hoechstTemperatur.add(CooLinechartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 21)));
-    hoechstTemperatur.add(CooLinechartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 22)));
+        .add(CooLineChartDataPoint(value: 16, minValue: 12, maxValue: 21, label: '16°', time: DateTime(2023, 4, 18)));
+    hoechstTemperatur.add(CooLineChartDataPoint(minValue: 12, maxValue: 23, time: DateTime(2023, 4, 19)));
+    hoechstTemperatur.add(CooLineChartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 20)));
+    hoechstTemperatur.add(CooLineChartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 21)));
+    hoechstTemperatur.add(CooLineChartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 22)));
 
-    var linechartHoechstTemperatur = CooLinechartDataSeries(
+    var linechartHoechstTemperatur = CooLineChartDataSeries(
       dataPoints: hoechstTemperatur,
       label: 'Voraussichtliche Tageshöchsttemperatur',
       showMinMaxArea: true,
@@ -794,33 +792,33 @@ class _LineChartDemoState extends State<LineChartDemo> {
     linechartDataSeries.add(linechartHoechstTemperatur);
 
     // Voraussichtliche Tagestiefsttemperatur
-    var tiefstTemperatur = List<CooLinechartDataPoint>.empty(growable: true);
+    var tiefstTemperatur = List<CooLineChartDataPoint>.empty(growable: true);
     tiefstTemperatur
-        .add(CooLinechartDataPoint(value: 3, minValue: 3, maxValue: 6, label: '3', time: DateTime(2023, 4, 9)));
+        .add(CooLineChartDataPoint(value: 3, minValue: 3, maxValue: 6, label: '3', time: DateTime(2023, 4, 9)));
     tiefstTemperatur
-        .add(CooLinechartDataPoint(value: 5, minValue: 2, maxValue: 5, label: '5°', time: DateTime(2023, 4, 10)));
+        .add(CooLineChartDataPoint(value: 5, minValue: 2, maxValue: 5, label: '5°', time: DateTime(2023, 4, 10)));
     tiefstTemperatur
-        .add(CooLinechartDataPoint(value: 10, minValue: 6, maxValue: 11, label: '10°', time: DateTime(2023, 4, 11)));
+        .add(CooLineChartDataPoint(value: 10, minValue: 6, maxValue: 11, label: '10°', time: DateTime(2023, 4, 11)));
     tiefstTemperatur
-        .add(CooLinechartDataPoint(value: 7, minValue: 5, maxValue: 8, label: '7°', time: DateTime(2023, 4, 12)));
+        .add(CooLineChartDataPoint(value: 7, minValue: 5, maxValue: 8, label: '7°', time: DateTime(2023, 4, 12)));
     tiefstTemperatur
-        .add(CooLinechartDataPoint(value: 5, minValue: 2, maxValue: 5.5, label: '5°', time: DateTime(2023, 4, 13)));
+        .add(CooLineChartDataPoint(value: 5, minValue: 2, maxValue: 5.5, label: '5°', time: DateTime(2023, 4, 13)));
     tiefstTemperatur
-        .add(CooLinechartDataPoint(value: 4, minValue: 2, maxValue: 6, label: '4°', time: DateTime(2023, 4, 14)));
+        .add(CooLineChartDataPoint(value: 4, minValue: 2, maxValue: 6, label: '4°', time: DateTime(2023, 4, 14)));
     tiefstTemperatur
-        .add(CooLinechartDataPoint(value: 6, minValue: 3, maxValue: 10, label: '6°', time: DateTime(2023, 4, 15)));
+        .add(CooLineChartDataPoint(value: 6, minValue: 3, maxValue: 10, label: '6°', time: DateTime(2023, 4, 15)));
     tiefstTemperatur
-        .add(CooLinechartDataPoint(value: 7, minValue: 3, maxValue: 11, label: '7°', time: DateTime(2023, 4, 16)));
+        .add(CooLineChartDataPoint(value: 7, minValue: 3, maxValue: 11, label: '7°', time: DateTime(2023, 4, 16)));
     tiefstTemperatur
-        .add(CooLinechartDataPoint(value: 8, minValue: 3, maxValue: 10, label: '8°', time: DateTime(2023, 4, 17)));
+        .add(CooLineChartDataPoint(value: 8, minValue: 3, maxValue: 10, label: '8°', time: DateTime(2023, 4, 17)));
     tiefstTemperatur
-        .add(CooLinechartDataPoint(value: 7, minValue: 3, maxValue: 11, label: '7°', time: DateTime(2023, 4, 18)));
-    tiefstTemperatur.add(CooLinechartDataPoint(minValue: 5, maxValue: 12, time: DateTime(2023, 4, 19)));
-    tiefstTemperatur.add(CooLinechartDataPoint(minValue: 5, maxValue: 13, time: DateTime(2023, 4, 20)));
-    tiefstTemperatur.add(CooLinechartDataPoint(minValue: 5, maxValue: 13, time: DateTime(2023, 4, 21)));
-    tiefstTemperatur.add(CooLinechartDataPoint(minValue: 4, maxValue: 12, time: DateTime(2023, 4, 22)));
+        .add(CooLineChartDataPoint(value: 7, minValue: 3, maxValue: 11, label: '7°', time: DateTime(2023, 4, 18)));
+    tiefstTemperatur.add(CooLineChartDataPoint(minValue: 5, maxValue: 12, time: DateTime(2023, 4, 19)));
+    tiefstTemperatur.add(CooLineChartDataPoint(minValue: 5, maxValue: 13, time: DateTime(2023, 4, 20)));
+    tiefstTemperatur.add(CooLineChartDataPoint(minValue: 5, maxValue: 13, time: DateTime(2023, 4, 21)));
+    tiefstTemperatur.add(CooLineChartDataPoint(minValue: 4, maxValue: 12, time: DateTime(2023, 4, 22)));
 
-    var dataSeriesTiefsttemperatur = CooLinechartDataSeries(
+    var dataSeriesTiefsttemperatur = CooLineChartDataSeries(
       dataPoints: tiefstTemperatur,
       label: 'Voraussichtliche Tagestiefsttemperatur',
       showMinMaxArea: true,
@@ -847,93 +845,93 @@ class _LineChartDemoState extends State<LineChartDemo> {
       bottomDateFormat: 'E',
       showTopLabels: true,
     );
-    var cooLinechartDataPoints = List<CooLinechartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints = List<CooLineChartDataPoint>.empty(growable: true);
 
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 3.9, time: DateTime(2023, 4, 9, 7, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 4.7, time: DateTime(2023, 4, 9, 8, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 6.1, time: DateTime(2023, 4, 9, 9, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 7.6, time: DateTime(2023, 4, 9, 10, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 9.1, time: DateTime(2023, 4, 9, 11, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.5, time: DateTime(2023, 4, 9, 12, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.6, time: DateTime(2023, 4, 9, 13, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11, time: DateTime(2023, 4, 9, 14, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.3, time: DateTime(2023, 4, 9, 15, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.8, time: DateTime(2023, 4, 9, 16, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 12.2, time: DateTime(2023, 4, 9, 17, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 12.0, time: DateTime(2023, 4, 9, 18, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.3, time: DateTime(2023, 4, 9, 19, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 9.8, time: DateTime(2023, 4, 9, 20, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 3.9, time: DateTime(2023, 4, 9, 7, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 4.7, time: DateTime(2023, 4, 9, 8, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 6.1, time: DateTime(2023, 4, 9, 9, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 7.6, time: DateTime(2023, 4, 9, 10, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 9.1, time: DateTime(2023, 4, 9, 11, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 10.5, time: DateTime(2023, 4, 9, 12, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 10.6, time: DateTime(2023, 4, 9, 13, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 11, time: DateTime(2023, 4, 9, 14, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 11.3, time: DateTime(2023, 4, 9, 15, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 11.8, time: DateTime(2023, 4, 9, 16, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 12.2, time: DateTime(2023, 4, 9, 17, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 12.0, time: DateTime(2023, 4, 9, 18, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 11.3, time: DateTime(2023, 4, 9, 19, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 9.8, time: DateTime(2023, 4, 9, 20, 0)));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 7.6, time: DateTime(2023, 4, 9, 21, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 7.6, time: DateTime(2023, 4, 9, 21, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 6.3, time: DateTime(2023, 4, 9, 22, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 6.3, time: DateTime(2023, 4, 9, 22, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 5.6, time: DateTime(2023, 4, 9, 23, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 5.6, time: DateTime(2023, 4, 9, 23, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 5.4, time: DateTime(2023, 4, 10, 0, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 5.4, time: DateTime(2023, 4, 10, 0, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 5.1, time: DateTime(2023, 4, 10, 1, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 5.1, time: DateTime(2023, 4, 10, 1, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 4.2, time: DateTime(2023, 4, 10, 2, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 4.2, time: DateTime(2023, 4, 10, 2, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 3.3, time: DateTime(2023, 4, 10, 3, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 3.3, time: DateTime(2023, 4, 10, 3, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 3.2, time: DateTime(2023, 4, 10, 4, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 3.2, time: DateTime(2023, 4, 10, 4, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 2.4, time: DateTime(2023, 4, 10, 5, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 2.4, time: DateTime(2023, 4, 10, 5, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 2.3, time: DateTime(2023, 4, 10, 6, 0), columnBackgroundColor: Colors.grey));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 2.1, time: DateTime(2023, 4, 10, 7, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 3.6, time: DateTime(2023, 4, 10, 8, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 5.9, time: DateTime(2023, 4, 10, 9, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.1, time: DateTime(2023, 4, 10, 10, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.5, time: DateTime(2023, 4, 10, 11, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 13.5, time: DateTime(2023, 4, 10, 12, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 15, time: DateTime(2023, 4, 10, 13, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 14, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 16, time: DateTime(2023, 4, 10, 15, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 16.9, time: DateTime(2023, 4, 10, 16, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 17, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 18, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 14.9, time: DateTime(2023, 4, 10, 19, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 14.1, time: DateTime(2023, 4, 10, 20, 0)));
+        .add(CooLineChartDataPoint(value: 2.3, time: DateTime(2023, 4, 10, 6, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 2.1, time: DateTime(2023, 4, 10, 7, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 3.6, time: DateTime(2023, 4, 10, 8, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 5.9, time: DateTime(2023, 4, 10, 9, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 10.1, time: DateTime(2023, 4, 10, 10, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 11.5, time: DateTime(2023, 4, 10, 11, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 13.5, time: DateTime(2023, 4, 10, 12, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 15, time: DateTime(2023, 4, 10, 13, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 14, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 16, time: DateTime(2023, 4, 10, 15, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 16.9, time: DateTime(2023, 4, 10, 16, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 17, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 18, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 14.9, time: DateTime(2023, 4, 10, 19, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 14.1, time: DateTime(2023, 4, 10, 20, 0)));
     cooLinechartDataPoints.add(
-        CooLinechartDataPoint(value: 11.8, time: DateTime(2023, 4, 10, 21, 0), columnBackgroundColor: Colors.grey));
+        CooLineChartDataPoint(value: 11.8, time: DateTime(2023, 4, 10, 21, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints.add(
-        CooLinechartDataPoint(value: 11.1, time: DateTime(2023, 4, 10, 22, 0), columnBackgroundColor: Colors.grey));
+        CooLineChartDataPoint(value: 11.1, time: DateTime(2023, 4, 10, 22, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints.add(
-        CooLinechartDataPoint(value: 11.4, time: DateTime(2023, 4, 10, 23, 0), columnBackgroundColor: Colors.grey));
+        CooLineChartDataPoint(value: 11.4, time: DateTime(2023, 4, 10, 23, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 11.0, time: DateTime(2023, 4, 11, 0, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 11.0, time: DateTime(2023, 4, 11, 0, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 10.6, time: DateTime(2023, 4, 11, 1, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 10.6, time: DateTime(2023, 4, 11, 1, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 10.2, time: DateTime(2023, 4, 11, 2, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 10.2, time: DateTime(2023, 4, 11, 2, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 8.2, time: DateTime(2023, 4, 11, 3, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 8.2, time: DateTime(2023, 4, 11, 3, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 8.5, time: DateTime(2023, 4, 11, 4, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 8.5, time: DateTime(2023, 4, 11, 4, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 6.9, time: DateTime(2023, 4, 11, 5, 0), columnBackgroundColor: Colors.grey));
+        .add(CooLineChartDataPoint(value: 6.9, time: DateTime(2023, 4, 11, 5, 0), columnBackgroundColor: Colors.grey));
     cooLinechartDataPoints
-        .add(CooLinechartDataPoint(value: 5.9, time: DateTime(2023, 4, 11, 6, 0), columnBackgroundColor: Colors.grey));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 6.0, time: DateTime(2023, 4, 11, 7, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 6.8, time: DateTime(2023, 4, 11, 8, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 8.1, time: DateTime(2023, 4, 11, 9, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 8.9, time: DateTime(2023, 4, 11, 10, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 9.5, time: DateTime(2023, 4, 11, 11, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 9.7, time: DateTime(2023, 4, 11, 12, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.6, time: DateTime(2023, 4, 11, 13, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.8, time: DateTime(2023, 4, 11, 14, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.9, time: DateTime(2023, 4, 11, 15, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.9, time: DateTime(2023, 4, 11, 16, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 12.4, time: DateTime(2023, 4, 11, 17, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 12.4, time: DateTime(2023, 4, 11, 18, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 12.2, time: DateTime(2023, 4, 11, 19, 0)));
-    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.2, time: DateTime(2023, 4, 11, 20, 0)));
+        .add(CooLineChartDataPoint(value: 5.9, time: DateTime(2023, 4, 11, 6, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 6.0, time: DateTime(2023, 4, 11, 7, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 6.8, time: DateTime(2023, 4, 11, 8, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 8.1, time: DateTime(2023, 4, 11, 9, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 8.9, time: DateTime(2023, 4, 11, 10, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 9.5, time: DateTime(2023, 4, 11, 11, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 9.7, time: DateTime(2023, 4, 11, 12, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 10.6, time: DateTime(2023, 4, 11, 13, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 10.8, time: DateTime(2023, 4, 11, 14, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 10.9, time: DateTime(2023, 4, 11, 15, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 11.9, time: DateTime(2023, 4, 11, 16, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 12.4, time: DateTime(2023, 4, 11, 17, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 12.4, time: DateTime(2023, 4, 11, 18, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 12.2, time: DateTime(2023, 4, 11, 19, 0)));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 11.2, time: DateTime(2023, 4, 11, 20, 0)));
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(CooLinechartDataSeries(
+    linechartDataSeries.add(CooLineChartDataSeries(
       dataPoints: cooLinechartDataPoints,
       label: 'Temperatur',
       showDataLabels: true,

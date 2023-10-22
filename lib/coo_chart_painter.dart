@@ -2,7 +2,6 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 
-import 'package:collection/collection.dart';
 import 'package:coo_charts/chart_column_block_config.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_padding.enum.dart';
@@ -15,6 +14,7 @@ import 'package:coo_charts/coo_chart_type.enum.dart';
 import 'package:coo_charts/coo_line_chart_data_point.dart';
 import 'package:coo_charts/coo_line_chart_data_series.dart';
 import 'package:coo_charts/data_point_label_pos.enum.dart';
+import 'package:coo_charts/iterable.extension.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/x_axis_value_type.enum.dart';
 import 'package:coo_charts/y_axis_config.dart';
@@ -552,7 +552,6 @@ class CooChartPainter extends CustomPainter {
         ..color = minMaxRangeLineColor
         ..strokeWidth = 1;
 
-      dataPointsLoop:
       for (var i = 0; i < dataSeriesNormalizedValues.length; i++) {
         // Lables für den späteren plotten parsen
         CooBarChartDataPoint dataPoint = localLinechartDataSeries.dataPoints[i];

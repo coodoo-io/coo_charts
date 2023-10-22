@@ -1,5 +1,5 @@
 name: coo_charts
-description: A new Flutter package project.
+description: A flutter charts project for highly configurable professional charts.
 version: 0.0.1+2
 homepage: "https://github.com/coodoo-io/coo_charts"
 
@@ -13,7 +13,6 @@ dependencies:
   intl: ^0.18.1
   flutter_svg: ^2.0.7
   image: ^4.1.3
-  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:
