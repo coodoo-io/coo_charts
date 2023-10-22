@@ -859,9 +859,10 @@ class CooChartPainter extends CustomPainter {
             onLineChartDataPointTabCallback!(i, selectedDataPoints);
           }
           if (chartType == CooChartType.bar && onBarChartDataPointTabCallback != null) {
-            var selectedDataPoints = barChartDataPointsByColumnIndex[i];
-            selectedDataPoints ??= List.empty(growable: false);
-            onBarChartDataPointTabCallback!(i, selectedDataPoints);
+            final selectedDataPoints = barChartDataPointsByColumnIndex[i] ?? const [];
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              onBarChartDataPointTabCallback!(i, selectedDataPoints);
+            });
           }
         }
       }
