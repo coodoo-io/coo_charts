@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-class LineChartDataPoint<T> {
-  LineChartDataPoint({
+class CooLineChartDataPoint<T> {
+  CooLineChartDataPoint({
     this.value, // Wert des Datenpunkts
     this.minValue, // kleinster Wert dieses Punktes
     this.maxValue, // größter Wert dieses Punktes

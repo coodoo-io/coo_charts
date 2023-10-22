@@ -2,11 +2,18 @@ import 'package:coo_charts/chart_column_block_config.dart';
 import 'package:coo_charts/chart_column_block_config_image.dart';
 import 'package:coo_charts/chart_column_block_data.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
+import 'package:coo_charts/chart_config.dart';
 import 'package:coo_charts/chart_util.dart';
-import 'package:coo_charts/linechart_data_point.dart';
-import 'package:coo_charts/linechart_data_serie.dart';
-import 'package:coo_charts/linechart_widget.dart';
+import 'package:coo_charts/coo_barchart_data_point.dart';
+import 'package:coo_charts/coo_chart_type.enum.dart';
+import 'package:coo_charts/coo_barchart.dart';
+import 'package:coo_charts/coo_linechart.dart';
+import 'package:coo_charts/coo_linechart_data_point.dart';
+import 'package:coo_charts/coo_linechart_data_series.dart';
+import 'package:coo_charts/coo_barchart_data_series.dart';
+import 'package:coo_charts/data_point_label_pos.enum.dart';
 import 'package:coo_charts/x_axis_config.dart';
+import 'package:coo_charts/x_axis_value_type.enum.dart';
 import 'package:coo_charts/y_axis_config.dart';
 import 'package:flutter/material.dart';
 
@@ -23,53 +30,37 @@ class LineChartDemo extends StatefulWidget {
 }
 
 class _LineChartDemoState extends State<LineChartDemo> {
-  late List<LinechartDataSeries> linechartDataSeries = List.empty(growable: true);
+  late List<CooLinechartDataSeries> linechartDataSeries = List.empty(growable: true);
+  late List<CooBarchartDataSeries> barchartDataSeries = List.empty(growable: true);
+
   ChartColumnBlocks? chartColumnBlocks;
+  ChartConfig chartConfig = const ChartConfig();
   double columnBottomDatasHeight = 40; // wie hoch soll die Column Legend sein, sofern sie übergeben wird?
-  bool curvedLine = false; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
-  bool crosshair = false; // Soll ein Fadenkreuz angezeigt werden?
-  bool showGridHorizontal = true; // if true, grid horizontal lines are painted
-  bool showGridVertical = true; // if true, grid vertical lines are painted
-  bool showDataPoints = true; // Sollen die Punkte auf der Kurve angezeigt werden?
-  /// Sollen die data labels direkt auf dem Chart gezeichnet werden?
-  bool showDataLabels = false;
-  bool showDataLine = true; // Soll der path auf der Kurve angezeigt werden?
-  bool highlightMouseColumn = true; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
-  bool highlightPoints = true; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
-  bool highlightPointsVerticalLine =
-      true; // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
-  bool highlightPointsHorizontalLine =
-      false; // Zeichnet eine horizontale Line über den Datenpunkt wenn die Maus in der Nähe ist.
-
-  /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
-  bool centerDataPointBetweenVerticalGrid = true;
-
-  /// gezeichnet. Es startet dann unten auf der Base-Line mit dem niedrigsten Wert und endet Oben mit dem Max-Wert.
   bool calcYAxisValuePadding = true;
 
-  double? yAxisMinLabelValue;
-  double? yAxisMaxLabelValue;
-  int yAxisLabelCount = 5;
+  var xAxisConfig = const XAxisConfig();
+  var yAxisConfig = const YAxisConfig();
+
+  bool chartBackgroundColorBlack = false;
+
+  CooChartType chartType = CooChartType.bar;
+
+  // TMP Variablen
+  bool showDataPoints = false;
+  bool showDataLabels = false;
+  bool showDataLine = false;
 
   /// X-Achse Config
-  int xAxisStartNumber = 0;
-  XAxisValueType xAxisValueType = XAxisValueType.number; // Konfiguriert den X-Achsen Wert (Zahlen oder Datum usw.)
-  String xAxisBottomDateFormat = 'dd.MM';
-
-  bool xAxisShowTopLabels = false;
-  bool xAxisShowBottomLabels = true;
-
-  String? yAxisLabelPostfix;
-  String? xAxisLabelTopPostfix;
-  String? xAxisLabelBottomPostfix;
 
   @override
   initState() {
     super.initState();
+    // _generateKachelmann14TageWetterTrend();
+    _generateKachelmannSonnenscheindauerTrend();
+    // _generateBarchart1Bis10();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
-    // _genrateRandomLineChartDataPoints();
-    _generateKachelmann14TageWetterTrend();
+    // _genrateRandomCooLinechartDataPoints();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
   }
@@ -95,39 +86,28 @@ class _LineChartDemoState extends State<LineChartDemo> {
               //     height: 500,
               //   ),
               // ),
-              SizedBox(
-                height: 500,
-                child: LineChartWidget(
-                  dataSeries: linechartDataSeries,
-                  columnBlocks: chartColumnBlocks,
-                  curvedLine: curvedLine,
-                  crosshair: crosshair,
-                  showGridHorizontal: showGridHorizontal,
-                  showGridVertical: showGridVertical,
-                  showDataPath: showDataLine,
-                  highlightMouseColumn: highlightMouseColumn,
-                  highlightPoints: highlightPoints,
-                  highlightPointsHorizontalLine: highlightPointsHorizontalLine,
-                  highlightPointsVerticalLine: highlightPointsVerticalLine,
-                  centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
-                  onDataPointTab: (index, linechartDataPoints) => print('Tab $index - ${linechartDataPoints[0].value}'),
-                  xAxisConfig: XAxisConfig(
-                    startNumber: xAxisStartNumber,
-                    valueType: xAxisValueType,
-                    showTopLabels: xAxisShowTopLabels,
-                    showBottomLabels: xAxisShowBottomLabels,
-                    bottomDateFormat: xAxisBottomDateFormat,
-                    labelBottomPostfix: xAxisLabelBottomPostfix,
-                    labelTopPostfix: xAxisLabelTopPostfix,
-                  ),
-                  yAxisConfig: YAxisConfig(
-                    addValuePadding: calcYAxisValuePadding,
-                    minLabelValue: yAxisMinLabelValue,
-                    maxLabelValue: yAxisMaxLabelValue,
-                    labelCount: yAxisLabelCount,
-                    labelPostfix: yAxisLabelPostfix,
-                  ),
-                ),
+              Container(
+                color: chartBackgroundColorBlack ? Colors.black : Colors.white,
+                child: SizedBox(
+                    height: 500,
+                    child: switch (chartType) {
+                      CooChartType.line => CooLineChart(
+                          dataSeries: linechartDataSeries,
+                          columnBlocks: chartColumnBlocks,
+                          chartConfig: chartConfig,
+                          onDataPointTab: (index, cooLinechartDataPoints) =>
+                              print('Tab $index - ${cooLinechartDataPoints[0].value}'),
+                          xAxisConfig: xAxisConfig,
+                          yAxisConfig: yAxisConfig,
+                        ),
+                      CooChartType.bar => CooBarChart(
+                          dataSeries: barchartDataSeries,
+                          columnBlocks: chartColumnBlocks,
+                          chartConfig: chartConfig,
+                          xAxisConfig: xAxisConfig,
+                          yAxisConfig: yAxisConfig,
+                        ),
+                    }),
               ),
               // Container(
               //   color: Colors.red,
@@ -144,7 +124,15 @@ class _LineChartDemoState extends State<LineChartDemo> {
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: () => setState(() => _genrateRandomLineChartDataPoints()),
+                    onPressed: () => setState(() => _generateBarchart1Bis10()),
+                    child: const Text('Barchart 1-10'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => _generateKachelmannSonnenscheindauerTrend()),
+                    child: const Text('Kachelmann Sonnenschein'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
                     child: const Text('Random Daten generieren'),
                   ),
                   ElevatedButton(
@@ -176,16 +164,19 @@ class _LineChartDemoState extends State<LineChartDemo> {
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: () => setState(() => showGridHorizontal = !showGridHorizontal),
-                    child: Text('Grid-Horizontal ${showGridHorizontal ? '✅' : '❌'}'),
+                    onPressed: () => setState(
+                        () => chartConfig = chartConfig.copyWith(showGridHorizontal: !chartConfig.showGridHorizontal)),
+                    child: Text('Grid-Horizontal ${chartConfig.showGridHorizontal ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => showGridVertical = !showGridVertical),
-                    child: Text('Grid-Vertical ${showGridVertical ? '✅' : '❌'}'),
+                    onPressed: () => setState(
+                        () => chartConfig = chartConfig.copyWith(showGridVertical: !chartConfig.showGridVertical)),
+                    child: Text('Grid-Vertical ${chartConfig.showGridVertical ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => curvedLine = !curvedLine),
-                    child: Text('Curved ${curvedLine ? '✅' : '❌'}'),
+                    onPressed: () =>
+                        setState(() => chartConfig = chartConfig.copyWith(curvedLine: !chartConfig.curvedLine)),
+                    child: Text('Curved ${chartConfig.curvedLine ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
                     onPressed: () => setState(() {
@@ -218,42 +209,60 @@ class _LineChartDemoState extends State<LineChartDemo> {
                     child: Text('Show Data Path ${showDataLine ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => crosshair = !crosshair),
-                    child: Text('Crosshair ${crosshair ? '✅' : '❌'}'),
+                    onPressed: () =>
+                        setState(() => chartConfig = chartConfig.copyWith(crosshair: !chartConfig.crosshair)),
+                    child: Text('Crosshair ${chartConfig.crosshair ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => xAxisShowTopLabels = !xAxisShowTopLabels),
-                    child: Text('Top Labels ${xAxisShowTopLabels ? '✅' : '❌'}'),
+                    onPressed: () =>
+                        setState(() => xAxisConfig = xAxisConfig.copyWith(showTopLabels: !xAxisConfig.showTopLabels)),
+                    child: Text('Top Labels ${xAxisConfig.showTopLabels ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => xAxisShowBottomLabels = !xAxisShowBottomLabels),
-                    child: Text('Bottom Labels ${xAxisShowBottomLabels ? '✅' : '❌'}'),
+                    onPressed: () => setState(
+                        () => xAxisConfig = xAxisConfig.copyWith(showBottomLabels: !xAxisConfig.showBottomLabels)),
+                    child: Text('Bottom Labels ${xAxisConfig.showBottomLabels ? '✅' : '❌'}'),
                   ),
                 ],
               ),
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: () => setState(() => highlightMouseColumn = !highlightMouseColumn),
-                    child: Text('Highlight Column ${highlightMouseColumn ? '✅' : '❌'}'),
+                    onPressed: () => setState(() =>
+                        chartConfig = chartConfig.copyWith(highlightMouseColumn: !chartConfig.highlightMouseColumn)),
+                    child: Text('Highlight Column ${chartConfig.highlightMouseColumn ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => highlightPoints = !highlightPoints),
-                    child: Text('Highlight points ${highlightPoints ? '✅' : '❌'}'),
+                    onPressed: () => setState(
+                        () => chartConfig = chartConfig.copyWith(highlightPoints: !chartConfig.highlightPoints)),
+                    child: Text('Highlight points ${chartConfig.highlightPoints ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => highlightPointsVerticalLine = !highlightPointsVerticalLine),
-                    child: Text('Highlight points vertical line ${highlightPointsVerticalLine ? '✅' : '❌'}'),
+                    onPressed: () => setState(() => chartConfig =
+                        chartConfig.copyWith(highlightPointsVerticalLine: !chartConfig.highlightPointsVerticalLine)),
+                    child:
+                        Text('Highlight points vertical line ${chartConfig.highlightPointsVerticalLine ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => highlightPointsHorizontalLine = !highlightPointsHorizontalLine),
-                    child: Text('Highlight points horizontal line ${highlightPointsHorizontalLine ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () =>
-                        setState(() => centerDataPointBetweenVerticalGrid = !centerDataPointBetweenVerticalGrid),
+                    onPressed: () {
+                      chartConfig = chartConfig.copyWith(
+                          highlightPointsHorizontalLine: !chartConfig.highlightPointsHorizontalLine);
+                      setState(() {});
+                    },
                     child: Text(
-                        'Center DataPoints between vertical Grid ${centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
+                        'Highlight points horizontal line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}'),
+                  ),
+                  // ElevatedButton(
+                  //   onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
+                  //       highlightPointsHorizontalLine: !chartConfig.highlightPointsHorizontalLine)),
+                  //   child: Text(
+                  //       'Highlight points horizontal line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}'),
+                  // ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
+                        centerDataPointBetweenVerticalGrid: !chartConfig.centerDataPointBetweenVerticalGrid)),
+                    child: Text(
+                        'Center DataPoints between vertical Grid ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
                   ),
                   ElevatedButton(
                     onPressed: () => setState(() => calcYAxisValuePadding = !calcYAxisValuePadding),
@@ -263,13 +272,19 @@ class _LineChartDemoState extends State<LineChartDemo> {
               ),
               Row(
                 children: [
-                  Text('Anzahl Labels Y-Achse: $yAxisLabelCount '),
                   ElevatedButton(
-                    onPressed: () => setState(() => yAxisLabelCount -= 1),
+                    onPressed: () => setState(() => chartBackgroundColorBlack = !chartBackgroundColorBlack),
+                    child: Text('Schwarzer Hintergrund ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
+                  ),
+                  Text('Anzahl Labels Y-Achse: ${yAxisConfig.labelCount} '),
+                  ElevatedButton(
+                    onPressed: () =>
+                        setState(() => yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisConfig.labelCount - 1)),
                     child: const Text('-'),
                   ),
                   ElevatedButton(
-                    onPressed: () => setState(() => yAxisLabelCount += 1),
+                    onPressed: () =>
+                        setState(() => yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisConfig.labelCount + 1)),
                     child: const Text('+'),
                   ),
                 ],
@@ -282,37 +297,37 @@ class _LineChartDemoState extends State<LineChartDemo> {
   }
 
   _resetToDefault() {
-    yAxisMinLabelValue = null;
-    yAxisMaxLabelValue = null;
-    yAxisLabelCount = 5;
+    yAxisConfig = const YAxisConfig();
+    xAxisConfig = const XAxisConfig();
 
     chartColumnBlocks = null;
   }
 
   _create0To10To0ValuesChartDataPoints() {
     _resetToDefault();
-    yAxisLabelCount = 20;
+    chartType = CooChartType.line;
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 20);
+    xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
 
-    xAxisValueType = XAxisValueType.number;
-    var linechartDataPoints1 = List<LineChartDataPoint>.empty(growable: true);
-    var linechartDataPoints2 = List<LineChartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints1 = List<CooLinechartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints2 = List<CooLinechartDataPoint>.empty(growable: true);
     var j = 0;
     var k = 10;
     for (int i = 0; i <= 20; i++) {
       if (i % 5 == 1) {
-        linechartDataPoints1.add(LineChartDataPoint(label: '-'));
-        linechartDataPoints1.add(LineChartDataPoint(label: '-'));
-        linechartDataPoints2.add(LineChartDataPoint(label: '-'));
-        linechartDataPoints2.add(LineChartDataPoint(label: '-'));
+        cooLinechartDataPoints1.add(CooLinechartDataPoint(label: '-'));
+        cooLinechartDataPoints1.add(CooLinechartDataPoint(label: '-'));
+        cooLinechartDataPoints1.add(CooLinechartDataPoint(label: '-'));
+        cooLinechartDataPoints1.add(CooLinechartDataPoint(label: '-'));
       } else {
-        LineChartDataPoint dataPoint = LineChartDataPoint(value: j.toDouble());
-        linechartDataPoints1.add(dataPoint);
-        LineChartDataPoint dataPoint2 = LineChartDataPoint(value: k.toDouble());
-        linechartDataPoints1.add(dataPoint2);
-        LineChartDataPoint dataPoint3 = LineChartDataPoint(value: (i + 2).toDouble());
-        linechartDataPoints2.add(dataPoint3);
-        LineChartDataPoint dataPoint4 = LineChartDataPoint(value: (i + 1).toDouble());
-        linechartDataPoints2.add(dataPoint4);
+        CooLinechartDataPoint dataPoint = CooLinechartDataPoint(value: j.toDouble());
+        cooLinechartDataPoints1.add(dataPoint);
+        CooLinechartDataPoint dataPoint2 = CooLinechartDataPoint(value: k.toDouble());
+        cooLinechartDataPoints1.add(dataPoint2);
+        CooLinechartDataPoint dataPoint3 = CooLinechartDataPoint(value: (i + 2).toDouble());
+        cooLinechartDataPoints2.add(dataPoint3);
+        CooLinechartDataPoint dataPoint4 = CooLinechartDataPoint(value: (i + 1).toDouble());
+        cooLinechartDataPoints2.add(dataPoint4);
       }
       if (i < 10) {
         j++;
@@ -324,13 +339,13 @@ class _LineChartDemoState extends State<LineChartDemo> {
     }
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(
-      dataPoints: linechartDataPoints1,
+    linechartDataSeries.add(CooLinechartDataSeries(
+      dataPoints: cooLinechartDataPoints1,
       label: 'Datenlinie 1',
       showDataLabels: true,
     ));
-    linechartDataSeries.add(LinechartDataSeries(
-      dataPoints: linechartDataPoints2,
+    linechartDataSeries.add(CooLinechartDataSeries(
+      dataPoints: cooLinechartDataPoints2,
       label: 'Datenlinie 2',
       showDataLabels: true,
     ));
@@ -338,77 +353,329 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   _create0To10ValuesChartDataPoints() {
     _resetToDefault();
-    xAxisValueType = XAxisValueType.number;
-    var linechartDataPoints1 = List<LineChartDataPoint>.empty(growable: true);
-    var linechartDataPoints2 = List<LineChartDataPoint>.empty(growable: true);
+    chartType = CooChartType.line;
+    xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
+    var cooLinechartDataPoints1 = List<CooLinechartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints2 = List<CooLinechartDataPoint>.empty(growable: true);
     var j = -2;
     for (int i = 0; i <= 10; i++) {
-      LineChartDataPoint dataPoint = LineChartDataPoint(value: i.toDouble());
-      linechartDataPoints1.add(dataPoint);
+      CooLinechartDataPoint dataPoint = CooLinechartDataPoint(value: i.toDouble());
+      cooLinechartDataPoints1.add(dataPoint);
 
-      LineChartDataPoint dataPoint2 = LineChartDataPoint(value: j.toDouble());
-      linechartDataPoints2.add(dataPoint2);
+      CooLinechartDataPoint dataPoint2 = CooLinechartDataPoint(value: j.toDouble());
+      cooLinechartDataPoints2.add(dataPoint2);
 
       j++;
     }
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints1, label: '0 zu 10'));
-    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints2, label: '-2 zu 8'));
+    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints1, label: '0 zu 10'));
+    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints2, label: '-2 zu 8'));
   }
 
   _create0To10To0WithNullValuesChartDataPoints() {
     _resetToDefault();
-    xAxisValueType = XAxisValueType.number;
-    var linechartDataPoints1 = List<LineChartDataPoint>.empty(growable: true);
-    var linechartDataPoints2 = List<LineChartDataPoint>.empty(growable: true);
+    chartType = CooChartType.line;
+    xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
+    var cooLinechartDataPoints1 = List<CooLinechartDataPoint>.empty(growable: true);
+    var cooLinechartDataPoints2 = List<CooLinechartDataPoint>.empty(growable: true);
     var j = -2;
     for (int i = 0; i <= 20; i++) {
       if (i % 3 == 0) {
         // Null Value
-        LineChartDataPoint dataPoint = LineChartDataPoint(label: '-');
-        linechartDataPoints1.add(dataPoint);
+        CooLinechartDataPoint dataPoint = CooLinechartDataPoint(label: '-');
+        cooLinechartDataPoints1.add(dataPoint);
       } else {
-        LineChartDataPoint dataPoint = LineChartDataPoint(value: i.toDouble());
-        linechartDataPoints1.add(dataPoint);
+        CooLinechartDataPoint dataPoint = CooLinechartDataPoint(value: i.toDouble());
+        cooLinechartDataPoints1.add(dataPoint);
       }
 
-      LineChartDataPoint dataPoint2 = LineChartDataPoint(value: j.toDouble());
-      linechartDataPoints2.add(dataPoint2);
+      CooLinechartDataPoint dataPoint2 = CooLinechartDataPoint(value: j.toDouble());
+      cooLinechartDataPoints2.add(dataPoint2);
 
       j++;
     }
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints1, label: '0 zu 10'));
-    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints2, label: '-2 zu 8'));
+    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints1, label: '0 zu 10'));
+    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints2, label: '-2 zu 8'));
   }
 
   _createMinus5To5ValuesChartDataPoints() {
     _resetToDefault();
-    yAxisLabelCount = 5;
-    xAxisValueType = XAxisValueType.number;
-    var linechartDataPoints = List<LineChartDataPoint>.empty(growable: true);
+    chartType = CooChartType.line;
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 5);
+    xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
+    var cooLinechartDataPoints = List<CooLinechartDataPoint>.empty(growable: true);
     for (int i = 5; i >= -5; i--) {
-      LineChartDataPoint dataPoint = LineChartDataPoint(value: i.toDouble(), label: 'L: ${i.toString()}');
-      linechartDataPoints.add(dataPoint);
+      CooLinechartDataPoint dataPoint = CooLinechartDataPoint(value: i.toDouble(), label: 'L: ${i.toString()}');
+      cooLinechartDataPoints.add(dataPoint);
     }
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints, label: '5 zu -5'));
+    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints, label: '5 zu -5'));
   }
 
-  _genrateRandomLineChartDataPoints({int count = 30, int maxValue = 100}) {
+  _genrateRandomCooLinechartDataPoints({int count = 30, int maxValue = 100}) {
     _resetToDefault();
-    xAxisValueType = XAxisValueType.number;
-    var linechartDataPoints = List<LineChartDataPoint>.empty(growable: true);
+    xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
+    var cooLinechartDataPoints = List<CooLinechartDataPoint>.empty(growable: true);
 
     var generatedValues = ChartUtil.generateRandomDataPoints(count: count, maxValue: maxValue);
     for (double value in generatedValues) {
-      LineChartDataPoint dataPoint = LineChartDataPoint(value: value, label: value.toString());
-      linechartDataPoints.add(dataPoint);
+      CooLinechartDataPoint dataPoint = CooLinechartDataPoint(value: value, label: value.toString());
+      cooLinechartDataPoints.add(dataPoint);
     }
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(dataPoints: linechartDataPoints, label: 'Random'));
+    linechartDataSeries.add(CooLinechartDataSeries(dataPoints: cooLinechartDataPoints, label: 'Random'));
+  }
+
+  /// https://kachelmannwetter.com/de/vorhersage/2874225-mainz/14-tage-trend
+  _generateKachelmannSonnenscheindauerTrend() {
+    _resetToDefault();
+    chartType = CooChartType.bar;
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+    );
+
+    yAxisConfig = yAxisConfig.copyWith(
+      labelCount: 12,
+      minLabelValue: 0,
+      maxLabelValue: 11,
+      labelPostfix: 'h',
+    );
+
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.date,
+      bottomDateFormat: 'dd.MM.',
+      showTopLabels: true,
+      topDateFormat: 'E',
+    );
+
+    barchartDataSeries.clear();
+
+    var sonnenscheindauer = List<CooBarchartDataPoint>.empty(growable: true);
+    sonnenscheindauer.add(CooBarchartDataPoint(
+        value: 0.4,
+        minValue: 0,
+        maxValue: 1.2,
+        time: DateTime(2023, 10, 22),
+        columnBackgroundColor: Colors.grey.withOpacity(0.2)));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 03.3,
+      minValue: 0.3,
+      maxValue: 6.4,
+      time: DateTime(2023, 10, 23),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 2,
+      minValue: 0,
+      maxValue: 5,
+      time: DateTime(2023, 10, 24),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 6,
+      minValue: 2,
+      maxValue: 9,
+      time: DateTime(2023, 10, 25),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 3,
+      minValue: 1,
+      maxValue: 10,
+      time: DateTime(2023, 10, 26),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1,
+      minValue: 0.5,
+      maxValue: 2,
+      time: DateTime(2023, 10, 27),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 2,
+      minValue: 1,
+      maxValue: 3,
+      time: DateTime(2023, 10, 28),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1,
+      minValue: 0,
+      maxValue: 3,
+      time: DateTime(2023, 10, 29),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1,
+      minValue: 0,
+      maxValue: 4,
+      time: DateTime(2023, 10, 30),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      minValue: 0,
+      maxValue: 1.2,
+      time: DateTime(2023, 10, 31),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1,
+      minValue: 0,
+      maxValue: 5,
+      time: DateTime(2023, 11, 01),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 2,
+      minValue: 0,
+      maxValue: 6,
+      time: DateTime(2023, 11, 02),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 3,
+      minValue: 0,
+      maxValue: 7,
+      time: DateTime(2023, 11, 03),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 4,
+      minValue: 0,
+      maxValue: 8,
+      time: DateTime(2023, 11, 04),
+    ));
+
+    CooBarchartDataSeries serie = CooBarchartDataSeries(
+      dataPoints: sonnenscheindauer,
+      barColor: const Color(0xFFfde81a),
+      minMaxLineColor: Colors.black,
+    );
+    barchartDataSeries.add(serie);
+
+    final bgColor = Colors.grey.withOpacity(0.2);
+    final bgColorBottom = Colors.blue.withOpacity(0.2);
+    final columnTopDatas = List<ChartColumnBlockData>.empty(growable: true);
+    columnTopDatas.add(ChartColumnBlockData(
+        text: 'a', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRain)]));
+    columnTopDatas.add(ChartColumnBlockData(text: 'b', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'c', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'd', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(
+        text: 'e', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRain)]));
+    columnTopDatas.add(ChartColumnBlockData(text: 'f', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'g', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'h', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'i', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'j', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'k', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'l', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'm', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'n', backgroundColor: bgColor));
+
+    final columnBottomDatas = List<ChartColumnBlockData>.empty(growable: true);
+    columnBottomDatas.add(ChartColumnBlockData(text: '0', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '2', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '6', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '2', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '4', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '1', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '7', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '4', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '3', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '6', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '0', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '2', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '1', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(text: '4', backgroundColor: bgColorBottom));
+
+    chartColumnBlocks = ChartColumnBlocks(
+      showTopBlocks: true,
+      topDatas: columnTopDatas,
+      topConfig: ChartColumnBlockConfig(height: 40),
+      showBottomBlocks: true,
+      bottomDatas: columnBottomDatas,
+    );
+  }
+
+  /// Barchart 1-10
+  _generateBarchart1Bis10() {
+    _resetToDefault();
+    chartType = CooChartType.bar;
+
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 11);
+    yAxisConfig = yAxisConfig.copyWith(minLabelValue: 0);
+    yAxisConfig = yAxisConfig.copyWith(maxLabelValue: 10);
+
+    const colorBar = Color(0xFFfde81a);
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+    );
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.date,
+      bottomDateFormat: 'dd.MM.',
+    );
+
+    barchartDataSeries.clear();
+
+    var sonnenscheindauer = List<CooBarchartDataPoint>.empty(growable: true);
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 0.5,
+      time: DateTime(2023, 10, 22),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1,
+      time: DateTime(2023, 10, 23),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 1.5,
+      time: DateTime(2023, 10, 24),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 2,
+      time: DateTime(2023, 10, 25),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 2.5,
+      time: DateTime(2023, 10, 26),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 3,
+      time: DateTime(2023, 10, 27),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 3.5,
+      time: DateTime(2023, 10, 28),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 4,
+      time: DateTime(2023, 10, 29),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 5,
+      time: DateTime(2023, 10, 30),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 6,
+      time: DateTime(2023, 10, 31),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 7,
+      time: DateTime(2023, 11, 01),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 8,
+      time: DateTime(2023, 11, 02),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 9,
+      time: DateTime(2023, 11, 03),
+    ));
+    sonnenscheindauer.add(CooBarchartDataPoint(
+      value: 10,
+      time: DateTime(2023, 11, 04),
+    ));
+
+    CooBarchartDataSeries serie = CooBarchartDataSeries(
+      dataPoints: sonnenscheindauer,
+      barColor: const Color(0xFFfde81a),
+    );
+    barchartDataSeries.add(serie);
   }
 
   // Zeichnet den Kachelmannchart "14 Tage Trend" ()
@@ -416,14 +683,17 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateKachelmann14TageWetterTrend() {
     _resetToDefault();
 
+    chartType = CooChartType.line;
+
     // yAxisMinLabelValue = -5;
     // yAxisMaxLabelValue = 30;
-    yAxisLabelCount = 8;
-    xAxisValueType = XAxisValueType.date;
-    xAxisBottomDateFormat = 'E';
-    xAxisShowTopLabels = true;
-    yAxisLabelPostfix = '°C';
-    highlightPointsVerticalLine = false;
+    chartConfig = chartConfig.copyWith(highlightPointsVerticalLine: false);
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 8, labelPostfix: '°C');
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.date,
+      bottomDateFormat: 'E',
+      showTopLabels: true,
+    );
 
     linechartDataSeries.clear();
 
@@ -485,33 +755,33 @@ class _LineChartDemoState extends State<LineChartDemo> {
     );
 
     // Voraussichtliche Tageshöchsttemperatur
-    var hoechstTemperatur = List<LineChartDataPoint>.empty(growable: true);
+    var hoechstTemperatur = List<CooLinechartDataPoint>.empty(growable: true);
     hoechstTemperatur
-        .add(LineChartDataPoint(value: 14, minValue: 12, maxValue: 14, label: '14°', time: DateTime(2023, 4, 9)));
+        .add(CooLinechartDataPoint(value: 14, minValue: 12, maxValue: 14, label: '14°', time: DateTime(2023, 4, 9)));
     hoechstTemperatur
-        .add(LineChartDataPoint(value: 16, minValue: 14, maxValue: 17, label: '16°', time: DateTime(2023, 4, 10)));
+        .add(CooLinechartDataPoint(value: 16, minValue: 14, maxValue: 17, label: '16°', time: DateTime(2023, 4, 10)));
     hoechstTemperatur
-        .add(LineChartDataPoint(value: 14, minValue: 12, maxValue: 15, label: '14°', time: DateTime(2023, 4, 11)));
+        .add(CooLinechartDataPoint(value: 14, minValue: 12, maxValue: 15, label: '14°', time: DateTime(2023, 4, 11)));
     hoechstTemperatur
-        .add(LineChartDataPoint(value: 12, minValue: 10, maxValue: 16, label: '12°', time: DateTime(2023, 4, 12)));
+        .add(CooLinechartDataPoint(value: 12, minValue: 10, maxValue: 16, label: '12°', time: DateTime(2023, 4, 12)));
     hoechstTemperatur
-        .add(LineChartDataPoint(value: 11, minValue: 9, maxValue: 12, label: '11°', time: DateTime(2023, 4, 13)));
+        .add(CooLinechartDataPoint(value: 11, minValue: 9, maxValue: 12, label: '11°', time: DateTime(2023, 4, 13)));
     hoechstTemperatur
-        .add(LineChartDataPoint(value: 11, minValue: 9, maxValue: 12, label: '11°', time: DateTime(2023, 4, 14)));
+        .add(CooLinechartDataPoint(value: 11, minValue: 9, maxValue: 12, label: '11°', time: DateTime(2023, 4, 14)));
     hoechstTemperatur
-        .add(LineChartDataPoint(value: 13, minValue: 10, maxValue: 15, label: '13°', time: DateTime(2023, 4, 15)));
+        .add(CooLinechartDataPoint(value: 13, minValue: 10, maxValue: 15, label: '13°', time: DateTime(2023, 4, 15)));
     hoechstTemperatur
-        .add(LineChartDataPoint(value: 13, minValue: 10, maxValue: 17, label: '13°', time: DateTime(2023, 4, 16)));
+        .add(CooLinechartDataPoint(value: 13, minValue: 10, maxValue: 17, label: '13°', time: DateTime(2023, 4, 16)));
     hoechstTemperatur
-        .add(LineChartDataPoint(value: 17, minValue: 11, maxValue: 20, label: '17°', time: DateTime(2023, 4, 17)));
+        .add(CooLinechartDataPoint(value: 17, minValue: 11, maxValue: 20, label: '17°', time: DateTime(2023, 4, 17)));
     hoechstTemperatur
-        .add(LineChartDataPoint(value: 16, minValue: 12, maxValue: 21, label: '16°', time: DateTime(2023, 4, 18)));
-    hoechstTemperatur.add(LineChartDataPoint(minValue: 12, maxValue: 23, time: DateTime(2023, 4, 19)));
-    hoechstTemperatur.add(LineChartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 20)));
-    hoechstTemperatur.add(LineChartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 21)));
-    hoechstTemperatur.add(LineChartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 22)));
+        .add(CooLinechartDataPoint(value: 16, minValue: 12, maxValue: 21, label: '16°', time: DateTime(2023, 4, 18)));
+    hoechstTemperatur.add(CooLinechartDataPoint(minValue: 12, maxValue: 23, time: DateTime(2023, 4, 19)));
+    hoechstTemperatur.add(CooLinechartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 20)));
+    hoechstTemperatur.add(CooLinechartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 21)));
+    hoechstTemperatur.add(CooLinechartDataPoint(minValue: 10, maxValue: 23, time: DateTime(2023, 4, 22)));
 
-    var linechartHoechstTemperatur = LinechartDataSeries(
+    var linechartHoechstTemperatur = CooLinechartDataSeries(
       dataPoints: hoechstTemperatur,
       label: 'Voraussichtliche Tageshöchsttemperatur',
       showMinMaxArea: true,
@@ -524,33 +794,33 @@ class _LineChartDemoState extends State<LineChartDemo> {
     linechartDataSeries.add(linechartHoechstTemperatur);
 
     // Voraussichtliche Tagestiefsttemperatur
-    var tiefstTemperatur = List<LineChartDataPoint>.empty(growable: true);
+    var tiefstTemperatur = List<CooLinechartDataPoint>.empty(growable: true);
     tiefstTemperatur
-        .add(LineChartDataPoint(value: 3, minValue: 3, maxValue: 6, label: '3', time: DateTime(2023, 4, 9)));
+        .add(CooLinechartDataPoint(value: 3, minValue: 3, maxValue: 6, label: '3', time: DateTime(2023, 4, 9)));
     tiefstTemperatur
-        .add(LineChartDataPoint(value: 5, minValue: 2, maxValue: 5, label: '5°', time: DateTime(2023, 4, 10)));
+        .add(CooLinechartDataPoint(value: 5, minValue: 2, maxValue: 5, label: '5°', time: DateTime(2023, 4, 10)));
     tiefstTemperatur
-        .add(LineChartDataPoint(value: 10, minValue: 6, maxValue: 11, label: '10°', time: DateTime(2023, 4, 11)));
+        .add(CooLinechartDataPoint(value: 10, minValue: 6, maxValue: 11, label: '10°', time: DateTime(2023, 4, 11)));
     tiefstTemperatur
-        .add(LineChartDataPoint(value: 7, minValue: 5, maxValue: 8, label: '7°', time: DateTime(2023, 4, 12)));
+        .add(CooLinechartDataPoint(value: 7, minValue: 5, maxValue: 8, label: '7°', time: DateTime(2023, 4, 12)));
     tiefstTemperatur
-        .add(LineChartDataPoint(value: 5, minValue: 2, maxValue: 5.5, label: '5°', time: DateTime(2023, 4, 13)));
+        .add(CooLinechartDataPoint(value: 5, minValue: 2, maxValue: 5.5, label: '5°', time: DateTime(2023, 4, 13)));
     tiefstTemperatur
-        .add(LineChartDataPoint(value: 4, minValue: 2, maxValue: 6, label: '4°', time: DateTime(2023, 4, 14)));
+        .add(CooLinechartDataPoint(value: 4, minValue: 2, maxValue: 6, label: '4°', time: DateTime(2023, 4, 14)));
     tiefstTemperatur
-        .add(LineChartDataPoint(value: 6, minValue: 3, maxValue: 10, label: '6°', time: DateTime(2023, 4, 15)));
+        .add(CooLinechartDataPoint(value: 6, minValue: 3, maxValue: 10, label: '6°', time: DateTime(2023, 4, 15)));
     tiefstTemperatur
-        .add(LineChartDataPoint(value: 7, minValue: 3, maxValue: 11, label: '7°', time: DateTime(2023, 4, 16)));
+        .add(CooLinechartDataPoint(value: 7, minValue: 3, maxValue: 11, label: '7°', time: DateTime(2023, 4, 16)));
     tiefstTemperatur
-        .add(LineChartDataPoint(value: 8, minValue: 3, maxValue: 10, label: '8°', time: DateTime(2023, 4, 17)));
+        .add(CooLinechartDataPoint(value: 8, minValue: 3, maxValue: 10, label: '8°', time: DateTime(2023, 4, 17)));
     tiefstTemperatur
-        .add(LineChartDataPoint(value: 7, minValue: 3, maxValue: 11, label: '7°', time: DateTime(2023, 4, 18)));
-    tiefstTemperatur.add(LineChartDataPoint(minValue: 5, maxValue: 12, time: DateTime(2023, 4, 19)));
-    tiefstTemperatur.add(LineChartDataPoint(minValue: 5, maxValue: 13, time: DateTime(2023, 4, 20)));
-    tiefstTemperatur.add(LineChartDataPoint(minValue: 5, maxValue: 13, time: DateTime(2023, 4, 21)));
-    tiefstTemperatur.add(LineChartDataPoint(minValue: 4, maxValue: 12, time: DateTime(2023, 4, 22)));
+        .add(CooLinechartDataPoint(value: 7, minValue: 3, maxValue: 11, label: '7°', time: DateTime(2023, 4, 18)));
+    tiefstTemperatur.add(CooLinechartDataPoint(minValue: 5, maxValue: 12, time: DateTime(2023, 4, 19)));
+    tiefstTemperatur.add(CooLinechartDataPoint(minValue: 5, maxValue: 13, time: DateTime(2023, 4, 20)));
+    tiefstTemperatur.add(CooLinechartDataPoint(minValue: 5, maxValue: 13, time: DateTime(2023, 4, 21)));
+    tiefstTemperatur.add(CooLinechartDataPoint(minValue: 4, maxValue: 12, time: DateTime(2023, 4, 22)));
 
-    var dataSeriesTiefsttemperatur = LinechartDataSeries(
+    var dataSeriesTiefsttemperatur = CooLinechartDataSeries(
       dataPoints: tiefstTemperatur,
       label: 'Voraussichtliche Tagestiefsttemperatur',
       showMinMaxArea: true,
@@ -570,96 +840,101 @@ class _LineChartDemoState extends State<LineChartDemo> {
   // 21 Uhr bis 6 Uhr Nacht
   _generateKachelmannVorhersageXL() {
     _resetToDefault();
-    yAxisLabelCount = 20;
-    xAxisValueType = XAxisValueType.datetime;
-    var linechartDataPoints = List<LineChartDataPoint>.empty(growable: true);
+    chartType = CooChartType.line;
+    yAxisConfig = yAxisConfig.copyWith(labelCount: 20, labelPostfix: '°C');
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'E',
+      showTopLabels: true,
+    );
+    var cooLinechartDataPoints = List<CooLinechartDataPoint>.empty(growable: true);
 
-    linechartDataPoints.add(LineChartDataPoint(value: 3.9, time: DateTime(2023, 4, 9, 7, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 4.7, time: DateTime(2023, 4, 9, 8, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 6.1, time: DateTime(2023, 4, 9, 9, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 7.6, time: DateTime(2023, 4, 9, 10, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 9.1, time: DateTime(2023, 4, 9, 11, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 10.5, time: DateTime(2023, 4, 9, 12, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 10.6, time: DateTime(2023, 4, 9, 13, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 11, time: DateTime(2023, 4, 9, 14, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 11.3, time: DateTime(2023, 4, 9, 15, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 11.8, time: DateTime(2023, 4, 9, 16, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 12.2, time: DateTime(2023, 4, 9, 17, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 12.0, time: DateTime(2023, 4, 9, 18, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 11.3, time: DateTime(2023, 4, 9, 19, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 9.8, time: DateTime(2023, 4, 9, 20, 0)));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 7.6, time: DateTime(2023, 4, 9, 21, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 6.3, time: DateTime(2023, 4, 9, 22, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 5.6, time: DateTime(2023, 4, 9, 23, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 5.4, time: DateTime(2023, 4, 10, 0, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 5.1, time: DateTime(2023, 4, 10, 1, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 4.2, time: DateTime(2023, 4, 10, 2, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 3.3, time: DateTime(2023, 4, 10, 3, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 3.2, time: DateTime(2023, 4, 10, 4, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 2.4, time: DateTime(2023, 4, 10, 5, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 2.3, time: DateTime(2023, 4, 10, 6, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints.add(LineChartDataPoint(value: 2.1, time: DateTime(2023, 4, 10, 7, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 3.6, time: DateTime(2023, 4, 10, 8, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 5.9, time: DateTime(2023, 4, 10, 9, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 10.1, time: DateTime(2023, 4, 10, 10, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 11.5, time: DateTime(2023, 4, 10, 11, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 13.5, time: DateTime(2023, 4, 10, 12, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 15, time: DateTime(2023, 4, 10, 13, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 14, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 16, time: DateTime(2023, 4, 10, 15, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 16.9, time: DateTime(2023, 4, 10, 16, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 17, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 18, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 14.9, time: DateTime(2023, 4, 10, 19, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 14.1, time: DateTime(2023, 4, 10, 20, 0)));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 11.8, time: DateTime(2023, 4, 10, 21, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 11.1, time: DateTime(2023, 4, 10, 22, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 11.4, time: DateTime(2023, 4, 10, 23, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 11.0, time: DateTime(2023, 4, 11, 0, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 10.6, time: DateTime(2023, 4, 11, 1, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 10.2, time: DateTime(2023, 4, 11, 2, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 8.2, time: DateTime(2023, 4, 11, 3, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 8.5, time: DateTime(2023, 4, 11, 4, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 6.9, time: DateTime(2023, 4, 11, 5, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints
-        .add(LineChartDataPoint(value: 5.9, time: DateTime(2023, 4, 11, 6, 0), columnBackgroundColor: Colors.grey));
-    linechartDataPoints.add(LineChartDataPoint(value: 6.0, time: DateTime(2023, 4, 11, 7, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 6.8, time: DateTime(2023, 4, 11, 8, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 8.1, time: DateTime(2023, 4, 11, 9, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 8.9, time: DateTime(2023, 4, 11, 10, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 9.5, time: DateTime(2023, 4, 11, 11, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 9.7, time: DateTime(2023, 4, 11, 12, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 10.6, time: DateTime(2023, 4, 11, 13, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 10.8, time: DateTime(2023, 4, 11, 14, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 10.9, time: DateTime(2023, 4, 11, 15, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 11.9, time: DateTime(2023, 4, 11, 16, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 12.4, time: DateTime(2023, 4, 11, 17, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 12.4, time: DateTime(2023, 4, 11, 18, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 12.2, time: DateTime(2023, 4, 11, 19, 0)));
-    linechartDataPoints.add(LineChartDataPoint(value: 11.2, time: DateTime(2023, 4, 11, 20, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 3.9, time: DateTime(2023, 4, 9, 7, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 4.7, time: DateTime(2023, 4, 9, 8, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 6.1, time: DateTime(2023, 4, 9, 9, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 7.6, time: DateTime(2023, 4, 9, 10, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 9.1, time: DateTime(2023, 4, 9, 11, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.5, time: DateTime(2023, 4, 9, 12, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.6, time: DateTime(2023, 4, 9, 13, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11, time: DateTime(2023, 4, 9, 14, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.3, time: DateTime(2023, 4, 9, 15, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.8, time: DateTime(2023, 4, 9, 16, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 12.2, time: DateTime(2023, 4, 9, 17, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 12.0, time: DateTime(2023, 4, 9, 18, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.3, time: DateTime(2023, 4, 9, 19, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 9.8, time: DateTime(2023, 4, 9, 20, 0)));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 7.6, time: DateTime(2023, 4, 9, 21, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 6.3, time: DateTime(2023, 4, 9, 22, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 5.6, time: DateTime(2023, 4, 9, 23, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 5.4, time: DateTime(2023, 4, 10, 0, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 5.1, time: DateTime(2023, 4, 10, 1, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 4.2, time: DateTime(2023, 4, 10, 2, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 3.3, time: DateTime(2023, 4, 10, 3, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 3.2, time: DateTime(2023, 4, 10, 4, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 2.4, time: DateTime(2023, 4, 10, 5, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 2.3, time: DateTime(2023, 4, 10, 6, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 2.1, time: DateTime(2023, 4, 10, 7, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 3.6, time: DateTime(2023, 4, 10, 8, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 5.9, time: DateTime(2023, 4, 10, 9, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.1, time: DateTime(2023, 4, 10, 10, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.5, time: DateTime(2023, 4, 10, 11, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 13.5, time: DateTime(2023, 4, 10, 12, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 15, time: DateTime(2023, 4, 10, 13, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 14, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 16, time: DateTime(2023, 4, 10, 15, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 16.9, time: DateTime(2023, 4, 10, 16, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 17, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 15.5, time: DateTime(2023, 4, 10, 18, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 14.9, time: DateTime(2023, 4, 10, 19, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 14.1, time: DateTime(2023, 4, 10, 20, 0)));
+    cooLinechartDataPoints.add(
+        CooLinechartDataPoint(value: 11.8, time: DateTime(2023, 4, 10, 21, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints.add(
+        CooLinechartDataPoint(value: 11.1, time: DateTime(2023, 4, 10, 22, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints.add(
+        CooLinechartDataPoint(value: 11.4, time: DateTime(2023, 4, 10, 23, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 11.0, time: DateTime(2023, 4, 11, 0, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 10.6, time: DateTime(2023, 4, 11, 1, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 10.2, time: DateTime(2023, 4, 11, 2, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 8.2, time: DateTime(2023, 4, 11, 3, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 8.5, time: DateTime(2023, 4, 11, 4, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 6.9, time: DateTime(2023, 4, 11, 5, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints
+        .add(CooLinechartDataPoint(value: 5.9, time: DateTime(2023, 4, 11, 6, 0), columnBackgroundColor: Colors.grey));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 6.0, time: DateTime(2023, 4, 11, 7, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 6.8, time: DateTime(2023, 4, 11, 8, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 8.1, time: DateTime(2023, 4, 11, 9, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 8.9, time: DateTime(2023, 4, 11, 10, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 9.5, time: DateTime(2023, 4, 11, 11, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 9.7, time: DateTime(2023, 4, 11, 12, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.6, time: DateTime(2023, 4, 11, 13, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.8, time: DateTime(2023, 4, 11, 14, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 10.9, time: DateTime(2023, 4, 11, 15, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.9, time: DateTime(2023, 4, 11, 16, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 12.4, time: DateTime(2023, 4, 11, 17, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 12.4, time: DateTime(2023, 4, 11, 18, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 12.2, time: DateTime(2023, 4, 11, 19, 0)));
+    cooLinechartDataPoints.add(CooLinechartDataPoint(value: 11.2, time: DateTime(2023, 4, 11, 20, 0)));
 
     linechartDataSeries.clear();
-    linechartDataSeries.add(LinechartDataSeries(
-      dataPoints: linechartDataPoints,
+    linechartDataSeries.add(CooLinechartDataSeries(
+      dataPoints: cooLinechartDataPoints,
       label: 'Temperatur',
       showDataLabels: true,
     ));

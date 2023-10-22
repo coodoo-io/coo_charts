@@ -9,7 +9,7 @@ class ChartColumnBlocks {
     this.showTopBlocks = false,
     this.topConfig = const ChartColumnBlockConfig(),
     this.topDatas = const [],
-    this.showBottomBlocks = true,
+    this.showBottomBlocks = false,
     this.bottomConfig = const ChartColumnBlockConfig(),
     this.bottomDatas = const [],
   });
