@@ -47,7 +47,7 @@ class CooChartPainter extends CustomPainter {
     required this.padding,
     required this.columLegendsAssetImages,
     required this.columLegendsAssetSvgPictureInfos,
-    this.onDataPointTabCallback,
+    this.onLineChartDataPointTabCallback,
   }) {
     chartWidth = canvasWidth - padding.left - padding.right;
     chartHeight = canvasHeight - padding.bottom - padding.top;
@@ -134,7 +134,8 @@ class CooChartPainter extends CustomPainter {
   double xSegmentWidth = 0.0;
   double xSegementWidthHalf = 0.0; // Convenient var so it don't have to be calculated by all data points.
 
-  Function(int, List<CooLineChartDataPoint>)? onDataPointTabCallback;
+  Function(int, List<CooLineChartDataPoint>)? onLineChartDataPointTabCallback;
+  Function(int, List<CooBarChartDataPoint>)? onBarChartDataPointTabCallback;
 
 // Hält alle Punkte die zu einer Axe Vertikal liegen. Das rect bestimmt den Maus-Hover-Bereich
   int mouseInRectYIndex = -1; // In welchem Y-Index befindet sich die Maus gerade?
@@ -846,14 +847,21 @@ class CooChartPainter extends CustomPainter {
       }
 
       // Tab Callback der gesamten Spalte
-      if (chartTabInfo.tabDownDetails != null && onDataPointTabCallback != null) {
+      if (chartTabInfo.tabDownDetails != null) {
         final tabDownDetails = chartTabInfo.tabDownDetails!;
         bool contains = rect.contains(Offset(tabDownDetails.localPosition.dx, tabDownDetails.localPosition.dy));
         if (contains && chartTabInfo.tabCount != chartTabInfo.tabCountCallbackInvocation) {
           chartTabInfo.tabCountCallbackInvocation = chartTabInfo.tabCountCallbackInvocation + 1;
-          var selectedDataPoints = lineChartDataPointsByColumnIndex[i];
-          selectedDataPoints ??= List.empty(growable: false);
-          onDataPointTabCallback!(i, selectedDataPoints);
+          if (chartType == CooChartType.line && onLineChartDataPointTabCallback != null) {
+            var selectedDataPoints = lineChartDataPointsByColumnIndex[i];
+            selectedDataPoints ??= List.empty(growable: false);
+            onLineChartDataPointTabCallback!(i, selectedDataPoints);
+          }
+          if (chartType == CooChartType.bar && onBarChartDataPointTabCallback != null) {
+            var selectedDataPoints = barChartDataPointsByColumnIndex[i];
+            selectedDataPoints ??= List.empty(growable: false);
+            onBarChartDataPointTabCallback!(i, selectedDataPoints);
+          }
         }
       }
 

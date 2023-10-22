@@ -40,6 +40,10 @@ class CooBarChart extends StatefulWidget {
 
   final ChartPadding padding;
 
+  /// Callback function on column tab
+  ///
+  /// First parameter: Column index (starts at 0)
+  /// Second parameter: the [CooBarChartDataPoint] objects which are in this tabbed column
   final Function(int, List<CooBarChartDataPoint>)? onDataPointTab;
 
   @override

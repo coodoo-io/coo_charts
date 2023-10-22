@@ -40,6 +40,10 @@ class CooLineChart extends StatefulWidget {
 
   final ChartPadding padding;
 
+  /// Callback function on column tab
+  ///
+  /// First parameter: Column index (starts at 0)
+  /// Second parameter: the [CooLineChartDataPoint] objects which are in this tabbed column
   final Function(int, List<CooLineChartDataPoint>)? onDataPointTab;
 
   @override
@@ -118,7 +122,7 @@ class _CooLineChartState extends State<CooLineChart> {
                 yAxisConfig: widget.yAxisConfig,
                 columLegendsAssetImages: columLegendsAssetImages,
                 columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
-                onDataPointTabCallback: widget.onDataPointTab,
+                onLineChartDataPointTabCallback: widget.onDataPointTab,
               ),
             ),
           ),
