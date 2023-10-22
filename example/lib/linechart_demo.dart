@@ -91,7 +91,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
                 child: SizedBox(
                     height: 500,
                     child: switch (chartType) {
-                      CooChartType.line => CooLinechart(
+                      CooChartType.line => CooLineChart(
                           dataSeries: linechartDataSeries,
                           columnBlocks: chartColumnBlocks,
                           chartConfig: chartConfig,
@@ -100,7 +100,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
                           xAxisConfig: xAxisConfig,
                           yAxisConfig: yAxisConfig,
                         ),
-                      CooChartType.bar => CooBarchart(
+                      CooChartType.bar => CooBarChart(
                           dataSeries: barchartDataSeries,
                           columnBlocks: chartColumnBlocks,
                           chartConfig: chartConfig,

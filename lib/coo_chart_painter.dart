@@ -7,13 +7,13 @@ import 'package:coo_charts/chart_column_block_config.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_padding.enum.dart';
 import 'package:coo_charts/chart_tab_info.dart';
-import 'package:coo_charts/coo_barchart_data_point.dart';
-import 'package:coo_charts/coo_barchart_data_series.dart';
+import 'package:coo_charts/coo_bar_chart_data_point.dart';
+import 'package:coo_charts/coo_bar_chart_data_series.dart';
 import 'package:coo_charts/coo_chart_constants.dart';
 import 'package:coo_charts/coo_chart_painter_util.dart';
 import 'package:coo_charts/coo_chart_type.enum.dart';
-import 'package:coo_charts/coo_linechart_data_point.dart';
-import 'package:coo_charts/coo_linechart_data_series.dart';
+import 'package:coo_charts/coo_line_chart_data_point.dart';
+import 'package:coo_charts/coo_line_chart_data_series.dart';
 import 'package:coo_charts/data_point_label_pos.enum.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/x_axis_value_type.enum.dart';
@@ -76,8 +76,8 @@ class CooChartPainter extends CustomPainter {
 
   final CooChartType chartType;
 
-  final List<CooLinechartDataSeries> linechartDataSeries;
-  final List<CooBarchartDataSeries> barchartDataSeries;
+  final List<CooLineChartDataSeries> linechartDataSeries;
+  final List<CooBarChartDataSeries> barchartDataSeries;
 
   final ChartColumnBlocks? columnBlocks;
   final Map<String, ui.Image> columLegendsAssetImages;
@@ -134,7 +134,7 @@ class CooChartPainter extends CustomPainter {
   double xSegmentWidth = 0.0;
   double xSegementWidthHalf = 0.0; // Convenient var so it don't have to be calculated by all data points.
 
-  Function(int, List<CooLinechartDataPoint>)? onDataPointTabCallback;
+  Function(int, List<CooLineChartDataPoint>)? onDataPointTabCallback;
 
 // Hält alle Punkte die zu einer Axe Vertikal liegen. Das rect bestimmt den Maus-Hover-Bereich
   int mouseInRectYIndex = -1; // In welchem Y-Index befindet sich die Maus gerade?
@@ -142,8 +142,8 @@ class CooChartPainter extends CustomPainter {
   // All sich auf diesem Index befindenden LineChart Datenpunkte
   // Die exakte Punkt (X,Y) eines LineChart DataPoint Objekts müsste man in Verbidung dises Objektes noch in einem
   // eigenen Objekt halten. Dann könnte man auch den nächstgelegenen Punkt zum Maus Pointer herausfinden
-  final Map<int, List<CooLinechartDataPoint>> lineChartDataPointsByColumnIndex = {};
-  final Map<int, List<CooBarchartDataPoint>> barChartDataPointsByColumnIndex = {};
+  final Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex = {};
+  final Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex = {};
 
   final Map<Rect, int> chartRectYPos = {}; // Merken welches Rect bei welcher Y-Pos liegt
 
@@ -293,7 +293,7 @@ class CooChartPainter extends CustomPainter {
     required double chartWidth,
     required double chartHeigt,
     required Offset? mousePosition,
-    required List<CooLinechartDataSeries> linechartDataSeries,
+    required List<CooLineChartDataSeries> linechartDataSeries,
     required double yAxisMinValue,
     required double yAxisMaxValue,
     required YAxisConfig yAxisConfig,
@@ -304,7 +304,7 @@ class CooChartPainter extends CustomPainter {
         columnBlocks != null && columnBlocks.showBottomBlocks ? columnBlocks.bottomConfig.height.toDouble() : 0;
     // Die Segment-width muss über alle vorhandenen Datenpunkte aller Reihen berechnet werden.
     for (var i = 0; i < linechartDataSeries.length; i++) {
-      CooLinechartDataSeries localLinechartDataSeries = linechartDataSeries[i];
+      CooLineChartDataSeries localLinechartDataSeries = linechartDataSeries[i];
       List<String?> dataSeriesLabels = List.empty(growable: true);
       List<double?> dataPointValues = localLinechartDataSeries.dataPoints.map((e) => e.value).toList();
 
@@ -329,7 +329,7 @@ class CooChartPainter extends CustomPainter {
       dataPointsLoop:
       for (var i = 0; i < dataSeriesNormalizedValues.length; i++) {
         // Lables für den späteren plotten parsen
-        CooLinechartDataPoint dataPoint = localLinechartDataSeries.dataPoints[i];
+        CooLineChartDataPoint dataPoint = localLinechartDataSeries.dataPoints[i];
         if (localLinechartDataSeries.showDataLabels) {
           if (dataPoint.label != null) {
             dataSeriesLabels.add(dataPoint.label!.trim());
@@ -483,7 +483,7 @@ class CooChartPainter extends CustomPainter {
     required double yAxisMaxValue,
     required YAxisConfig yAxisConfig,
     required double minDataPointValue,
-    required List<CooBarchartDataSeries> barchartDataSeries,
+    required List<CooBarChartDataSeries> barchartDataSeries,
     ChartColumnBlocks? columnBlocks,
   }) {
     bool showColumnBottomDatas = false;
@@ -504,7 +504,7 @@ class CooChartPainter extends CustomPainter {
 
     // Die Segment-width muss über alle vorhandenen Datenpunkte aller Reihen berechnet werden.
     for (var i = 0; i < barchartDataSeries.length; i++) {
-      CooBarchartDataSeries localLinechartDataSeries = barchartDataSeries[i];
+      CooBarChartDataSeries localLinechartDataSeries = barchartDataSeries[i];
       List<String?> dataSeriesLabels = List.empty(growable: true);
 
       // Alle Punkte auf einen Bereich zwischen 0.0 und 1.0 bringen um sie in der Fläche relativ berechnen zu können
@@ -555,7 +555,7 @@ class CooChartPainter extends CustomPainter {
       dataPointsLoop:
       for (var i = 0; i < dataSeriesNormalizedValues.length; i++) {
         // Lables für den späteren plotten parsen
-        CooBarchartDataPoint dataPoint = localLinechartDataSeries.dataPoints[i];
+        CooBarChartDataPoint dataPoint = localLinechartDataSeries.dataPoints[i];
         if (localLinechartDataSeries.showDataLabels) {
           if (dataPoint.label != null) {
             dataSeriesLabels.add(dataPoint.label!.trim());
@@ -654,8 +654,8 @@ class CooChartPainter extends CustomPainter {
     required double chartWidth,
     required double chartHeigt,
     required Offset? mousePosition,
-    required CooLinechartDataSeries dataSeries,
-    required List<CooLinechartDataPoint> minMaxPoints,
+    required CooLineChartDataSeries dataSeries,
+    required List<CooLineChartDataPoint> minMaxPoints,
     required dataPointColumnLegendHeight,
   }) {
     // Min- Max-Datenpunkte in eine Reihe bringen um eine Form zu bilden
@@ -797,7 +797,7 @@ class CooChartPainter extends CustomPainter {
     required double chartWidth,
     required double chartHeigt,
     required Offset? mousePosition,
-    required List<CooLinechartDataSeries> linechartDataSeries,
+    required List<CooLineChartDataSeries> linechartDataSeries,
   }) {
     mouseInRectYIndex = -1; // Reset
 
@@ -835,7 +835,7 @@ class CooChartPainter extends CustomPainter {
       if (mouseOverBarHiglight) {
         canvas.drawRect(rect, backgroundRectHighlightPaint);
       } else if (barChartDataPointsByColumnIndex[i] != null) {
-        List<CooBarchartDataPoint> barchartDataPoints = barChartDataPointsByColumnIndex[i]!;
+        List<CooBarChartDataPoint> barchartDataPoints = barChartDataPointsByColumnIndex[i]!;
         // get first background color
         final dataPoint = barchartDataPoints.firstWhereOrNull((element) => element.columnBackgroundColor != null);
         if (dataPoint != null) {
@@ -1040,7 +1040,7 @@ class CooChartPainter extends CustomPainter {
     required Canvas canvas,
     required double chartWidth,
     required double chartHeight,
-    required List<CooLinechartDataSeries> linechartDataSeries,
+    required List<CooLineChartDataSeries> linechartDataSeries,
     required bool showYAxisLables,
     ChartColumnBlocks? columnBlocks,
   }) {
@@ -1122,7 +1122,7 @@ class CooChartPainter extends CustomPainter {
       }
 
       for (var i = 0; i < dataSeries.dataPoints.length; i++) {
-        CooLinechartDataPoint dataPoint = dataSeries.dataPoints[i];
+        CooLineChartDataPoint dataPoint = dataSeries.dataPoints[i];
         if (lineChartDataPointsByColumnIndex[i] == null) {
           lineChartDataPointsByColumnIndex[i] = [];
         }
@@ -1143,7 +1143,7 @@ class CooChartPainter extends CustomPainter {
       }
 
       for (var i = 0; i < dataSeries.dataPoints.length; i++) {
-        CooBarchartDataPoint dataPoint = dataSeries.dataPoints[i];
+        CooBarChartDataPoint dataPoint = dataSeries.dataPoints[i];
         if (barChartDataPointsByColumnIndex[i] == null) {
           barChartDataPointsByColumnIndex[i] = [];
         }
@@ -1167,7 +1167,7 @@ class CooChartPainter extends CustomPainter {
       }
 
       for (var i = 0; i < dataSeries.dataPoints.length; i++) {
-        CooLinechartDataPoint dataPoint = dataSeries.dataPoints[i];
+        CooLineChartDataPoint dataPoint = dataSeries.dataPoints[i];
         if (lineChartDataPointsByColumnIndex[i] == null) {
           lineChartDataPointsByColumnIndex[i] = [];
         }
@@ -1334,7 +1334,7 @@ class CooChartPainter extends CustomPainter {
     required ui.Canvas canvas,
     required double chartWidth,
     required double chartHeight,
-    required List<CooLinechartDataSeries> linechartDataSeries,
+    required List<CooLineChartDataSeries> linechartDataSeries,
     ChartColumnBlocks? columnBlocks,
   }) {
     if (columnBlocks == null) {

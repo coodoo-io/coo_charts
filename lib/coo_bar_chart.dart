@@ -4,20 +4,21 @@ import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_config.dart';
 import 'package:coo_charts/chart_padding.enum.dart';
 import 'package:coo_charts/chart_tab_info.dart';
+import 'package:coo_charts/coo_bar_chart_data_point.dart';
+import 'package:coo_charts/coo_bar_chart_data_series.dart';
+import 'package:coo_charts/coo_chart_painter.dart';
 import 'package:coo_charts/coo_chart_painter_util.dart';
 import 'package:coo_charts/coo_chart_type.enum.dart';
-import 'package:coo_charts/coo_linechart_data_point.dart';
-import 'package:coo_charts/coo_linechart_data_series.dart';
-import 'package:coo_charts/coo_chart_painter.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/y_axis_config.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:image/image.dart' as image;
 
-class CooLinechart extends StatefulWidget {
-  const CooLinechart({
+/// The CooBarChart Widget.
+///
+/// Prints a bar chart with optional min-max-range line.
+class CooBarChart extends StatefulWidget {
+  const CooBarChart({
     super.key,
     required this.dataSeries,
     this.columnBlocks,
@@ -28,7 +29,7 @@ class CooLinechart extends StatefulWidget {
     this.onDataPointTab,
   });
 
-  final List<CooLinechartDataSeries> dataSeries;
+  final List<CooBarChartDataSeries> dataSeries;
   final ChartColumnBlocks? columnBlocks;
 
   final ChartConfig chartConfig;
@@ -39,13 +40,13 @@ class CooLinechart extends StatefulWidget {
 
   final ChartPadding padding;
 
-  final Function(int, List<CooLinechartDataPoint>)? onDataPointTab;
+  final Function(int, List<CooBarChartDataPoint>)? onDataPointTab;
 
   @override
-  State<CooLinechart> createState() => _CooLinechartState();
+  State<CooBarChart> createState() => _CooBarChartState();
 }
 
-class _CooLinechartState extends State<CooLinechart> {
+class _CooBarChartState extends State<CooBarChart> {
   Offset? _mousePointer;
   final chartTabInfo = ChartTabInfo();
 
@@ -95,9 +96,9 @@ class _CooLinechartState extends State<CooLinechart> {
             height: height,
             child: CustomPaint(
               painter: CooChartPainter(
-                chartType: CooChartType.line,
-                linechartDataSeries: widget.dataSeries,
-                barchartDataSeries: [],
+                chartType: CooChartType.bar,
+                linechartDataSeries: [],
+                barchartDataSeries: widget.dataSeries,
                 columnBlocks: widget.columnBlocks,
                 canvasWidth: width,
                 canvasHeight: height,
@@ -113,11 +114,10 @@ class _CooLinechartState extends State<CooLinechart> {
                 highlightPointsVerticalLine: widget.chartConfig.highlightPointsVerticalLine,
                 highlightPointsHorizontalLine: widget.chartConfig.highlightPointsHorizontalLine,
                 xAxisConfig: widget.xAxisConfig,
-                centerDataPointBetweenVerticalGrid: widget.chartConfig.centerDataPointBetweenVerticalGrid,
+                centerDataPointBetweenVerticalGrid: true,
                 yAxisConfig: widget.yAxisConfig,
                 columLegendsAssetImages: columLegendsAssetImages,
                 columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
-                onDataPointTabCallback: widget.onDataPointTab,
               ),
             ),
           ),

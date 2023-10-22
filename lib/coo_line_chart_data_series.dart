@@ -1,10 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:coo_charts/coo_linechart_data_point.dart';
+import 'package:coo_charts/coo_line_chart_data_point.dart';
 import 'package:coo_charts/data_point_label_pos.enum.dart';
 import 'package:flutter/material.dart';
 
-class CooLinechartDataSeries {
-  CooLinechartDataSeries({
+class CooLineChartDataSeries {
+  CooLineChartDataSeries({
     required this.dataPoints,
     this.label,
     this.showDataLine = true,
@@ -25,7 +25,7 @@ class CooLinechartDataSeries {
   });
 
   /// Die Datenpunkte, die den Line-Chart beschreiben
-  final List<CooLinechartDataPoint> dataPoints;
+  final List<CooLineChartDataPoint> dataPoints;
 
   /// Titel der Datenreihe
   final String? label;
@@ -57,8 +57,8 @@ class CooLinechartDataSeries {
   // Define the padding from the data point to the labels
   final int dataPointLabelPadding;
 
-  CooLinechartDataSeries copyWith({
-    List<CooLinechartDataPoint>? dataPoints,
+  CooLineChartDataSeries copyWith({
+    List<CooLineChartDataPoint>? dataPoints,
     String? label,
     bool? showDataLine,
     bool? showDataPoints,
@@ -72,7 +72,7 @@ class CooLinechartDataSeries {
     TextStyle? dataPointLabelTextStyle,
     DataPointLabelPos? dataPointLabelPosition,
   }) {
-    return CooLinechartDataSeries(
+    return CooLineChartDataSeries(
       dataPoints: dataPoints ?? this.dataPoints,
       label: label ?? this.label,
       showDataLine: showDataLine ?? this.showDataLine,
