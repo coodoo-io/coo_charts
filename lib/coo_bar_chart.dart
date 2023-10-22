@@ -122,6 +122,7 @@ class _CooBarChartState extends State<CooBarChart> {
                 yAxisConfig: widget.yAxisConfig,
                 columLegendsAssetImages: columLegendsAssetImages,
                 columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
+                onBarChartDataPointTabCallback: widget.onDataPointTab,
               ),
             ),
           ),

@@ -48,6 +48,7 @@ class CooChartPainter extends CustomPainter {
     required this.columLegendsAssetImages,
     required this.columLegendsAssetSvgPictureInfos,
     this.onLineChartDataPointTabCallback,
+    this.onBarChartDataPointTabCallback,
   }) {
     chartWidth = canvasWidth - padding.left - padding.right;
     chartHeight = canvasHeight - padding.bottom - padding.top;
