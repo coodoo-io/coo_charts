@@ -8,6 +8,7 @@ import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_padding.enum.dart';
 import 'package:coo_charts/y_axis_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image/image.dart' as image;
 
@@ -100,6 +101,17 @@ class CooChartPainterUtil {
       if (columLegendsAssetImages[assetImagePath] != null) {
         continue blockAssetImageLoop;
       }
+      // TODO ausschließlich PNGs erlauben..
+      if (assetImagePath.endsWith('.png')) {
+        try {
+          ui.Image uiImg = await loadImage(assetImagePath, blockAssetImage.height);
+          // TODO nicht nur nach assetpath speichern sondern auch nach gwünschter größe
+          columLegendsAssetImages[assetImagePath] = uiImg;
+        } catch (e) {
+          // TODO Logging
+        }
+        continue blockAssetImageLoop;
+      }
       try {
         PictureInfo pictureInfo = await vg.loadPicture(SvgAssetLoader(assetImagePath), null);
 
@@ -126,6 +138,16 @@ class CooChartPainterUtil {
         /// Image could not be processed..
       }
     }
+  }
+
+  Future<ui.Image> loadImage(String assetImagePath, int height) async {
+    final data = await rootBundle.load(assetImagePath);
+    image.Image baseSizeImage = image.decodeImage(data.buffer.asUint8List())!;
+    image.Image resizeImage = image.copyResize(baseSizeImage, height: height);
+    ui.Codec codec = await ui.instantiateImageCodec(image.encodePng(resizeImage));
+    ui.FrameInfo frameInfo = await codec.getNextFrame();
+
+    return frameInfo.image;
   }
 
   /// Alle Chart-Punkte auf einen Wert zwischen 0.0 und 1.0 bringen. So wird später die Position

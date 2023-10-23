@@ -17,10 +17,14 @@ import 'package:coo_charts/x_axis_value_type.enum.dart';
 import 'package:coo_charts/y_axis_config.dart';
 import 'package:flutter/material.dart';
 
-const kIconWeatherCloudy = 'assets/sym_cloudy.svg';
-const kIconWeatherRain = 'assets/sym_rain.svg';
-const kIconWindOver50 = 'assets/wind_over50.svg';
-const kIconWindOver90 = 'assets/wind_over90.svg';
+const kIconWeatherCloudySvg = 'assets/sym_cloudy.svg';
+const kIconWeatherRainSvg = 'assets/sym_rain.svg';
+const kIconWindOver50Svg = 'assets/wind_over50.svg';
+const kIconWindOver90Svg = 'assets/wind_over90.svg';
+const kIconWeatherCloudyPng = 'assets/cloudcoverage-0.png';
+const kIconWeatherRainPng = 'assets/cloudcoverage-6.png';
+const kIconWindOver50Png = 'assets/wind_over50.png';
+const kIconWindOver90Png = 'assets/wind_over90.png';
 
 class LineChartDemo extends StatefulWidget {
   const LineChartDemo({super.key});
@@ -555,12 +559,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
     final bgColorBottom = Colors.blue.withOpacity(0.2);
     final columnTopDatas = List<ChartColumnBlockData>.empty(growable: true);
     columnTopDatas.add(ChartColumnBlockData(
-        text: 'a', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRain)]));
+        text: 'a', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRainSvg)]));
     columnTopDatas.add(ChartColumnBlockData(text: 'b', backgroundColor: bgColor));
     columnTopDatas.add(ChartColumnBlockData(text: 'c', backgroundColor: bgColor));
     columnTopDatas.add(ChartColumnBlockData(text: 'd', backgroundColor: bgColor));
     columnTopDatas.add(ChartColumnBlockData(
-        text: 'e', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRain)]));
+        text: 'e', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRainSvg)]));
     columnTopDatas.add(ChartColumnBlockData(text: 'f', backgroundColor: bgColor));
     columnTopDatas.add(ChartColumnBlockData(text: 'g', backgroundColor: bgColor));
     columnTopDatas.add(ChartColumnBlockData(text: 'h', backgroundColor: bgColor));
@@ -719,12 +723,16 @@ class _LineChartDemoState extends State<LineChartDemo> {
     final bgColorBottom = Colors.blue.withOpacity(0.2);
     final columnTopDatas = List<ChartColumnBlockData>.empty(growable: true);
     columnTopDatas.add(ChartColumnBlockData(
-        text: 'a', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRain)]));
+        text: 'a',
+        backgroundColor: bgColor,
+        assetImages: [const BlockAssetImage(path: kIconWindOver50Png, height: 10)]));
     columnTopDatas.add(ChartColumnBlockData(text: 'b', backgroundColor: bgColor));
     columnTopDatas.add(ChartColumnBlockData(text: 'c', backgroundColor: bgColor));
     columnTopDatas.add(ChartColumnBlockData(text: 'd', backgroundColor: bgColor));
     columnTopDatas.add(ChartColumnBlockData(
-        text: 'e', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRain)]));
+        text: 'e',
+        backgroundColor: bgColor,
+        assetImages: [const BlockAssetImage(path: kIconWindOver50Png, height: 10)]));
     columnTopDatas.add(ChartColumnBlockData(text: 'f', backgroundColor: bgColor));
     columnTopDatas.add(ChartColumnBlockData(text: 'g', backgroundColor: bgColor));
     columnTopDatas.add(ChartColumnBlockData(text: 'h', backgroundColor: bgColor));
@@ -754,7 +762,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartColumnBlocks = ChartColumnBlocks(
       showTopBlocks: true,
       topDatas: columnTopDatas,
-      topConfig: ChartColumnBlockConfig(height: 40),
+      topConfig: ChartColumnBlockConfig(height: 20),
       showBottomBlocks: true,
       bottomDatas: columnBottomDatas,
     );
@@ -876,8 +884,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       text: 'a',
       backgroundColor: colorLimitClear.withOpacity(1),
       assetImages: [
-        const BlockAssetImage(path: kIconWeatherCloudy),
-        const BlockAssetImage(path: kIconWindOver50, offsetTop: 50),
+        const BlockAssetImage(path: kIconWeatherCloudySvg),
+        const BlockAssetImage(path: kIconWindOver50Svg, offsetTop: 50),
       ],
     ));
     columnBottomDatas.add(ChartColumnBlockData(
@@ -885,15 +893,15 @@ class _LineChartDemoState extends State<LineChartDemo> {
       text: 'b',
       backgroundColor: colorLimitClear,
       assetImages: [
-        const BlockAssetImage(path: kIconWeatherRain),
-        const BlockAssetImage(path: kIconWindOver90, offsetTop: 50),
+        const BlockAssetImage(path: kIconWeatherRainSvg),
+        const BlockAssetImage(path: kIconWindOver90Svg, offsetTop: 50),
       ],
     ));
     columnBottomDatas.add(ChartColumnBlockData(
       time: DateTime(2023, 4, 11),
       text: 'c',
       backgroundColor: colorLimitFew,
-      assetImages: [const BlockAssetImage(path: kIconWeatherRain)],
+      assetImages: [const BlockAssetImage(path: kIconWeatherRainSvg)],
     ));
     columnBottomDatas
         .add(ChartColumnBlockData(time: DateTime(2023, 4, 12), text: 'd', backgroundColor: colorLimitScattered));
