@@ -19,9 +19,11 @@ class CooBarChartDataSeries {
     ),
     this.dataPointLabelPosition = DataPointLabelPos.top,
     this.dataPointLabelPadding = 0,
+    this.barWidth,
     this.minBarWidth, // Not implemented yet
     this.maxBarWidth, // Not implemented yet
     this.barWidthPercentColumn, // Not implemented yet
+    this.barHeight,
   });
 
   /// Die Datenpunkte, die den Line-Chart beschreiben
@@ -42,9 +44,15 @@ class CooBarChartDataSeries {
   final Color? minMaxLineColor;
 
   // Wie breit darf der Bar maximal sein?
+  final int? barWidth;
   final int? minBarWidth;
   final int? maxBarWidth;
   final int? barWidthPercentColumn; // Wieviel Prozent der Column darf der Barchart breit sein?
+
+  // Candle Stick Chart Add-On
+  // TODO move to own chart type
+  // Wenn gesetzt wird der Value als "Mittelpunkt" verwendet und diese höhe / 2 auf jeder Seite draufgerechnet
+  final int? barHeight;
 
   // Configure the text style of all data labels
   final TextStyle dataPointLabelTextStyle;

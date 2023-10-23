@@ -578,11 +578,17 @@ class CooChartPainter extends CustomPainter {
         if (centerDataPointBetweenVerticalGrid) {
           x += xSegementWidthHalf; // add center offset
         }
+
         final startYPos = canvasHeight - padding.bottom - padding.top - bottomColumnHeight - topColumnHeight;
         final dataValue = dataSeriesNormalizedValues[i];
         if (dataValue != null) {
           // Berechnen der Position zum Plotten der Linie
           final y = startYPos - (dataValue * (startYPos)) + padding.top + topColumnHeight;
+
+          var barWidth = xSegementWidthHalf / 1.5;
+          if (localLinechartDataSeries.barWidth != null) {
+            barWidth = localLinechartDataSeries.barWidth!.toDouble() / 2;
+          }
 
           /// Pos(x0,y0) - Pos(x1,y0)
           ///     |                |
@@ -591,10 +597,17 @@ class CooChartPainter extends CustomPainter {
           ///     |                |
           ///     |                |
           /// Pos(x0,y1)  -  Pos(x1,y1)
-          double x0 = x - (xSegementWidthHalf / 1.5);
+          double x0 = x - barWidth;
           double y0 = y;
-          double x1 = x + (xSegementWidthHalf / 1.5);
+          double x1 = x + barWidth;
           double y1 = startYPos + padding.top + topColumnHeight;
+
+          if (localLinechartDataSeries.barHeight != null) {
+            // Ist eigentlich ein Candle-Stick-Chart
+            // TODO move to candle stick chart
+            y0 = y0 - (localLinechartDataSeries.barHeight!.toDouble() / 2);
+            y1 = y0 + localLinechartDataSeries.barHeight!.toDouble();
+          }
 
           var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
 
@@ -1381,6 +1394,21 @@ class CooChartPainter extends CustomPainter {
     if (!centerDataPointBetweenVerticalGrid) {
       xGridLineCount -= 1;
     }
+
+    // TODO in Default Theme auslagern
+    final TextStyle textStyleNormal = config.textStyle ??
+        const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        );
+    final TextStyle textStyleHighlight = config.textStyleHightlight ??
+        const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Colors.grey,
+        );
+
     double xOffsetInterval = chartWidth / (xGridLineCount);
     for (int i = 0; i < xGridLineCount; i++) {
       final columnData = columnDatas[i];
@@ -1390,20 +1418,7 @@ class CooChartPainter extends CustomPainter {
         x += xSegementWidthHalf; // add center offset
       }
 
-      TextStyle textStyle;
-      if (i == mouseInRectYIndex) {
-        textStyle = const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        );
-      } else {
-        textStyle = const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.normal,
-          color: Colors.grey,
-        );
-      }
+      final TextStyle textStyle = (i == mouseInRectYIndex) ? textStyleHighlight : textStyleNormal;
 
       // Die letzte vertikale Linie muss bei Centered zusätzlich gezeichnet werden, das nächste Label allerdings
       // nicht, denn das wäre ein nicht vorhandener Datenpunkt zu viel
