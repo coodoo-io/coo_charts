@@ -587,7 +587,7 @@ class CooChartPainter extends CustomPainter {
 
           var barWidth = xSegementWidthHalf / 1.5;
           if (localLinechartDataSeries.barWidth != null) {
-            barWidth = localLinechartDataSeries.barWidth!.toDouble() / 2;
+            barWidth = localLinechartDataSeries.barWidth!.toDouble();
           }
 
           /// Pos(x0,y0) - Pos(x1,y0)
@@ -866,12 +866,16 @@ class CooChartPainter extends CustomPainter {
         bool contains = rect.contains(Offset(tabDownDetails.localPosition.dx, tabDownDetails.localPosition.dy));
         if (contains && chartTabInfo.tabCount != chartTabInfo.tabCountCallbackInvocation) {
           chartTabInfo.tabCountCallbackInvocation = chartTabInfo.tabCountCallbackInvocation + 1;
+
+          // Linechart callback
           if (chartType == CooChartType.line && onLineChartDataPointTabCallback != null) {
             final selectedDataPoints = lineChartDataPointsByColumnIndex[i] ?? List.empty(growable: false);
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              onLineChartDataPointTabCallback!(i, selectedDataPoints)!;
+              onLineChartDataPointTabCallback!(i, selectedDataPoints);
             });
           }
+
+          // Barchchart callback
           if (chartType == CooChartType.bar && onBarChartDataPointTabCallback != null) {
             final selectedDataPoints = barChartDataPointsByColumnIndex[i] ?? List.empty(growable: false);
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
