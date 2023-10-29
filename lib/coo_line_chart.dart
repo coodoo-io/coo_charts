@@ -27,6 +27,8 @@ class CooLineChart extends StatefulWidget {
     this.xAxisConfig = const XAxisConfig(),
     this.padding = const ChartPadding(),
     this.onDataPointTab,
+    this.xAxisStepLineTopLabelCallback,
+    this.xAxisStepLineBottomLabelCallback,
   });
 
   final List<CooLineChartDataSeries> dataSeries;
@@ -45,6 +47,10 @@ class CooLineChart extends StatefulWidget {
   /// First parameter: Column index (starts at 0)
   /// Second parameter: the [CooLineChartDataPoint] objects which are in this tabbed column
   final Function(int, List<CooLineChartDataPoint>)? onDataPointTab;
+
+  /// If given every step this callback will be invoekd
+  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelCallback;
+  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelCallback;
 
   @override
   State<CooLineChart> createState() => _CooLineChartState();
@@ -123,6 +129,8 @@ class _CooLineChartState extends State<CooLineChart> {
                 columLegendsAssetImages: columLegendsAssetImages,
                 columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
                 onLineChartDataPointTabCallback: widget.onDataPointTab,
+                xAxisStepLineTopLabelCallback: widget.xAxisStepLineTopLabelCallback,
+                xAxisStepLineBottomLabelCallback: widget.xAxisStepLineBottomLabelCallback,
               ),
             ),
           ),

@@ -13,6 +13,8 @@ class XAxisConfig {
     this.startNumber = 0, // If value type is number -> startnumber
     this.labelBottomPostfix,
     this.labelTopPostfix,
+    this.stepAxisLineStart,
+    this.stepAxisLine,
   });
 
   /// Shoud the x-axis be printed. Default is true
@@ -40,6 +42,13 @@ class XAxisConfig {
   final String? labelBottomPostfix;
   final String? labelTopPostfix;
 
+  /// Print every given step, started at axisStepStart or 0 an x-axis line
+  /// If given no other axis lines will be printed
+  final int? stepAxisLine;
+
+  // start step for the first printed x-axise line
+  final int? stepAxisLineStart;
+
   XAxisConfig copyWith({
     bool? showAxis,
     XAxisValueType? valueType,
@@ -50,6 +59,8 @@ class XAxisConfig {
     int? startNumber,
     String? labelBottomPostfix,
     String? labelTopPostfix,
+    int? stepAxisLine,
+    int? stepAxisLineStart,
   }) {
     return XAxisConfig(
       showAxis: showAxis ?? this.showAxis,
@@ -61,6 +72,8 @@ class XAxisConfig {
       startNumber: startNumber ?? this.startNumber,
       labelBottomPostfix: labelBottomPostfix ?? this.labelBottomPostfix,
       labelTopPostfix: labelTopPostfix ?? this.labelTopPostfix,
+      stepAxisLine: stepAxisLine ?? this.stepAxisLine,
+      stepAxisLineStart: stepAxisLineStart ?? this.stepAxisLineStart,
     );
   }
 }

@@ -19,15 +19,4 @@ class ChartUtil {
     }
     return normalizedDataPoints;
   }
-
-// Generates random double Values which can be uses für chart point data.
-  static List<double> generateRandomDataPoints({int count = 20, int maxValue = 100}) {
-    var dps = List<double>.empty(growable: true);
-    for (var i = 0; i < count; i++) {
-      var randomNumber = Random().nextDouble() * maxValue;
-      dps.add(randomNumber);
-    }
-
-    return dps;
-  }
 }
