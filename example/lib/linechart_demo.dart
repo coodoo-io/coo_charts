@@ -16,6 +16,7 @@ import 'package:coo_charts/x_axis_value_type.enum.dart';
 import 'package:coo_charts/y_axis_config.dart';
 import 'package:coo_charts_example/linechart_demo_util.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 const kIconWeatherCloudySvg = 'assets/sym_cloudy.svg';
 const kIconWeatherRainSvg = 'assets/sym_rain.svg';
@@ -1136,7 +1137,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     };
 
     xAxisStepLineTopLabelCallback = (index, cooLineChartDataPoints) {
-      return 'top';
+      return DateFormat.E().format(cooLineChartDataPoints[0].time!);
     };
 
     final now = DateTime.now();

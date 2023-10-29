@@ -1039,7 +1039,7 @@ class CooChartPainter extends CustomPainter {
 
         // Top Labels
         if (xAxisStepLineTopLabelCallback != null) {
-          topLabel = xAxisStepLineTopLabelCallback!(i, []);
+          topLabel = xAxisStepLineTopLabelCallback!(i, lineChartDataPointsByColumnIndex[i]!);
         } else {
           switch (xAxisConfig.valueType) {
             case XAxisValueType.date:
@@ -1057,7 +1057,7 @@ class CooChartPainter extends CustomPainter {
 
         // Bottom Labels
         if (xAxisStepLineBottomLabelCallback != null) {
-          bottomLabel = xAxisStepLineBottomLabelCallback!(i, []);
+          bottomLabel = xAxisStepLineBottomLabelCallback!(i, lineChartDataPointsByColumnIndex[i]!);
         } else {
           switch (xAxisConfig.valueType) {
             case XAxisValueType.date:
