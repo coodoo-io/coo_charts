@@ -10,8 +10,8 @@ class ChartConfig {
   const ChartConfig({
     this.curvedLine = false,
     this.crosshair = false,
-    this.showGridHorizontal = false,
-    this.showGridVertical = false,
+    this.showGridHorizontal = true,
+    this.showGridVertical = true,
     this.showDataPath = true,
     this.highlightMouseColumn = true,
     this.hightlightColumnColor,

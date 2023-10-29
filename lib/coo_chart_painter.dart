@@ -49,6 +49,8 @@ class CooChartPainter extends CustomPainter {
     required this.columLegendsAssetSvgPictureInfos,
     this.onLineChartDataPointTabCallback,
     this.onBarChartDataPointTabCallback,
+    this.xAxisStepLineTopLabelCallback,
+    this.xAxisStepLineBottomLabelCallback,
   }) {
     chartWidth = canvasWidth - padding.left - padding.right;
     chartHeight = canvasHeight - padding.bottom - padding.top;
@@ -146,6 +148,9 @@ class CooChartPainter extends CustomPainter {
   // eigenen Objekt halten. Dann könnte man auch den nächstgelegenen Punkt zum Maus Pointer herausfinden
   final Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex = {};
   final Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex = {};
+
+  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelCallback;
+  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelCallback;
 
   final Map<Rect, int> chartRectYPos = {}; // Merken welches Rect bei welcher Y-Pos liegt
 
@@ -604,7 +609,8 @@ class CooChartPainter extends CustomPainter {
 
           if (localLinechartDataSeries.barHeight != null) {
             // Ist eigentlich ein Candle-Stick-Chart
-            // TODO move to candle stick chart
+            // TODO move to candle sti
+            //ck chart
             y0 = y0 - (localLinechartDataSeries.barHeight!.toDouble() / 2);
             y1 = y0 + localLinechartDataSeries.barHeight!.toDouble();
           }
@@ -969,8 +975,9 @@ class CooChartPainter extends CustomPainter {
       bottomDateFormat = DateFormat(xAxisConfig.bottomDateFormat);
     }
 
+    var stepCount = 0;
     int startNumber = xAxisConfig.startNumber;
-    gridLineLoop:
+    axisStepLoop:
     for (int i = 0; i <= xGridLineCount; i++) {
       double x = (xOffsetInterval * i) + padding.left;
       double xVerticalGridline = x;
@@ -979,10 +986,21 @@ class CooChartPainter extends CustomPainter {
       }
 
       // Don't draw the first vertical grid line because there is already the y-Axis line
+      // Draw only vertical lines if general config enabled it and no individual config is given
+      bool isStepAxisLine = false;
       if (i != 0 && showGridVertical) {
-        canvas.drawLine(
-            Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), _gridPaint);
+        if (xAxisConfig.stepAxisLine == null) {
+          canvas.drawLine(
+              Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), _gridPaint);
+        } else if (i == xAxisConfig.stepAxisLineStart || stepCount % xAxisConfig.stepAxisLine! == 0) {
+          isStepAxisLine = true;
+          // Nur zeichen wenn der Start Step oder der konfigierte Step ab dem start übereinstimmt
+          canvas.drawLine(
+              Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), _gridPaint);
+          stepCount = 0;
+        }
       }
+      stepCount++;
 
       // draw highlight vertical line on mouse-over
       if (highlightPointsVerticalLine && i != 0 && i == mouseInRectYIndex) {
@@ -991,7 +1009,11 @@ class CooChartPainter extends CustomPainter {
 
       if (!xAxisConfig.showTopLabels && !xAxisConfig.showBottomLabels) {
         // Es sollen keine Labels gemalt werden - können uns diese Auswertung sparen.
-        continue gridLineLoop;
+        continue axisStepLoop;
+      }
+      // Wenn ein axis step konfiguriert ist soll auch nur dann das Label geschrieben werden
+      if (xAxisConfig.stepAxisLine != null && (!isStepAxisLine || i < (xAxisConfig.stepAxisLine! / 4))) {
+        continue axisStepLoop;
       }
 
       TextStyle textStyle;
@@ -1014,23 +1036,41 @@ class CooChartPainter extends CustomPainter {
       if (!centerDataPointBetweenVerticalGrid || i != xGridLineCount) {
         late String topLabel;
         late String bottomLabel;
-        switch (xAxisConfig.valueType) {
-          case XAxisValueType.date:
-          case XAxisValueType.datetime:
-            topLabel = topDateFormat!.format(allDateTimeXAxisValues[i]);
-            bottomLabel = bottomDateFormat!.format(allDateTimeXAxisValues[i]);
-            break;
-          case XAxisValueType.number:
-            bottomLabel = startNumber.toString();
-            topLabel = startNumber.toString();
-            break;
+
+        // Top Labels
+        if (xAxisStepLineTopLabelCallback != null) {
+          topLabel = xAxisStepLineTopLabelCallback!(i, []);
+        } else {
+          switch (xAxisConfig.valueType) {
+            case XAxisValueType.date:
+            case XAxisValueType.datetime:
+              topLabel = topDateFormat!.format(allDateTimeXAxisValues[i]);
+              break;
+            case XAxisValueType.number:
+              topLabel = startNumber.toString();
+              break;
+          }
+          if (xAxisConfig.labelTopPostfix != null) {
+            topLabel = '$topLabel ${xAxisConfig.labelTopPostfix}';
+          }
         }
 
-        if (xAxisConfig.labelTopPostfix != null) {
-          topLabel = '$topLabel ${xAxisConfig.labelTopPostfix}';
-        }
-        if (xAxisConfig.labelBottomPostfix != null) {
-          topLabel = '$topLabel ${xAxisConfig.labelBottomPostfix}';
+        // Bottom Labels
+        if (xAxisStepLineBottomLabelCallback != null) {
+          bottomLabel = xAxisStepLineBottomLabelCallback!(i, []);
+        } else {
+          switch (xAxisConfig.valueType) {
+            case XAxisValueType.date:
+            case XAxisValueType.datetime:
+              bottomLabel = bottomDateFormat!.format(allDateTimeXAxisValues[i]);
+              break;
+            case XAxisValueType.number:
+              bottomLabel = startNumber.toString();
+              break;
+          }
+          if (xAxisConfig.labelBottomPostfix != null) {
+            bottomLabel = '$bottomLabel ${xAxisConfig.labelBottomPostfix}';
+          }
         }
 
         startNumber++;
@@ -1040,8 +1080,15 @@ class CooChartPainter extends CustomPainter {
           _axisLabelPainter.layout();
           // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
           final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
+
           // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
-          final xPos = x - (xOffsetInterval / 2) + xPosCenter;
+          final double xPos;
+          if (isStepAxisLine) {
+            // Es müssen Anzahl steps * breite Column für den Offset nehmen
+            xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
+          } else {
+            xPos = x - (xOffsetInterval / 2) + xPosCenter;
+          }
           _axisLabelPainter.paint(canvas, Offset(xPos, padding.top.toDouble() - 25));
         }
 
@@ -1051,9 +1098,17 @@ class CooChartPainter extends CustomPainter {
           // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
           final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
           // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
-          final xPos = x - (xOffsetInterval / 2) + xPosCenter;
+          final double xPos;
+          if (isStepAxisLine) {
+            // Es müssen Anzahl steps * breite Column für den Offset nehmen
+            xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
+          } else {
+            xPos = x - (xOffsetInterval / 2) + xPosCenter;
+          }
           _axisLabelPainter.paint(canvas, Offset(xPos, chartHeight + padding.top + 10));
         }
+
+        stepCount++;
       }
     }
   }

@@ -3,18 +3,18 @@ import 'package:coo_charts/chart_column_block_config_image.dart';
 import 'package:coo_charts/chart_column_block_data.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_config.dart';
-import 'package:coo_charts/chart_util.dart';
-import 'package:coo_charts/coo_bar_chart_data_point.dart';
-import 'package:coo_charts/coo_chart_type.enum.dart';
 import 'package:coo_charts/coo_bar_chart.dart';
+import 'package:coo_charts/coo_bar_chart_data_point.dart';
+import 'package:coo_charts/coo_bar_chart_data_series.dart';
+import 'package:coo_charts/coo_chart_type.enum.dart';
 import 'package:coo_charts/coo_line_chart.dart';
 import 'package:coo_charts/coo_line_chart_data_point.dart';
 import 'package:coo_charts/coo_line_chart_data_series.dart';
-import 'package:coo_charts/coo_bar_chart_data_series.dart';
 import 'package:coo_charts/data_point_label_pos.enum.dart';
 import 'package:coo_charts/x_axis_config.dart';
 import 'package:coo_charts/x_axis_value_type.enum.dart';
 import 'package:coo_charts/y_axis_config.dart';
+import 'package:coo_charts_example/linechart_demo_util.dart';
 import 'package:flutter/material.dart';
 
 const kIconWeatherCloudySvg = 'assets/sym_cloudy.svg';
@@ -36,6 +36,9 @@ class LineChartDemo extends StatefulWidget {
 class _LineChartDemoState extends State<LineChartDemo> {
   late List<CooLineChartDataSeries> linechartDataSeries = List.empty(growable: true);
   late List<CooBarChartDataSeries> barchartDataSeries = List.empty(growable: true);
+
+  String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelCallback;
+  String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelCallback;
 
   ChartColumnBlocks? chartColumnBlocks;
   ChartConfig chartConfig = const ChartConfig();
@@ -61,13 +64,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
     super.initState();
     // _generateKachelmann14TageWetterTrend();
     // _generateKachelmannSonnenscheindauerTrend();
-    _generateKachelmannWindoenForecast();
+    // _generateKachelmannWindoenForecast();
     // _generateBarchart1Bis10();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
     // _genrateRandomCooLinechartDataPoints();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
+    _generateLargeVorhersageHourly();
   }
 
   @override
@@ -104,6 +108,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
                               print('Tab $index - ${cooLinechartDataPoints[0].value}'),
                           xAxisConfig: xAxisConfig,
                           yAxisConfig: yAxisConfig,
+                          xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelCallback,
+                          xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelCallback,
                         ),
                       CooChartType.bar => CooBarChart(
                           dataSeries: barchartDataSeries,
@@ -310,6 +316,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisConfig = const XAxisConfig();
 
     chartColumnBlocks = null;
+    xAxisStepLineBottomLabelCallback = null;
   }
 
   _create0To10To0ValuesChartDataPoints() {
@@ -429,7 +436,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
     var cooLinechartDataPoints = List<CooLineChartDataPoint>.empty(growable: true);
 
-    var generatedValues = ChartUtil.generateRandomDataPoints(count: count, maxValue: maxValue);
+    var generatedValues = LineChartDemoUtil.generateRandomDataPoints(count: count, maxValue: maxValue);
     for (double value in generatedValues) {
       CooLineChartDataPoint dataPoint = CooLineChartDataPoint(value: value, label: value.toString());
       cooLinechartDataPoints.add(dataPoint);
@@ -1113,5 +1120,59 @@ class _LineChartDemoState extends State<LineChartDemo> {
       label: 'Temperatur',
       showDataLabels: true,
     ));
+  }
+
+  _generateLargeVorhersageHourly() {
+    _resetToDefault();
+    linechartDataSeries.clear();
+    chartType = CooChartType.line;
+    yAxisConfig = yAxisConfig.copyWith(
+      labelCount: 10,
+      labelPostfix: '°C',
+    );
+
+    xAxisStepLineBottomLabelCallback = (index, cooLineChartDataPoints) {
+      return 'bottom';
+    };
+
+    xAxisStepLineTopLabelCallback = (index, cooLineChartDataPoints) {
+      return 'top';
+    };
+
+    final now = DateTime.now();
+    final mitternacht = now.copyWith(hour: 0, minute: 0, microsecond: 0, millisecond: 0).add(const Duration(days: 1));
+    final hourDiff = mitternacht.difference(now).inHours + 1;
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'H',
+      showTopLabels: true,
+      showBottomLabels: true,
+      stepAxisLine: 24,
+      stepAxisLineStart: hourDiff,
+    );
+
+    {
+      final dataPoints1 = LineChartDemoUtil.createDataPoints(
+        maxDataPointCount: 170,
+        minValue: 20,
+        maxValue: 22,
+      );
+      linechartDataSeries.add(CooLineChartDataSeries(dataPoints: dataPoints1, showDataPoints: false));
+    }
+    {
+      final dataPoints1 = LineChartDemoUtil.createDataPoints(
+        maxDataPointCount: 330,
+        minValue: 10,
+        maxValue: 12,
+        addNullValues: true,
+      );
+      linechartDataSeries.add(CooLineChartDataSeries(dataPoints: dataPoints1, showDataPoints: false));
+    }
+    // linechartDataSeries.add(CooLineChartDataSeries(
+    //     dataPoints: LineChartDemoUtil.createDataPoints(
+    //   maxDataPointCount: 10,
+    //   minValue: 10,
+    //   maxValue: 32,
+    // )));
   }
 }
