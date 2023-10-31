@@ -30,6 +30,8 @@ class CooChartPainter extends CustomPainter {
     this.columnBlocks,
     required this.canvasWidth,
     required this.canvasHeight,
+    this.canvasBackgroundColor,
+    required this.canvasBackgroundPaintingStyle,
     required this.curvedLine,
     required this.mousePosition,
     required this.chartTabInfo,
@@ -89,6 +91,8 @@ class CooChartPainter extends CustomPainter {
   final double canvasHeight;
   final double canvasWidth;
   final ChartPadding padding;
+  final Color? canvasBackgroundColor;
+  final PaintingStyle canvasBackgroundPaintingStyle;
 
   final Offset? mousePosition; // Position des Mauszeigers - wird für das Fadenkreuz benötigt (interne Variable)
   final ChartTabInfo chartTabInfo;
@@ -209,16 +213,17 @@ class CooChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     /// Chart canvas size to draw on
 
-    CooChartPainterUtil.drawAxis(
-      canvas: canvas,
-      padding: padding,
-      axisPaint: _axisPaint,
-      canvasWidth: canvasWidth,
-      canvasHeight: canvasHeight,
-      showYAxis: yAxisConfig.showAxis,
-      showXAxis: xAxisConfig.showAxis,
-      showFullRect: true,
-    );
+    CooChartPainterUtil.drawCanvasAndAxis(
+        canvas: canvas,
+        padding: padding,
+        axisPaint: _axisPaint,
+        canvasWidth: canvasWidth,
+        canvasHeight: canvasHeight,
+        showYAxis: yAxisConfig.showAxis,
+        showXAxis: xAxisConfig.showAxis,
+        showFullRect: true,
+        backgroundColor: canvasBackgroundColor,
+        backgroundPaintingStyle: canvasBackgroundPaintingStyle);
 
     // Berechnet die Spalten für alle Datenpunkte und setzt den Index welche Column für die
     // darüberliegende Maus gerade aktiv ist.
@@ -261,7 +266,7 @@ class CooChartPainter extends CustomPainter {
         chartWidth: chartWidth,
         chartHeigt: chartHeight,
         mousePosition: mousePosition,
-        minDataPointValue: minDataPointValue!,
+        minDataPointValue: minDataPointValue,
         yAxisConfig: yAxisConfig,
         yAxisMaxValue: yAxisMaxValue!,
         yAxisMinValue: yAxisMinValue!,
@@ -275,7 +280,7 @@ class CooChartPainter extends CustomPainter {
         chartWidth: chartWidth,
         chartHeigt: chartHeight,
         mousePosition: mousePosition,
-        minDataPointValue: minDataPointValue!,
+        minDataPointValue: minDataPointValue,
         yAxisConfig: yAxisConfig,
         yAxisMaxValue: yAxisMaxValue!,
         yAxisMinValue: yAxisMinValue!,
@@ -687,14 +692,14 @@ class CooChartPainter extends CustomPainter {
 
     List<double?> minPointsNormalized = CooChartPainterUtil.normalizeChartDataPoints(
       linechartDataPoints: minPoints,
-      minDataPointValue: minDataPointValue!,
+      minDataPointValue: minDataPointValue,
       yAxisMinValue: yAxisMinValue!,
       yAxisMaxValue: yAxisMaxValue!,
       yAxisConfig: yAxisConfig,
     );
     List<double?> maxPointsNormalized = CooChartPainterUtil.normalizeChartDataPoints(
       linechartDataPoints: maxPoints,
-      minDataPointValue: minDataPointValue!,
+      minDataPointValue: minDataPointValue,
       yAxisMinValue: yAxisMinValue!,
       yAxisMaxValue: yAxisMaxValue!,
       yAxisConfig: yAxisConfig,
@@ -1280,12 +1285,12 @@ class CooChartPainter extends CustomPainter {
 
         // Min- und Max-Value herausfinden (Nulls beachten und ignorieren)
         final maxValueTmp = values.cast<double>().reduce(max);
-        if (maxDataPointValue == null || maxDataPointValue! < maxValueTmp) {
+        if (maxDataPointValue < maxValueTmp) {
           maxDataPointValue = maxValueTmp;
           yAxisMaxValue = maxValueTmp;
         }
         final minValueTmp = values.cast<double>().reduce(min);
-        if (minDataPointValue == null || minDataPointValue! > minValueTmp) {
+        if (minDataPointValue > minValueTmp) {
           minDataPointValue = minValueTmp;
           yAxisMinValue = minValueTmp;
         }
@@ -1300,7 +1305,7 @@ class CooChartPainter extends CustomPainter {
 
         if (maxValues.isNotEmpty) {
           final maxValuesMax = maxValues.cast<double>().reduce(max);
-          if (maxDataPointValue == null || maxDataPointValue! < maxValuesMax) {
+          if (maxDataPointValue < maxValuesMax) {
             maxDataPointValue = maxValuesMax;
             yAxisMaxValue = maxValuesMax;
           }
@@ -1312,7 +1317,7 @@ class CooChartPainter extends CustomPainter {
 
         if (minValues.isNotEmpty) {
           final minValuesMin = minValues.cast<double>().reduce(min);
-          if (minDataPointValue == null || minDataPointValue! > minValuesMin) {
+          if (minDataPointValue > minValuesMin) {
             minDataPointValue = minValuesMin;
             yAxisMinValue = minValuesMin;
           }
@@ -1338,12 +1343,12 @@ class CooChartPainter extends CustomPainter {
 
         // Min- und Max-Value herausfinden (Nulls beachten und ignorieren)
         final maxValueTmp = values.cast<double>().reduce(max);
-        if (maxDataPointValue == null || maxDataPointValue! < maxValueTmp) {
+        if (maxDataPointValue < maxValueTmp) {
           maxDataPointValue = maxValueTmp;
           yAxisMaxValue = maxValueTmp;
         }
         final minValueTmp = values.cast<double>().reduce(min);
-        if (minDataPointValue == null || minDataPointValue! > minValueTmp) {
+        if (minDataPointValue > minValueTmp) {
           minDataPointValue = minValueTmp;
           yAxisMinValue = minValueTmp;
         }
@@ -1355,27 +1360,27 @@ class CooChartPainter extends CustomPainter {
       // Es darf unten und oben etwas Platz gelassen werden- daher wird dynamisch etwas oben und unten dazugerechnet.
       // Liegt kein Wert unterhalb von und und ist die Differenz zu 0 im Vergleich zum Max -> obere Grenze kleiner,
       // wird unten immer bei 0 in der Y-Achsen-Skala angefangen
-      var orgStep = ((maxDataPointValue! - minDataPointValue!) / (yAxisConfig.labelCount));
+      var orgStep = ((maxDataPointValue - minDataPointValue) / (yAxisConfig.labelCount));
 
-      var maxValueInt = (maxDataPointValue! + (orgStep)).toInt();
-      var minValueInt = (minDataPointValue! - (orgStep)).toInt();
+      var maxValueInt = (maxDataPointValue + (orgStep)).toInt();
+      var minValueInt = (minDataPointValue - (orgStep)).toInt();
       int diff = maxValueInt - minValueInt;
       // tmpStep wird benötigt um Puffer zu addieren. Man könnte auch 10% vom Range nehmen..
       var tmpStep = ((diff / yAxisConfig.labelCount) + 1).toInt();
 
-      if (yAxisConfig.minLabelValue != null && yAxisConfig.minLabelValue! < minDataPointValue!) {
+      if (yAxisConfig.minLabelValue != null && yAxisConfig.minLabelValue! < minDataPointValue) {
         yAxisMinValue = yAxisConfig.minLabelValue;
       } else {
         yAxisMinValue = minValueInt.toDouble();
 
         // Wenn kein Wert unter 0 vorhanden ist kann Min auf 0 gesetzt werden
         // Für den Betrachter optisch besser.
-        if (minDataPointValue! >= 0 && yAxisMinValue! < 0) {
+        if (minDataPointValue >= 0 && yAxisMinValue! < 0) {
           yAxisMinValue = 0;
         }
       }
 
-      if (yAxisConfig.maxLabelValue != null && yAxisConfig.maxLabelValue! > maxDataPointValue!) {
+      if (yAxisConfig.maxLabelValue != null && yAxisConfig.maxLabelValue! > maxDataPointValue) {
         yAxisMaxValue = yAxisConfig.maxLabelValue;
       } else {
         // Der max-Value muss aus den ermittelten Steps berechnet werden
@@ -1383,7 +1388,7 @@ class CooChartPainter extends CustomPainter {
 
         // Manchmal kommt es vor, dass die Ermittlung des Puffers und des Steps zu gering ist
         // In diesem Fall muss die Step-Größe um eins erhöht werden um das max zu ermitteln
-        if (yAxisMaxValue! < maxDataPointValue!) {
+        if (yAxisMaxValue! < maxDataPointValue) {
           tmpStep += 1;
           yAxisMaxValue = yAxisMinValue! + (tmpStep * (yAxisConfig.labelCount - 1));
         }
@@ -1400,11 +1405,11 @@ class CooChartPainter extends CustomPainter {
     } else {
       // Der niedrigste
       // Daten punkt soll unten direkt auf der X-Achse liegen. Kein Puffer dazwischenrechnen
-      yAxisSteps = ((maxDataPointValue! - minDataPointValue!) / (yAxisConfig.labelCount - 1));
+      yAxisSteps = ((maxDataPointValue - minDataPointValue) / (yAxisConfig.labelCount - 1));
 
       // Sonderfall: wenn zwischen min und Max die anzahl an möglichen Skalierungspunkten als ganze Zahlen
       // verwendet werden können, dann bekommt max oben ein bisschen padding
-      var scalePotential = maxDataPointValue! / yAxisConfig.labelCount;
+      var scalePotential = maxDataPointValue / yAxisConfig.labelCount;
       if (scalePotential > 0) {
         yAxisSteps = (scalePotential + 1).toInt().toDouble();
         yAxisMaxValue = yAxisMinValue! + (yAxisSteps * (yAxisConfig.labelCount - 1));

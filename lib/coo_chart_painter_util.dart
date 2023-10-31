@@ -26,7 +26,7 @@ class CooChartPainterUtil {
   ///     |                                 |
   ///     |                                 |
   /// Pos(x0,y1) ---------------------- Pos(x1,y1)
-  static void drawAxis({
+  static void drawCanvasAndAxis({
     required Canvas canvas,
     required Paint axisPaint,
     required ChartPadding padding,
@@ -35,6 +35,8 @@ class CooChartPainterUtil {
     required bool showYAxis,
     required bool showXAxis,
     required bool showFullRect,
+    Color? backgroundColor,
+    required PaintingStyle backgroundPaintingStyle,
   }) {
     double x0 = padding.left.toDouble(); // Links erste X-Pos
     double x1 = canvasWidth - padding.right; // Rechts zweite X-Pos
@@ -44,6 +46,16 @@ class CooChartPainterUtil {
     Offset posX0Y1 = Offset(x0, y1);
     Offset posX1Y0 = Offset(x1, y0);
     Offset posX1Y1 = Offset(x1, y1);
+
+    if (backgroundColor != null) {
+      final Paint backgroundPaint = Paint()
+        ..color = backgroundColor
+        ..strokeWidth = 10
+        ..style = backgroundPaintingStyle;
+      var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
+      canvas.drawRect(rect, backgroundPaint);
+    }
+
     if (showXAxis) {
       // X-Achse unten
       canvas.drawLine(posX0Y1, posX1Y1, axisPaint);

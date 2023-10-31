@@ -112,6 +112,8 @@ class _CooLineChartState extends State<CooLineChart> {
                 columnBlocks: widget.columnBlocks,
                 canvasWidth: width,
                 canvasHeight: height,
+                canvasBackgroundColor: widget.chartConfig.canvasBackgroundColor,
+                canvasBackgroundPaintingStyle: widget.chartConfig.canvasBackgroundPaintingStyle,
                 padding: widget.padding,
                 mousePosition: _mousePointer,
                 chartTabInfo: chartTabInfo,

@@ -20,7 +20,12 @@ class ChartConfig {
     this.highlightPointsVerticalLine = false,
     this.highlightPointsHorizontalLine = false,
     this.centerDataPointBetweenVerticalGrid = true,
+    this.canvasBackgroundColor,
+    this.canvasBackgroundPaintingStyle = PaintingStyle.fill,
   });
+
+  final Color? canvasBackgroundColor;
+  final PaintingStyle canvasBackgroundPaintingStyle;
 
   /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   final bool curvedLine;
@@ -44,6 +49,8 @@ class ChartConfig {
   final bool centerDataPointBetweenVerticalGrid;
 
   ChartConfig copyWith({
+    Color? canvasBackgroundColor,
+    PaintingStyle? canvasBackgroundPaintingStyle,
     bool? curvedLine,
     bool? crosshair,
     bool? showGridHorizontal,
@@ -60,6 +67,8 @@ class ChartConfig {
     ChartPadding? padding,
   }) {
     return ChartConfig(
+      canvasBackgroundColor: canvasBackgroundColor ?? this.canvasBackgroundColor,
+      canvasBackgroundPaintingStyle: canvasBackgroundPaintingStyle ?? this.canvasBackgroundPaintingStyle,
       curvedLine: curvedLine ?? this.curvedLine,
       crosshair: crosshair ?? this.crosshair,
       showGridHorizontal: showGridHorizontal ?? this.showGridHorizontal,

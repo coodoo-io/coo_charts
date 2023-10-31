@@ -1182,6 +1182,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     _resetToDefault();
     linechartDataSeries.clear();
     chartType = CooChartType.line;
+    chartConfig = chartConfig.copyWith(canvasBackgroundColor: Colors.amber);
     yAxisConfig = yAxisConfig.copyWith(
       showYAxisLables: false,
     );
