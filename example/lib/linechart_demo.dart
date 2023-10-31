@@ -72,7 +72,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _genrateRandomCooLinechartDataPoints();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
-    _generateLargeVorhersageHourly();
+    // _generateLargeVorhersageHourly();
+    _generateEmptyLists();
   }
 
   @override
@@ -1175,5 +1176,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
     //   minValue: 10,
     //   maxValue: 32,
     // )));
+  }
+
+  _generateEmptyLists() {
+    _resetToDefault();
+    linechartDataSeries.clear();
+    chartType = CooChartType.line;
+    yAxisConfig = yAxisConfig.copyWith(
+      showYAxisLables: false,
+    );
   }
 }

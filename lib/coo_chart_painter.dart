@@ -124,8 +124,8 @@ class CooChartPainter extends CustomPainter {
   int maxAbsoluteValueCount = 0;
 
   // Größten und kleinsten Wert merken
-  double? maxDataPointValue; // Größter Wert aller Datenpunkte
-  double? minDataPointValue; // Kleinster Wert aller Datenpunkte
+  double maxDataPointValue = 0; // Größter Wert aller Datenpunkte
+  double minDataPointValue = 0; // Kleinster Wert aller Datenpunkte
   double? yAxisMaxValue; // Größter Wert auf der Y-Achsen-Skala
   double? yAxisMinValue; // Kleinster Wert auf der Y-AchsenSkale
   double yAxisSteps = 0.0; // globale Hilfsvariable zum Berechnen der Datenpunkte
