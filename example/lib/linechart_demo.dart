@@ -67,14 +67,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateKachelmannSonnenscheindauerTrend();
     // _generateKachelmannWindoenForecast();
     // _generateBarchart1Bis10();
-    // _generateMultipleBarchart();
+    _generateMultipleBarchart();
     // _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
     // _genrateRandomCooLinechartDataPoints();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
-    _generateLargeVorhersageHourly();
+    // _generateLargeVorhersageHourly();
     // _generateEmptyLists();
   }
 
@@ -188,7 +188,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   ),
                   ElevatedButton(
                     onPressed: () => setState(() => _generateKachelmannVorhersageXL()),
-                    child: const Text('Kachelmann Vorhersage XL'),
+                    child: const Text('Temperaturkurve'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => _generateLargeVorhersageHourly()),
+                    child: const Text('Große Datenmennge'),
                   ),
                 ],
               ),
@@ -332,6 +336,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisConfig = const XAxisConfig();
 
     chartColumnBlocks = null;
+    xAxisStepLineBottomLabelCallback = null;
+    xAxisStepLineTopLabelCallback = null;
     xAxisStepLineBottomLabelCallback = null;
   }
 

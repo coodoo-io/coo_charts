@@ -1242,8 +1242,24 @@ class CooChartPainter extends CustomPainter {
       allDateTimeValues.removeWhere((element) => element == null);
       allDateTimeValues.sort((a, b) => a!.compareTo(b!));
 
+      allDateTimeValuesLoop:
       for (var dt in allDateTimeValues) {
-        allDateTimesTmp.add(dt!);
+        if (dt == null) {
+          continue allDateTimeValuesLoop;
+        }
+        DateTime cleandDateTime;
+        switch (xAxisConfig.valueType) {
+          case XAxisValueType.date:
+            // Stunde, Minute und MS werden nicht beachtet
+            cleandDateTime = dt.copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+            break;
+          case XAxisValueType.datetime:
+            cleandDateTime = dt.copyWith(microsecond: 0);
+            break;
+          default:
+            cleandDateTime = dt;
+        }
+        allDateTimesTmp.add(cleandDateTime);
       }
 
       for (var i = 0; i < dataSeries.dataPoints.length; i++) {
