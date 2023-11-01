@@ -948,7 +948,7 @@ class CooChartPainter extends CustomPainter {
     if (!centerDataPointBetweenVerticalGrid) {
       xGridLineCount -= 1;
     }
-    double xOffsetInterval = chartWidth / (xGridLineCount);
+    double xOffsetInterval = xGridLineCount == 0 ? chartWidth : chartWidth / (xGridLineCount);
     double xBottomPos = chartHeight + padding.top;
 
     // In case of a date label define the default date format
@@ -1559,7 +1559,7 @@ class CooChartPainter extends CustomPainter {
             // Deswegen wird das schlechtere von SVG zu PNG transformierte Bild gezeichnet
             // canvas.drawPicture(columLegendsAssetSvgPictureInfos[blockAssetImage.path]!.picture);
 
-            canvas.drawImage(image, Offset(xPos, yPos), Paint());
+            canvas.drawImage(image, Offset(xPos, yPos), Paint()..filterQuality = FilterQuality.high);
           }
         }
       }

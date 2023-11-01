@@ -1,5 +1,3 @@
-import 'dart:math';
-
 class ChartUtil {
   /// Generates a list with all given datapoints mapped between 0.0 and 1.0 relative to their original range.
   static List<double> normalizeChartDataPoints(List<double> dataPoints) {

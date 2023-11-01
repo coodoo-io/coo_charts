@@ -3,6 +3,7 @@ import 'package:coo_charts/chart_column_block_config_image.dart';
 import 'package:coo_charts/chart_column_block_data.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_config.dart';
+import 'package:coo_charts/chart_util.dart';
 import 'package:coo_charts/coo_bar_chart.dart';
 import 'package:coo_charts/coo_bar_chart_data_point.dart';
 import 'package:coo_charts/coo_bar_chart_data_series.dart';
@@ -67,13 +68,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateKachelmannSonnenscheindauerTrend();
     // _generateKachelmannWindoenForecast();
     // _generateBarchart1Bis10();
+    _generateMultipleBarchart1Bis10();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
     // _genrateRandomCooLinechartDataPoints();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
     // _generateLargeVorhersageHourly();
-    _generateEmptyLists();
+    // _generateEmptyLists();
   }
 
   @override
@@ -435,13 +437,16 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   _genrateRandomCooLinechartDataPoints({int count = 30, int maxValue = 100}) {
     _resetToDefault();
+    chartType = CooChartType.line;
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
-    var cooLinechartDataPoints = List<CooLineChartDataPoint>.empty(growable: true);
+    List<CooLineChartDataPoint> cooLinechartDataPoints = [];
 
     var generatedValues = LineChartDemoUtil.generateRandomDataPoints(count: count, maxValue: maxValue);
     for (double value in generatedValues) {
-      CooLineChartDataPoint dataPoint = CooLineChartDataPoint(value: value, label: value.toString());
-      cooLinechartDataPoints.add(dataPoint);
+      cooLinechartDataPoints.add(CooLineChartDataPoint(
+        value: value,
+        label: value.toString(),
+      ));
     }
     linechartDataSeries.clear();
     linechartDataSeries.add(CooLineChartDataSeries(dataPoints: cooLinechartDataPoints, label: 'Random'));
@@ -862,6 +867,59 @@ class _LineChartDemoState extends State<LineChartDemo> {
     barchartDataSeries.add(serie);
   }
 
+  /// Barchart 1-10
+  _generateMultipleBarchart1Bis10() {
+    _resetToDefault();
+    chartType = CooChartType.bar;
+
+    yAxisConfig = yAxisConfig.copyWith(maxLabelValue: 10);
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+    );
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.date,
+      bottomDateFormat: 'dd.MM.',
+    );
+
+    barchartDataSeries.clear();
+
+    List<CooBarChartDataPoint> barChartDataPoints1 = [];
+    {
+      int dataSeries1Size = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeries1Size, minValue: 10, maxValue: 30);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeries1Size; i++) {
+        barChartDataPoints1.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+    }
+    List<CooBarChartDataPoint> barChartDataPoints2 = [];
+    {
+      int dataSeries1Size = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeries1Size, minValue: 10, maxValue: 30);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeries1Size; i++) {
+        barChartDataPoints2.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+    }
+
+    CooBarChartDataSeries serie1 = CooBarChartDataSeries(
+      dataPoints: barChartDataPoints2,
+      barColor: const Color(0xFFfde81a),
+    );
+    CooBarChartDataSeries serie2 = CooBarChartDataSeries(
+      dataPoints: barChartDataPoints1,
+      barColor: Colors.green,
+    );
+    barchartDataSeries.add(serie1);
+    barchartDataSeries.add(serie2);
+  }
+
   // Zeichnet den Kachelmannchart "14 Tage Trend" ()
   // https://kachelmannwetter.com/de/vorhersage/2874225-mainz/14-tage-trend
   _generateKachelmann14TageWetterTrend() {
@@ -1155,7 +1213,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     {
       final dataPoints1 = LineChartDemoUtil.createDataPoints(
-        maxDataPointCount: 170,
+        maxDataPointCount: 100,
         minValue: 20,
         maxValue: 22,
       );
