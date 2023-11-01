@@ -67,8 +67,13 @@ class _CooBarChartState extends State<CooBarChart> {
   @override
   Widget build(BuildContext context) {
     if (widget.columnBlocks != null) {
-      loadColumnDataImageAssets(widget.columnBlocks!, () {
-        setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        loadColumnDataImageAssets(widget.columnBlocks!, () {
+          if (context.mounted) {
+            setState(() {});
+          }
+        });
+        // executes after build
       });
     }
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
