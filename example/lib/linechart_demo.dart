@@ -3,6 +3,7 @@ import 'package:coo_charts/chart_column_block_config_image.dart';
 import 'package:coo_charts/chart_column_block_data.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_config.dart';
+import 'package:coo_charts/chart_util.dart';
 import 'package:coo_charts/coo_bar_chart.dart';
 import 'package:coo_charts/coo_bar_chart_data_point.dart';
 import 'package:coo_charts/coo_bar_chart_data_series.dart';
@@ -63,17 +64,18 @@ class _LineChartDemoState extends State<LineChartDemo> {
   @override
   initState() {
     super.initState();
-    // _generateKachelmann14TageWetterTrend();
     // _generateKachelmannSonnenscheindauerTrend();
     // _generateKachelmannWindoenForecast();
     // _generateBarchart1Bis10();
+    _generateMultipleBarchart();
+    // _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
     // _genrateRandomCooLinechartDataPoints();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
     // _generateLargeVorhersageHourly();
-    _generateEmptyLists();
+    // _generateEmptyLists();
   }
 
   @override
@@ -137,17 +139,29 @@ class _LineChartDemoState extends State<LineChartDemo> {
               Row(
                 children: [
                   ElevatedButton(
+                    onPressed: () => setState(() => _generateEmptyLists()),
+                    child: const Text('Leere Liste'),
+                  ),
+                  ElevatedButton(
                     onPressed: () => setState(() => _generateBarchart1Bis10()),
-                    child: const Text('Barchart 1-10'),
+                    child: const Text('Bar Chart 1-10'),
                   ),
                   ElevatedButton(
                     onPressed: () => setState(() => _generateKachelmannSonnenscheindauerTrend()),
-                    child: const Text('Kachelmann Sonnenschein'),
+                    child: const Text('Bar Chart mit Range'),
                   ),
                   ElevatedButton(
                     onPressed: () => setState(() => _generateKachelmannWindoenForecast()),
-                    child: const Text('Kachelmann Windböen'),
+                    child: const Text('Candle-StickChart'),
                   ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => _generateMultipleBarchart()),
+                    child: const Text('Multiple Bar Charts'),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
                   ElevatedButton(
                     onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
                     child: const Text('Random Daten generieren'),
@@ -174,7 +188,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   ),
                   ElevatedButton(
                     onPressed: () => setState(() => _generateKachelmannVorhersageXL()),
-                    child: const Text('Kachelmann Vorhersage XL'),
+                    child: const Text('Temperaturkurve'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => _generateLargeVorhersageHourly()),
+                    child: const Text('Große Datenmennge'),
                   ),
                 ],
               ),
@@ -319,6 +337,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     chartColumnBlocks = null;
     xAxisStepLineBottomLabelCallback = null;
+    xAxisStepLineTopLabelCallback = null;
+    xAxisStepLineBottomLabelCallback = null;
   }
 
   _create0To10To0ValuesChartDataPoints() {
@@ -435,13 +455,16 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   _genrateRandomCooLinechartDataPoints({int count = 30, int maxValue = 100}) {
     _resetToDefault();
+    chartType = CooChartType.line;
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
-    var cooLinechartDataPoints = List<CooLineChartDataPoint>.empty(growable: true);
+    List<CooLineChartDataPoint> cooLinechartDataPoints = [];
 
     var generatedValues = LineChartDemoUtil.generateRandomDataPoints(count: count, maxValue: maxValue);
     for (double value in generatedValues) {
-      CooLineChartDataPoint dataPoint = CooLineChartDataPoint(value: value, label: value.toString());
-      cooLinechartDataPoints.add(dataPoint);
+      cooLinechartDataPoints.add(CooLineChartDataPoint(
+        value: value,
+        label: value.toString(),
+      ));
     }
     linechartDataSeries.clear();
     linechartDataSeries.add(CooLineChartDataSeries(dataPoints: cooLinechartDataPoints, label: 'Random'));
@@ -862,6 +885,234 @@ class _LineChartDemoState extends State<LineChartDemo> {
     barchartDataSeries.add(serie);
   }
 
+  /// Barchart 1-10
+  _generateMultipleBarchart() {
+    _resetToDefault();
+    chartType = CooChartType.bar;
+
+    yAxisConfig = yAxisConfig.copyWith(maxLabelValue: 10);
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+    );
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.date,
+      bottomDateFormat: 'dd.MM.',
+    );
+
+    barchartDataSeries.clear();
+
+    {
+      List<CooBarChartDataPoint> barChartDataPoints1 = [];
+      int dataSeries1Size = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeries1Size, minValue: 2, maxValue: 33);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeries1Size; i++) {
+        barChartDataPoints1.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie1 = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints1,
+        barColor: const Color(0xFFfde81a),
+      );
+      barchartDataSeries.add(serie1);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints2 = [];
+      int dataSeries1Size = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeries1Size, minValue: 14, maxValue: 20);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeries1Size; i++) {
+        barChartDataPoints2.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie2 = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints2,
+        barColor: Colors.green,
+      );
+      barchartDataSeries.add(serie2);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints3 = [];
+      int dataSeries1Size = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeries1Size, minValue: 20, maxValue: 40);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeries1Size; i++) {
+        barChartDataPoints3.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie3 = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints3,
+        barColor: Colors.blue,
+      );
+      barchartDataSeries.add(serie3);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints = [];
+      int dataSeriesSize = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints,
+        barColor: Colors.red,
+      );
+      barchartDataSeries.add(serie);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints = [];
+      int dataSeriesSize = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints,
+        barColor: Colors.amber,
+      );
+      barchartDataSeries.add(serie);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints = [];
+      int dataSeriesSize = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints,
+        barColor: Colors.blueGrey,
+      );
+      barchartDataSeries.add(serie);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints = [];
+      int dataSeriesSize = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints,
+        barColor: Colors.deepPurpleAccent,
+      );
+      barchartDataSeries.add(serie);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints = [];
+      int dataSeriesSize = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints,
+        barColor: Colors.greenAccent,
+      );
+      barchartDataSeries.add(serie);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints = [];
+      int dataSeriesSize = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints,
+        barColor: Colors.orange,
+      );
+      barchartDataSeries.add(serie);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints = [];
+      int dataSeriesSize = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints,
+        barColor: Colors.teal,
+      );
+      barchartDataSeries.add(serie);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints = [];
+      int dataSeriesSize = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints,
+        barColor: Colors.cyan,
+      );
+      barchartDataSeries.add(serie);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints = [];
+      int dataSeriesSize = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints,
+        barColor: Colors.brown,
+      );
+      barchartDataSeries.add(serie);
+    }
+    {
+      List<CooBarChartDataPoint> barChartDataPoints = [];
+      int dataSeriesSize = 14;
+      final List<double> values =
+          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+        time = time.add(const Duration(days: 1));
+      }
+      CooBarChartDataSeries serie = CooBarChartDataSeries(
+        dataPoints: barChartDataPoints,
+        barColor: Colors.pinkAccent,
+      );
+      barchartDataSeries.add(serie);
+    }
+  }
+
   // Zeichnet den Kachelmannchart "14 Tage Trend" ()
   // https://kachelmannwetter.com/de/vorhersage/2874225-mainz/14-tage-trend
   _generateKachelmann14TageWetterTrend() {
@@ -1134,7 +1385,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     );
 
     xAxisStepLineBottomLabelCallback = (index, cooLineChartDataPoints) {
-      return 'bottom';
+      return 'b';
     };
 
     xAxisStepLineTopLabelCallback = (index, cooLineChartDataPoints) {
@@ -1155,7 +1406,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     {
       final dataPoints1 = LineChartDemoUtil.createDataPoints(
-        maxDataPointCount: 170,
+        maxDataPointCount: 300,
         minValue: 20,
         maxValue: 22,
       );
@@ -1163,7 +1414,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     }
     {
       final dataPoints1 = LineChartDemoUtil.createDataPoints(
-        maxDataPointCount: 330,
+        maxDataPointCount: 830,
         minValue: 10,
         maxValue: 12,
         addNullValues: true,

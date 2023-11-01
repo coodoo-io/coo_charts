@@ -70,12 +70,16 @@ class CooChartPainter extends CustomPainter {
         _initializeNumberLineChartValues();
     }
 
+    // Festlegen wie viel Breite zwischen zwei Datenpunkten liegen kann
+
     if (!centerDataPointBetweenVerticalGrid) {
+      // Es sind die Punkte links und rechts auf der Y-Achse verfügbar
+      // Der erste Datenpunkt liegt direkt auf der Y-Achse
       xSegmentWidth = chartWidth / (maxAbsoluteValueCount - 1);
     } else {
+      // Hier liegen die Punkte zwischen den Linien in der MItte
       xSegmentWidth = chartWidth / maxAbsoluteValueCount;
     }
-
     xSegementWidthHalf = xSegmentWidth / 2;
   }
 
@@ -514,8 +518,9 @@ class CooChartPainter extends CustomPainter {
       }
     }
 
+    final int dataSeriesCount = barchartDataSeries.length;
     // Die Segment-width muss über alle vorhandenen Datenpunkte aller Reihen berechnet werden.
-    for (var i = 0; i < barchartDataSeries.length; i++) {
+    for (var i = 0; i < dataSeriesCount; i++) {
       CooBarChartDataSeries localLinechartDataSeries = barchartDataSeries[i];
       List<String?> dataSeriesLabels = List.empty(growable: true);
 
@@ -564,9 +569,9 @@ class CooChartPainter extends CustomPainter {
         ..color = minMaxRangeLineColor
         ..strokeWidth = 1;
 
-      for (var i = 0; i < dataSeriesNormalizedValues.length; i++) {
+      for (var j = 0; j < dataSeriesNormalizedValues.length; j++) {
         // Lables für den späteren plotten parsen
-        CooBarChartDataPoint dataPoint = localLinechartDataSeries.dataPoints[i];
+        CooBarChartDataPoint dataPoint = localLinechartDataSeries.dataPoints[j];
         if (localLinechartDataSeries.showDataLabels) {
           if (dataPoint.label != null) {
             dataSeriesLabels.add(dataPoint.label!.trim());
@@ -579,26 +584,27 @@ class CooChartPainter extends CustomPainter {
 
         // Vorberechneter X-Wert, der dann für das Bar oder die Linie angepasst werden muss
         // Mittiger X-Wert anhand der Positon der gerade durchlaufenden Data Point
+        // Wenn mehrere BarChart Serien vorhanden sind teilen sie sich den Platz und die X-Pos verändert sich
+        // entsprechend der Anzahl
         double x;
-        if (i == 0) {
+        if (j == 0) {
           x = 0.0 + padding.left;
         } else {
-          x = (i * xSegmentWidth) + padding.left;
+          x = (j * xSegmentWidth) + padding.left;
         }
-        if (centerDataPointBetweenVerticalGrid) {
-          x += xSegementWidthHalf; // add center offset
-        }
+        final multipleBarchartSegmentWidth = xSegmentWidth * 0.12; // Extra Space von links und rechts in einem Segment
+        final multipleSegmentWidth =
+            (xSegmentWidth - multipleBarchartSegmentWidth) / (dataSeriesCount); // Mögliche Gesamtbreite für jeden bar
+        // Verschieben um die serienanzahl der breite -> z.B. 3. Serie muss direkt um 2 * bar-segment-breite verschoben werden
+        // anschließend um die hälfte verschieben, dann ist der bar in der mitte
+        // Dann nochmal um den angepassten platz für das gesamte segment aller bars verschieben
+        x += (i * multipleSegmentWidth) + (multipleSegmentWidth / 2) + (multipleBarchartSegmentWidth / 2);
 
         final startYPos = canvasHeight - padding.bottom - padding.top - bottomColumnHeight - topColumnHeight;
-        final dataValue = dataSeriesNormalizedValues[i];
+        final dataValue = dataSeriesNormalizedValues[j];
         if (dataValue != null) {
           // Berechnen der Position zum Plotten der Linie
           final y = startYPos - (dataValue * (startYPos)) + padding.top + topColumnHeight;
-
-          var barWidth = xSegementWidthHalf / 1.5;
-          if (localLinechartDataSeries.barWidth != null) {
-            barWidth = localLinechartDataSeries.barWidth!.toDouble();
-          }
 
           /// Pos(x0,y0) - Pos(x1,y0)
           ///     |                |
@@ -607,6 +613,17 @@ class CooChartPainter extends CustomPainter {
           ///     |                |
           ///     |                |
           /// Pos(x0,y1)  -  Pos(x1,y1)
+
+          // Durch die X-Verschiebung des Punktes ist die Hälfte des Segments die komplette Breite eines Segments
+          // in der Berechnung
+          var barWidth = xSegementWidthHalf * 0.66; // Default Bar Breite soll 2/3 des Spaltenplaztes einnehmen
+          if (dataSeriesCount > 1) {
+            // Breite muss sich durch die Anzahl der Serien aufteilen
+            barWidth = xSegementWidthHalf / dataSeriesCount * 0.66;
+          }
+          if (localLinechartDataSeries.barWidth != null) {
+            barWidth = localLinechartDataSeries.barWidth!.toDouble();
+          }
           double x0 = x - barWidth;
           double y0 = y;
           double x1 = x + barWidth;
@@ -646,7 +663,7 @@ class CooChartPainter extends CustomPainter {
         if (dataPoint.minValue != null && dataPoint.maxValue != null) {
           // Der normalisierte Wert muss da sein, weil der min und max Wert nicht null sind
           // Horizontale Linie für MAX
-          double maxDataValue = maxPointsNormalized[i]!;
+          double maxDataValue = maxPointsNormalized[j]!;
           final yMax = startYPos - (maxDataValue * (startYPos)) + padding.top;
           double xMax0 = x - (xSegementWidthHalf / 3);
           double yMax0 = yMax + topColumnHeight;
@@ -655,7 +672,7 @@ class CooChartPainter extends CustomPainter {
           canvas.drawLine(Offset(xMax0, yMax0), Offset(xMax1, yMax1), minMaxRangePaint);
 
           // Horizontale Linie für MIN
-          double minDataValue = minPointsNormalized[i]!;
+          double minDataValue = minPointsNormalized[j]!;
           final yMin = startYPos - (minDataValue * (startYPos)) + padding.top;
           double xMin0 = x - (xSegementWidthHalf / 3);
           double yMin0 = yMin + topColumnHeight;
@@ -948,7 +965,7 @@ class CooChartPainter extends CustomPainter {
     if (!centerDataPointBetweenVerticalGrid) {
       xGridLineCount -= 1;
     }
-    double xOffsetInterval = chartWidth / (xGridLineCount);
+    double xOffsetInterval = xGridLineCount == 0 ? chartWidth : chartWidth / (xGridLineCount);
     double xBottomPos = chartHeight + padding.top;
 
     // In case of a date label define the default date format
@@ -1225,8 +1242,24 @@ class CooChartPainter extends CustomPainter {
       allDateTimeValues.removeWhere((element) => element == null);
       allDateTimeValues.sort((a, b) => a!.compareTo(b!));
 
+      allDateTimeValuesLoop:
       for (var dt in allDateTimeValues) {
-        allDateTimesTmp.add(dt!);
+        if (dt == null) {
+          continue allDateTimeValuesLoop;
+        }
+        DateTime cleandDateTime;
+        switch (xAxisConfig.valueType) {
+          case XAxisValueType.date:
+            // Stunde, Minute und MS werden nicht beachtet
+            cleandDateTime = dt.copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+            break;
+          case XAxisValueType.datetime:
+            cleandDateTime = dt.copyWith(microsecond: 0);
+            break;
+          default:
+            cleandDateTime = dt;
+        }
+        allDateTimesTmp.add(cleandDateTime);
       }
 
       for (var i = 0; i < dataSeries.dataPoints.length; i++) {
@@ -1559,7 +1592,7 @@ class CooChartPainter extends CustomPainter {
             // Deswegen wird das schlechtere von SVG zu PNG transformierte Bild gezeichnet
             // canvas.drawPicture(columLegendsAssetSvgPictureInfos[blockAssetImage.path]!.picture);
 
-            canvas.drawImage(image, Offset(xPos, yPos), Paint());
+            canvas.drawImage(image, Offset(xPos, yPos), Paint()..filterQuality = FilterQuality.high);
           }
         }
       }
