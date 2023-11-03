@@ -1099,29 +1099,34 @@ class CooChartPainter extends CustomPainter {
         if (xAxisConfig.showTopLabels) {
           _axisLabelPainter.text = TextSpan(text: topLabel, style: textStyle);
           _axisLabelPainter.layout();
+          final double labelTextWidth = _axisLabelPainter.width;
 
+          // Prüfen ob die Größe noch in den Bereich passt
+          bool textFitsInSpace = true;
+          if (labelTextWidth < (i * (xSegmentWidth - 1))) {
+            // Der Platz reicht für das Label aus
+            textFitsInSpace = true;
+          } else {
+            textFitsInSpace = false;
+          }
           bool drawLabel = true;
           // Wenn ein Axis Step konfiguriert ist soll auch nur dann das Label geschrieben werden,
           // Wenn Platz dafür ist.
           if (xAxisConfig.stepAxisLine != null) {
             if (!isStepAxisLine) {
               drawLabel = false;
-            } else
+            } else if (xAxisConfig.stepAxisLineStart > 0 && i <= xAxisConfig.stepAxisLineStart) {}
 
-            // Prüfen ob die Größe noch in den Bereich passt
-            if (xAxisConfig.stepAxisLineStart > 0 && i <= xAxisConfig.stepAxisLineStart) {
-              // TODO prüfen ob genügend Platz wäre das Label dennoch zu zeichnen
-              drawLabel = false;
-            }
+            // TODO Prüfen ob es auch in den abgeschnittenen Space passt
           }
 
           if (drawLabel) {
             // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-            final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
+            final xPosCenter = (xOffsetInterval / 2) - (labelTextWidth / 2);
 
             // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
             final double xPos;
-            if (isStepAxisLine) {
+            if (isStepAxisLine && textFitsInSpace) {
               // Es müssen Anzahl steps * breite Column für den Offset nehmen
               xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
             } else {
@@ -1134,24 +1139,32 @@ class CooChartPainter extends CustomPainter {
         if (xAxisConfig.showBottomLabels) {
           _axisLabelPainter.text = TextSpan(text: bottomLabel, style: textStyle);
           _axisLabelPainter.layout();
+          final double labelTextWidth = _axisLabelPainter.width;
           bool drawLabel = true;
+          // Prüfen ob die Größe noch in den Bereich passt
+          bool textFitsInSpace = true;
+          // TODO
+          if (labelTextWidth < (i * xSegmentWidth - 1)) {
+            // Der Platz reicht für das Label aus
+            textFitsInSpace = true;
+          } else {
+            textFitsInSpace = false;
+          }
           // Wenn ein Axis Step konfiguriert ist soll auch nur dann das Label geschrieben werden,
           // Wenn Platz dafür ist.
-          if (xAxisConfig.stepAxisLine != null) {
+          if (drawLabel && xAxisConfig.stepAxisLine != null) {
             if (!isStepAxisLine) {
               drawLabel = false;
             } else
 
             // Prüfen ob die Größe noch in den Bereich passt
-            if (xAxisConfig.stepAxisLineStart > 0 && i <= xAxisConfig.stepAxisLineStart) {
-              // TODO prüfen ob genügend Platz wäre das Label dennoch zu zeichnen
-              drawLabel = false;
-            }
+            if (xAxisConfig.stepAxisLineStart > 0 && i <= xAxisConfig.stepAxisLineStart) {}
+            // TODO Prüfen ob es auch in den abgeschnittenen Space passt
           }
 
-          if (drawLabel) {
+          if (drawLabel && textFitsInSpace) {
             // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-            final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
+            final xPosCenter = (xOffsetInterval / 2) - (labelTextWidth / 2);
             // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
             final double xPos;
             if (isStepAxisLine) {

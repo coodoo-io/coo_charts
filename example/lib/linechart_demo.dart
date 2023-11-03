@@ -1385,7 +1385,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     );
 
     xAxisStepLineBottomLabelCallback = (index, cooLineChartDataPoints) {
-      return 'b';
+      return 'basdfasdfasfsadfasdfasdfasd';
     };
 
     xAxisStepLineTopLabelCallback = (index, cooLineChartDataPoints) {
@@ -1406,7 +1406,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     {
       final dataPoints1 = LineChartDemoUtil.createDataPoints(
-        maxDataPointCount: 47,
+        maxDataPointCount: 70,
         minValue: 20,
         maxValue: 22,
       );
