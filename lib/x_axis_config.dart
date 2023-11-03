@@ -13,7 +13,7 @@ class XAxisConfig {
     this.startNumber = 0, // If value type is number -> startnumber
     this.labelBottomPostfix,
     this.labelTopPostfix,
-    this.stepAxisLineStart,
+    this.stepAxisLineStart = 0,
     this.stepAxisLine,
   });
 
@@ -47,7 +47,7 @@ class XAxisConfig {
   final int? stepAxisLine;
 
   // start step for the first printed x-axise line
-  final int? stepAxisLineStart;
+  final int stepAxisLineStart;
 
   XAxisConfig copyWith({
     bool? showAxis,

@@ -67,14 +67,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateKachelmannSonnenscheindauerTrend();
     // _generateKachelmannWindoenForecast();
     // _generateBarchart1Bis10();
-    _generateMultipleBarchart();
+    // _generateMultipleBarchart();
     // _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
     // _genrateRandomCooLinechartDataPoints();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
-    // _generateLargeVorhersageHourly();
+    _generateLargeVorhersageHourly();
     // _generateEmptyLists();
   }
 
@@ -1389,38 +1389,38 @@ class _LineChartDemoState extends State<LineChartDemo> {
     };
 
     xAxisStepLineTopLabelCallback = (index, cooLineChartDataPoints) {
-      return DateFormat.E().format(cooLineChartDataPoints[0].time!);
+      return DateFormat.E().format(cooLineChartDataPoints[0].time!.add(const Duration(hours: -2)));
     };
 
     final now = DateTime.now();
     final mitternacht = now.copyWith(hour: 0, minute: 0, microsecond: 0, millisecond: 0).add(const Duration(days: 1));
-    final hourDiff = mitternacht.difference(now).inHours + 1;
+    final hourDiff = mitternacht.difference(now).inHours;
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'H',
       showTopLabels: true,
       showBottomLabels: true,
       stepAxisLine: 24,
-      stepAxisLineStart: hourDiff,
+      stepAxisLineStart: 10,
     );
 
     {
       final dataPoints1 = LineChartDemoUtil.createDataPoints(
-        maxDataPointCount: 300,
+        maxDataPointCount: 47,
         minValue: 20,
         maxValue: 22,
       );
       linechartDataSeries.add(CooLineChartDataSeries(dataPoints: dataPoints1, showDataPoints: false));
     }
-    {
-      final dataPoints1 = LineChartDemoUtil.createDataPoints(
-        maxDataPointCount: 830,
-        minValue: 10,
-        maxValue: 12,
-        addNullValues: true,
-      );
-      linechartDataSeries.add(CooLineChartDataSeries(dataPoints: dataPoints1, showDataPoints: false));
-    }
+    // {
+    //   final dataPoints1 = LineChartDemoUtil.createDataPoints(
+    //     maxDataPointCount: 130,
+    //     minValue: 10,
+    //     maxValue: 12,
+    //     addNullValues: true,
+    //   );
+    //   linechartDataSeries.add(CooLineChartDataSeries(dataPoints: dataPoints1, showDataPoints: false));
+    // }
     // linechartDataSeries.add(CooLineChartDataSeries(
     //     dataPoints: LineChartDemoUtil.createDataPoints(
     //   maxDataPointCount: 10,

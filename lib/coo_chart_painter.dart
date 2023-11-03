@@ -997,7 +997,6 @@ class CooChartPainter extends CustomPainter {
       bottomDateFormat = DateFormat(xAxisConfig.bottomDateFormat);
     }
 
-    var stepCount = 0;
     int startNumber = xAxisConfig.startNumber;
     axisStepLoop:
     for (int i = 0; i <= xGridLineCount; i++) {
@@ -1014,15 +1013,19 @@ class CooChartPainter extends CustomPainter {
         if (xAxisConfig.stepAxisLine == null) {
           canvas.drawLine(
               Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), _gridPaint);
-        } else if (i == xAxisConfig.stepAxisLineStart || stepCount % xAxisConfig.stepAxisLine! == 0) {
-          isStepAxisLine = true;
-          // Nur zeichen wenn der Start Step oder der konfigierte Step ab dem start übereinstimmt
-          canvas.drawLine(
-              Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), _gridPaint);
-          stepCount = 0;
+        } else {
+          bool drawLine = i == xAxisConfig.stepAxisLineStart; // Wenn i exakt der Startangabe ist
+          // Wenn i auf einem vielfachen der angegebenen step liegt. Ist ein Start angegben wird dieser von i abgezogen
+          drawLine = drawLine || (i - (xAxisConfig.stepAxisLineStart ?? 0)) % xAxisConfig.stepAxisLine! == 0;
+
+          if (drawLine) {
+            isStepAxisLine = true;
+            // Nur zeichen wenn der Start Step oder der konfigierte Step ab dem start übereinstimmt
+            canvas.drawLine(
+                Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), _gridPaint);
+          }
         }
       }
-      stepCount++;
 
       // draw highlight vertical line on mouse-over
       if (highlightPointsVerticalLine && i != 0 && i == mouseInRectYIndex) {
@@ -1031,10 +1034,6 @@ class CooChartPainter extends CustomPainter {
 
       if (!xAxisConfig.showTopLabels && !xAxisConfig.showBottomLabels) {
         // Es sollen keine Labels gemalt werden - können uns diese Auswertung sparen.
-        continue axisStepLoop;
-      }
-      // Wenn ein axis step konfiguriert ist soll auch nur dann das Label geschrieben werden
-      if (xAxisConfig.stepAxisLine != null && (!isStepAxisLine || i < (xAxisConfig.stepAxisLine! / 4))) {
         continue axisStepLoop;
       }
 
@@ -1100,37 +1099,70 @@ class CooChartPainter extends CustomPainter {
         if (xAxisConfig.showTopLabels) {
           _axisLabelPainter.text = TextSpan(text: topLabel, style: textStyle);
           _axisLabelPainter.layout();
-          // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-          final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
 
-          // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
-          final double xPos;
-          if (isStepAxisLine) {
-            // Es müssen Anzahl steps * breite Column für den Offset nehmen
-            xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
-          } else {
-            xPos = x - (xOffsetInterval / 2) + xPosCenter;
+          bool drawLabel = true;
+          // Wenn ein Axis Step konfiguriert ist soll auch nur dann das Label geschrieben werden,
+          // Wenn Platz dafür ist.
+          if (xAxisConfig.stepAxisLine != null) {
+            if (!isStepAxisLine) {
+              drawLabel = false;
+            } else
+
+            // Prüfen ob die Größe noch in den Bereich passt
+            if (xAxisConfig.stepAxisLineStart > 0 && i <= xAxisConfig.stepAxisLineStart) {
+              // TODO prüfen ob genügend Platz wäre das Label dennoch zu zeichnen
+              drawLabel = false;
+            }
           }
-          _axisLabelPainter.paint(canvas, Offset(xPos, padding.top.toDouble() - 25));
+
+          if (drawLabel) {
+            // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
+            final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
+
+            // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
+            final double xPos;
+            if (isStepAxisLine) {
+              // Es müssen Anzahl steps * breite Column für den Offset nehmen
+              xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
+            } else {
+              xPos = x - (xOffsetInterval / 2) + xPosCenter;
+            }
+            _axisLabelPainter.paint(canvas, Offset(xPos, padding.top.toDouble() - 25));
+          }
         }
 
         if (xAxisConfig.showBottomLabels) {
           _axisLabelPainter.text = TextSpan(text: bottomLabel, style: textStyle);
           _axisLabelPainter.layout();
-          // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-          final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
-          // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
-          final double xPos;
-          if (isStepAxisLine) {
-            // Es müssen Anzahl steps * breite Column für den Offset nehmen
-            xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
-          } else {
-            xPos = x - (xOffsetInterval / 2) + xPosCenter;
-          }
-          _axisLabelPainter.paint(canvas, Offset(xPos, chartHeight + padding.top + 10));
-        }
+          bool drawLabel = true;
+          // Wenn ein Axis Step konfiguriert ist soll auch nur dann das Label geschrieben werden,
+          // Wenn Platz dafür ist.
+          if (xAxisConfig.stepAxisLine != null) {
+            if (!isStepAxisLine) {
+              drawLabel = false;
+            } else
 
-        stepCount++;
+            // Prüfen ob die Größe noch in den Bereich passt
+            if (xAxisConfig.stepAxisLineStart > 0 && i <= xAxisConfig.stepAxisLineStart) {
+              // TODO prüfen ob genügend Platz wäre das Label dennoch zu zeichnen
+              drawLabel = false;
+            }
+          }
+
+          if (drawLabel) {
+            // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
+            final xPosCenter = (xOffsetInterval / 2) - (_axisLabelPainter.width / 2);
+            // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
+            final double xPos;
+            if (isStepAxisLine) {
+              // Es müssen Anzahl steps * breite Column für den Offset nehmen
+              xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
+            } else {
+              xPos = x - (xOffsetInterval / 2) + xPosCenter;
+            }
+            _axisLabelPainter.paint(canvas, Offset(xPos, chartHeight + padding.top + 10));
+          }
+        }
       }
     }
   }
