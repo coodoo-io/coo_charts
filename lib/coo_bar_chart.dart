@@ -27,6 +27,8 @@ class CooBarChart extends StatefulWidget {
     this.xAxisConfig = const XAxisConfig(),
     this.padding = const ChartPadding(),
     this.onDataPointTab,
+    this.xAxisStepLineTopLabelCallback,
+    this.xAxisStepLineBottomLabelCallback,
   });
 
   final List<CooBarChartDataSeries> dataSeries;
@@ -45,6 +47,10 @@ class CooBarChart extends StatefulWidget {
   /// First parameter: Column index (starts at 0)
   /// Second parameter: the [CooBarChartDataPoint] objects which are in this tabbed column
   final Function(int, List<CooBarChartDataPoint>)? onDataPointTab;
+
+  /// If given every step this callback will be invoekd
+  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelCallback;
+  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelCallback;
 
   @override
   State<CooBarChart> createState() => _CooBarChartState();
