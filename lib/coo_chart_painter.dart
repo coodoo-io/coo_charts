@@ -1065,7 +1065,7 @@ class CooChartPainter extends CustomPainter {
       // Die letzte vertikale Linie muss bei Centered zusätzlich gezeichnet werden, das nächste Label allerdings
       // nicht, denn das wäre ein nicht vorhandener Datenpunkt zu viel
       if (!centerDataPointBetweenVerticalGrid || i != xGridLineCount) {
-        late String? topLabel;
+        String? topLabel;
         // Top Labels Callbacks
         switch (chartType) {
           case CooChartType.line:
@@ -1096,7 +1096,7 @@ class CooChartPainter extends CustomPainter {
           }
         }
 
-        late String? bottomLabel;
+        String? bottomLabel;
         // Bottom Labels Callbacks
         switch (chartType) {
           case CooChartType.line:
