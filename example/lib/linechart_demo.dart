@@ -3,7 +3,6 @@ import 'package:coo_charts/chart_column_block_config_image.dart';
 import 'package:coo_charts/chart_column_block_data.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_config.dart';
-import 'package:coo_charts/chart_util.dart';
 import 'package:coo_charts/coo_bar_chart.dart';
 import 'package:coo_charts/coo_bar_chart_data_point.dart';
 import 'package:coo_charts/coo_bar_chart_data_series.dart';
@@ -39,8 +38,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
   late List<CooLineChartDataSeries> linechartDataSeries = List.empty(growable: true);
   late List<CooBarChartDataSeries> barchartDataSeries = List.empty(growable: true);
 
-  String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelCallback;
-  String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelCallback;
+  String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelLineChartCallback;
+  String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelLineChartCallback;
+  String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelBarChartCallback;
+  String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelBarChartCallback;
 
   ChartColumnBlocks? chartColumnBlocks;
   ChartConfig chartConfig = const ChartConfig();
@@ -112,8 +113,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
                               print('Tab $index - ${cooLinechartDataPoints[0].value}'),
                           xAxisConfig: xAxisConfig,
                           yAxisConfig: yAxisConfig,
-                          xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelCallback,
-                          xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelCallback,
+                          xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelLineChartCallback,
+                          xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelLineChartCallback,
                         ),
                       CooChartType.bar => CooBarChart(
                           dataSeries: barchartDataSeries,
@@ -121,6 +122,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
                           chartConfig: chartConfig,
                           xAxisConfig: xAxisConfig,
                           yAxisConfig: yAxisConfig,
+                          xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelBarChartCallback,
+                          xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelBarChartCallback,
                         ),
                     }),
               ),
@@ -336,9 +339,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisConfig = const XAxisConfig();
 
     chartColumnBlocks = null;
-    xAxisStepLineBottomLabelCallback = null;
-    xAxisStepLineTopLabelCallback = null;
-    xAxisStepLineBottomLabelCallback = null;
+    xAxisStepLineTopLabelLineChartCallback = null;
+    xAxisStepLineBottomLabelLineChartCallback = null;
+    xAxisStepLineTopLabelBarChartCallback = null;
+    xAxisStepLineBottomLabelBarChartCallback = null;
   }
 
   _create0To10To0ValuesChartDataPoints() {
@@ -794,7 +798,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartColumnBlocks = ChartColumnBlocks(
       showTopBlocks: true,
       topDatas: columnTopDatas,
-      topConfig: ChartColumnBlockConfig(height: 20),
+      topConfig: const ChartColumnBlockConfig(height: 20),
       showBottomBlocks: true,
       bottomDatas: columnBottomDatas,
     );
@@ -805,9 +809,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
     _resetToDefault();
     chartType = CooChartType.bar;
 
-    yAxisConfig = yAxisConfig.copyWith(labelCount: 11);
-    yAxisConfig = yAxisConfig.copyWith(minLabelValue: 0);
-    yAxisConfig = yAxisConfig.copyWith(maxLabelValue: 10);
+    yAxisConfig = yAxisConfig.copyWith(
+      labelCount: 11,
+      minLabelValue: 0,
+      maxLabelValue: 0,
+      showYAxisLables: true,
+    );
 
     chartConfig = chartConfig.copyWith(
       showGridHorizontal: true,
@@ -816,7 +823,18 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.date,
       bottomDateFormat: 'dd.MM.',
+      topLabelTextStyle: const TextStyle(color: Colors.amber, fontSize: 8),
+      topLabelOffset: const Offset(0, -20),
+      bottomLabelTextStyle: const TextStyle(color: Colors.blue, fontSize: 8),
+      bottomLabelOffset: const Offset(0, -20),
     );
+
+    xAxisStepLineBottomLabelBarChartCallback = (p0, p1) {
+      return 'Bottom Label';
+    };
+    xAxisStepLineTopLabelBarChartCallback = (p0, p1) {
+      return 'Top\nLabel';
+    };
 
     barchartDataSeries.clear();
 
@@ -1385,11 +1403,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
       labelPostfix: '°C',
     );
 
-    xAxisStepLineBottomLabelCallback = (index, cooLineChartDataPoints) {
+    xAxisStepLineBottomLabelLineChartCallback = (index, cooLineChartDataPoints) {
       return 'basdfasdfasfsadfasdfasdfasd';
     };
 
-    xAxisStepLineTopLabelCallback = (index, cooLineChartDataPoints) {
+    xAxisStepLineTopLabelLineChartCallback = (index, cooLineChartDataPoints) {
       return DateFormat.E().format(cooLineChartDataPoints[0].time!.add(const Duration(hours: -2)));
     };
 

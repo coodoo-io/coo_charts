@@ -1,13 +1,20 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:coo_charts/x_axis_value_type.enum.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class XAxisConfig {
   const XAxisConfig({
     this.showAxis = true,
     this.valueType = XAxisValueType.number,
-    this.showTopLabels = false,
+    this.showTopLabels = true,
+    this.topLabelTextStyle,
+    this.topLabelTextStyleHighlight,
+    this.topLabelOffset,
     this.showBottomLabels = true,
+    this.bottomLabelTextStyle,
+    this.bottomLabelTextStyleHighlight,
+    this.bottomLabelOffset,
     this.topDateFormat,
     this.bottomDateFormat,
     this.startNumber = 0, // If value type is number -> startnumber
@@ -26,6 +33,14 @@ class XAxisConfig {
   // Show the x-axis lables or not?
   final bool showTopLabels;
   final bool showBottomLabels;
+
+  final TextStyle? topLabelTextStyle;
+  final TextStyle? topLabelTextStyleHighlight;
+  final TextStyle? bottomLabelTextStyle;
+  final TextStyle? bottomLabelTextStyleHighlight;
+
+  final Offset? topLabelOffset;
+  final Offset? bottomLabelOffset;
 
   /// The formatter of a date x-axis value. There is a build in default but you can use all the availble
   /// [DateFormat] formatter options (https://api.flutter.dev/flutter/intl/DateFormat-class.html).
@@ -50,6 +65,12 @@ class XAxisConfig {
   final int stepAxisLineStart;
 
   XAxisConfig copyWith({
+    TextStyle? topLabelTextStyle,
+    TextStyle? topLabelTextStyleHighlight,
+    TextStyle? bottomLabelTextStyle,
+    TextStyle? bottomLabelTextStyleHighlight,
+    Offset? topLabelOffset,
+    Offset? bottomLabelOffset,
     bool? showAxis,
     XAxisValueType? valueType,
     bool? showTopLabels,
@@ -63,6 +84,12 @@ class XAxisConfig {
     int? stepAxisLineStart,
   }) {
     return XAxisConfig(
+      topLabelTextStyle: topLabelTextStyle ?? this.topLabelTextStyle,
+      topLabelTextStyleHighlight: topLabelTextStyleHighlight ?? this.topLabelTextStyleHighlight,
+      bottomLabelTextStyle: bottomLabelTextStyle ?? this.bottomLabelTextStyle,
+      bottomLabelTextStyleHighlight: bottomLabelTextStyleHighlight ?? this.bottomLabelTextStyleHighlight,
+      topLabelOffset: topLabelOffset ?? this.topLabelOffset,
+      bottomLabelOffset: bottomLabelOffset ?? this.bottomLabelOffset,
       showAxis: showAxis ?? this.showAxis,
       valueType: valueType ?? this.valueType,
       showTopLabels: showTopLabels ?? this.showTopLabels,

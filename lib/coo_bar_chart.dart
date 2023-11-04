@@ -136,6 +136,8 @@ class _CooBarChartState extends State<CooBarChart> {
                 columLegendsAssetImages: columLegendsAssetImages,
                 columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
                 onBarChartDataPointTabCallback: widget.onDataPointTab,
+                xAxisStepLineTopLabelBarChartCallback: widget.xAxisStepLineTopLabelCallback,
+                xAxisStepLineBottomLabelBarChartCallback: widget.xAxisStepLineBottomLabelCallback,
               ),
             ),
           ),

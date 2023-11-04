@@ -51,8 +51,10 @@ class CooChartPainter extends CustomPainter {
     required this.columLegendsAssetSvgPictureInfos,
     this.onLineChartDataPointTabCallback,
     this.onBarChartDataPointTabCallback,
-    this.xAxisStepLineTopLabelCallback,
-    this.xAxisStepLineBottomLabelCallback,
+    this.xAxisStepLineTopLabelLineChartCallback,
+    this.xAxisStepLineBottomLabelLineChartCallback,
+    this.xAxisStepLineTopLabelBarChartCallback,
+    this.xAxisStepLineBottomLabelBarChartCallback,
   }) {
     chartWidth = canvasWidth - padding.left - padding.right;
     chartHeight = canvasHeight - padding.bottom - padding.top;
@@ -157,8 +159,10 @@ class CooChartPainter extends CustomPainter {
   final Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex = {};
   final Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex = {};
 
-  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelCallback;
-  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelCallback;
+  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelLineChartCallback;
+  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelLineChartCallback;
+  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelBarChartCallback;
+  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelBarChartCallback;
 
   final Map<Rect, int> chartRectYPos = {}; // Merken welches Rect bei welcher Y-Pos liegt
 
@@ -1019,7 +1023,7 @@ class CooChartPainter extends CustomPainter {
         } else {
           bool drawLine = i == xAxisConfig.stepAxisLineStart; // Wenn i exakt der Startangabe ist
           // Wenn i auf einem vielfachen der angegebenen step liegt. Ist ein Start angegben wird dieser von i abgezogen
-          drawLine = drawLine || (i - (xAxisConfig.stepAxisLineStart ?? 0)) % xAxisConfig.stepAxisLine! == 0;
+          drawLine = drawLine || (i - xAxisConfig.stepAxisLineStart) % xAxisConfig.stepAxisLine! == 0;
 
           if (drawLine) {
             isStepAxisLine = true;
@@ -1040,31 +1044,44 @@ class CooChartPainter extends CustomPainter {
         continue axisStepLoop;
       }
 
-      TextStyle textStyle;
+      // TODO in Theme auslagern
+      TextStyle? topLabelTextStyle;
+      TextStyle? bottomLabelTextStyle;
+      if (xAxisConfig.topLabelTextStyle != null) {
+        topLabelTextStyle = xAxisConfig.topLabelTextStyle!;
+      }
+      if (xAxisConfig.bottomLabelTextStyle != null) {
+        bottomLabelTextStyle = xAxisConfig.bottomLabelTextStyle!;
+      }
       if (highlightPointsVerticalLine && i != 0 && i == mouseInRectYIndex) {
-        textStyle = const TextStyle(
+        topLabelTextStyle ??= const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         );
-      } else {
-        textStyle = const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.normal,
-          color: Colors.grey,
-        );
+        bottomLabelTextStyle ??= topLabelTextStyle;
       }
 
       // Die letzte vertikale Linie muss bei Centered zusätzlich gezeichnet werden, das nächste Label allerdings
       // nicht, denn das wäre ein nicht vorhandener Datenpunkt zu viel
       if (!centerDataPointBetweenVerticalGrid || i != xGridLineCount) {
-        late String topLabel;
-        late String bottomLabel;
+        late String? topLabel;
+        // Top Labels Callbacks
+        switch (chartType) {
+          case CooChartType.line:
+            if (xAxisStepLineTopLabelLineChartCallback != null) {
+              topLabel = xAxisStepLineTopLabelLineChartCallback!(i, lineChartDataPointsByColumnIndex[i]!);
+            }
+            break;
+          case CooChartType.bar:
+            if (xAxisStepLineTopLabelBarChartCallback != null) {
+              topLabel = xAxisStepLineTopLabelBarChartCallback!(i, barChartDataPointsByColumnIndex[i]!);
+              break;
+            }
+        }
 
-        // Top Labels
-        if (xAxisStepLineTopLabelCallback != null) {
-          topLabel = xAxisStepLineTopLabelCallback!(i, lineChartDataPointsByColumnIndex[i]!);
-        } else {
+        // Top Labels Defaults
+        if (topLabel == null) {
           switch (xAxisConfig.valueType) {
             case XAxisValueType.date:
             case XAxisValueType.datetime:
@@ -1079,10 +1096,23 @@ class CooChartPainter extends CustomPainter {
           }
         }
 
-        // Bottom Labels
-        if (xAxisStepLineBottomLabelCallback != null) {
-          bottomLabel = xAxisStepLineBottomLabelCallback!(i, lineChartDataPointsByColumnIndex[i]!);
-        } else {
+        late String? bottomLabel;
+        // Bottom Labels Callbacks
+        switch (chartType) {
+          case CooChartType.line:
+            if (xAxisStepLineBottomLabelLineChartCallback != null) {
+              bottomLabel = xAxisStepLineBottomLabelLineChartCallback!(i, lineChartDataPointsByColumnIndex[i]!);
+            }
+            break;
+          case CooChartType.bar:
+            if (xAxisStepLineBottomLabelBarChartCallback != null) {
+              bottomLabel = xAxisStepLineBottomLabelBarChartCallback!(i, barChartDataPointsByColumnIndex[i]!);
+              break;
+            }
+        }
+
+        // Bottom Labels Defaults, wenn kein Callback gegeben ist
+        if (bottomLabel == null) {
           switch (xAxisConfig.valueType) {
             case XAxisValueType.date:
             case XAxisValueType.datetime:
@@ -1100,7 +1130,7 @@ class CooChartPainter extends CustomPainter {
         startNumber++;
 
         if (xAxisConfig.showTopLabels) {
-          _axisLabelPainter.text = TextSpan(text: topLabel, style: textStyle);
+          _axisLabelPainter.text = TextSpan(text: topLabel, style: topLabelTextStyle);
           _axisLabelPainter.layout();
           final double labelTextWidth = _axisLabelPainter.width;
 
@@ -1128,26 +1158,31 @@ class CooChartPainter extends CustomPainter {
             final xPosCenter = (xOffsetInterval / 2) - (labelTextWidth / 2);
 
             // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
-            final double xPos;
+            double xPos;
             if (isStepAxisLine && textFitsInSpace) {
               // Es müssen Anzahl steps * breite Column für den Offset nehmen
               xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
             } else {
               xPos = x - (xOffsetInterval / 2) + xPosCenter;
             }
-            _axisLabelPainter.paint(canvas, Offset(xPos, padding.top.toDouble() - 25));
+            double yPos = padding.top.toDouble() - 25;
+            if (xAxisConfig.topLabelOffset != null) {
+              xPos += xAxisConfig.topLabelOffset!.dx;
+              yPos += xAxisConfig.topLabelOffset!.dy;
+            }
+            _axisLabelPainter.paint(canvas, Offset(xPos, yPos));
           }
         }
 
         if (xAxisConfig.showBottomLabels) {
-          _axisLabelPainter.text = TextSpan(text: bottomLabel, style: textStyle);
+          _axisLabelPainter.text = TextSpan(text: bottomLabel, style: bottomLabelTextStyle);
           _axisLabelPainter.layout();
           final double labelTextWidth = _axisLabelPainter.width;
           bool drawLabel = true;
           // Prüfen ob die Größe noch in den Bereich passt
           bool textFitsInSpace = true;
           // TODO
-          if (labelTextWidth < (i * xSegmentWidth - 1)) {
+          if (labelTextWidth < (xSegmentWidth - 1)) {
             // Der Platz reicht für das Label aus
             textFitsInSpace = true;
           } else {
@@ -1169,14 +1204,19 @@ class CooChartPainter extends CustomPainter {
             // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
             final xPosCenter = (xOffsetInterval / 2) - (labelTextWidth / 2);
             // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
-            final double xPos;
+            double xPos;
             if (isStepAxisLine) {
               // Es müssen Anzahl steps * breite Column für den Offset nehmen
               xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
             } else {
               xPos = x - (xOffsetInterval / 2) + xPosCenter;
             }
-            _axisLabelPainter.paint(canvas, Offset(xPos, chartHeight + padding.top + 10));
+            double yPos = chartHeight + padding.top + 10;
+            if (xAxisConfig.bottomLabelOffset != null) {
+              xPos += xAxisConfig.bottomLabelOffset!.dx;
+              yPos += xAxisConfig.bottomLabelOffset!.dy;
+            }
+            _axisLabelPainter.paint(canvas, Offset(xPos, yPos));
           }
         }
       }
