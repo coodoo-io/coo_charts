@@ -7,7 +7,7 @@ class XAxisConfig {
   const XAxisConfig({
     this.showAxis = true,
     this.valueType = XAxisValueType.number,
-    this.showTopLabels = true,
+    this.showTopLabels = false,
     this.topLabelTextStyle,
     this.topLabelTextStyleHighlight,
     this.topLabelOffset,

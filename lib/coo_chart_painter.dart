@@ -1055,12 +1055,16 @@ class CooChartPainter extends CustomPainter {
       }
       if (highlightPointsVerticalLine && i != 0 && i == mouseInRectYIndex) {
         topLabelTextStyle ??= const TextStyle(
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: ui.Color.fromARGB(255, 71, 0, 251),
         );
         bottomLabelTextStyle ??= topLabelTextStyle;
       }
+
+      // Defaults
+      bottomLabelTextStyle ??= const TextStyle(color: Colors.grey, fontSize: 11);
+      topLabelTextStyle ??= const TextStyle(color: Colors.grey, fontSize: 11);
 
       // Die letzte vertikale Linie muss bei Centered zusätzlich gezeichnet werden, das nächste Label allerdings
       // nicht, denn das wäre ein nicht vorhandener Datenpunkt zu viel
@@ -1093,37 +1097,6 @@ class CooChartPainter extends CustomPainter {
           }
           if (xAxisConfig.labelTopPostfix != null) {
             topLabel = '$topLabel ${xAxisConfig.labelTopPostfix}';
-          }
-        }
-
-        String? bottomLabel;
-        // Bottom Labels Callbacks
-        switch (chartType) {
-          case CooChartType.line:
-            if (xAxisStepLineBottomLabelLineChartCallback != null) {
-              bottomLabel = xAxisStepLineBottomLabelLineChartCallback!(i, lineChartDataPointsByColumnIndex[i]!);
-            }
-            break;
-          case CooChartType.bar:
-            if (xAxisStepLineBottomLabelBarChartCallback != null) {
-              bottomLabel = xAxisStepLineBottomLabelBarChartCallback!(i, barChartDataPointsByColumnIndex[i]!);
-              break;
-            }
-        }
-
-        // Bottom Labels Defaults, wenn kein Callback gegeben ist
-        if (bottomLabel == null) {
-          switch (xAxisConfig.valueType) {
-            case XAxisValueType.date:
-            case XAxisValueType.datetime:
-              bottomLabel = bottomDateFormat!.format(allDateTimeXAxisValues[i]);
-              break;
-            case XAxisValueType.number:
-              bottomLabel = startNumber.toString();
-              break;
-          }
-          if (xAxisConfig.labelBottomPostfix != null) {
-            bottomLabel = '$bottomLabel ${xAxisConfig.labelBottomPostfix}';
           }
         }
 
@@ -1174,14 +1147,42 @@ class CooChartPainter extends CustomPainter {
           }
         }
 
+        String? bottomLabel;
+        // Bottom Labels Callbacks
+        switch (chartType) {
+          case CooChartType.line:
+            if (xAxisStepLineBottomLabelLineChartCallback != null) {
+              bottomLabel = xAxisStepLineBottomLabelLineChartCallback!(i, lineChartDataPointsByColumnIndex[i]!);
+            }
+            break;
+          case CooChartType.bar:
+            if (xAxisStepLineBottomLabelBarChartCallback != null) {
+              bottomLabel = xAxisStepLineBottomLabelBarChartCallback!(i, barChartDataPointsByColumnIndex[i]!);
+              break;
+            }
+        }
+
+        // Bottom Labels Defaults, wenn kein Callback gegeben ist
+        if (bottomLabel == null) {
+          switch (xAxisConfig.valueType) {
+            case XAxisValueType.date:
+            case XAxisValueType.datetime:
+              bottomLabel = bottomDateFormat!.format(allDateTimeXAxisValues[i]);
+              break;
+            case XAxisValueType.number:
+              bottomLabel = startNumber.toString();
+              break;
+          }
+          if (xAxisConfig.labelBottomPostfix != null) {
+            bottomLabel = '$bottomLabel ${xAxisConfig.labelBottomPostfix}';
+          }
+        }
         if (xAxisConfig.showBottomLabels) {
           _axisLabelPainter.text = TextSpan(text: bottomLabel, style: bottomLabelTextStyle);
           _axisLabelPainter.layout();
           final double labelTextWidth = _axisLabelPainter.width;
-          bool drawLabel = true;
           // Prüfen ob die Größe noch in den Bereich passt
           bool textFitsInSpace = true;
-          // TODO
           if (labelTextWidth < (xSegmentWidth - 1)) {
             // Der Platz reicht für das Label aus
             textFitsInSpace = true;
@@ -1190,6 +1191,7 @@ class CooChartPainter extends CustomPainter {
           }
           // Wenn ein Axis Step konfiguriert ist soll auch nur dann das Label geschrieben werden,
           // Wenn Platz dafür ist.
+          bool drawLabel = true;
           if (drawLabel && xAxisConfig.stepAxisLine != null) {
             if (!isStepAxisLine) {
               drawLabel = false;

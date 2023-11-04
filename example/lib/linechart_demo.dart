@@ -67,7 +67,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     super.initState();
     // _generateKachelmannSonnenscheindauerTrend();
     // _generateKachelmannWindoenForecast();
-    _generateBarchart1Bis10();
+    // _generateBarchart1Bis10();
     // _generateMultipleBarchart();
     // _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
@@ -75,7 +75,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _genrateRandomCooLinechartDataPoints();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
-    // _generateLargeVorhersageHourly();
+    _generateLargeVorhersageHourly();
     // _generateEmptyLists();
   }
 
@@ -337,6 +337,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _resetToDefault() {
     yAxisConfig = const YAxisConfig();
     xAxisConfig = const XAxisConfig();
+    chartConfig = const ChartConfig();
 
     chartColumnBlocks = null;
     xAxisStepLineTopLabelLineChartCallback = null;
@@ -823,8 +824,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.date,
       bottomDateFormat: 'dd.MM.',
+      showTopLabels: true,
       topLabelTextStyle: const TextStyle(color: Colors.amber, fontSize: 8),
       topLabelOffset: const Offset(0, -20),
+      showBottomLabels: true,
       bottomLabelTextStyle: const TextStyle(color: Colors.blue, fontSize: 8),
       bottomLabelOffset: const Offset(0, -20),
     );

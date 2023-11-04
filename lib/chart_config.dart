@@ -17,7 +17,7 @@ class ChartConfig {
     this.hightlightColumnColor,
     this.highlightPoints = true,
     this.addYAxisValueBuffer = true,
-    this.highlightPointsVerticalLine = false,
+    this.highlightPointsVerticalLine = true,
     this.highlightPointsHorizontalLine = false,
     this.centerDataPointBetweenVerticalGrid = true,
     this.canvasBackgroundColor,
