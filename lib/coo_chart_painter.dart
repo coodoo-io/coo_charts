@@ -617,6 +617,9 @@ class CooChartPainter extends CustomPainter {
           // Durch die X-Verschiebung des Punktes ist die Hälfte des Segments die komplette Breite eines Segments
           // in der Berechnung
           var barWidth = xSegementWidthHalf * 0.66; // Default Bar Breite soll 2/3 des Spaltenplaztes einnehmen
+          if (localLinechartDataSeries.maxBarWidth != null && barWidth > localLinechartDataSeries.maxBarWidth!) {
+            barWidth = localLinechartDataSeries.maxBarWidth!.toDouble();
+          }
           if (dataSeriesCount > 1) {
             // Breite muss sich durch die Anzahl der Serien aufteilen
             barWidth = xSegementWidthHalf / dataSeriesCount * 0.66;

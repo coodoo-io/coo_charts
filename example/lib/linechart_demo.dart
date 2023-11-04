@@ -66,7 +66,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     super.initState();
     // _generateKachelmannSonnenscheindauerTrend();
     // _generateKachelmannWindoenForecast();
-    // _generateBarchart1Bis10();
+    _generateBarchart1Bis10();
     // _generateMultipleBarchart();
     // _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
@@ -74,7 +74,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _genrateRandomCooLinechartDataPoints();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
-    _generateLargeVorhersageHourly();
+    // _generateLargeVorhersageHourly();
     // _generateEmptyLists();
   }
 
@@ -881,6 +881,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     CooBarChartDataSeries serie = CooBarChartDataSeries(
       dataPoints: sonnenscheindauer,
       barColor: const Color(0xFFfde81a),
+      maxBarWidth: 10,
     );
     barchartDataSeries.add(serie);
   }
@@ -935,182 +936,182 @@ class _LineChartDemoState extends State<LineChartDemo> {
       );
       barchartDataSeries.add(serie2);
     }
-    {
-      List<CooBarChartDataPoint> barChartDataPoints3 = [];
-      int dataSeries1Size = 14;
-      final List<double> values =
-          LineChartDemoUtil.generateRandomDataPoints(count: dataSeries1Size, minValue: 20, maxValue: 40);
-      var time = DateTime.now();
-      for (int i = 0; i < dataSeries1Size; i++) {
-        barChartDataPoints3.add(CooBarChartDataPoint(value: values[i], time: time));
-        time = time.add(const Duration(days: 1));
-      }
-      CooBarChartDataSeries serie3 = CooBarChartDataSeries(
-        dataPoints: barChartDataPoints3,
-        barColor: Colors.blue,
-      );
-      barchartDataSeries.add(serie3);
-    }
-    {
-      List<CooBarChartDataPoint> barChartDataPoints = [];
-      int dataSeriesSize = 14;
-      final List<double> values =
-          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
-      var time = DateTime.now();
-      for (int i = 0; i < dataSeriesSize; i++) {
-        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
-        time = time.add(const Duration(days: 1));
-      }
-      CooBarChartDataSeries serie = CooBarChartDataSeries(
-        dataPoints: barChartDataPoints,
-        barColor: Colors.red,
-      );
-      barchartDataSeries.add(serie);
-    }
-    {
-      List<CooBarChartDataPoint> barChartDataPoints = [];
-      int dataSeriesSize = 14;
-      final List<double> values =
-          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
-      var time = DateTime.now();
-      for (int i = 0; i < dataSeriesSize; i++) {
-        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
-        time = time.add(const Duration(days: 1));
-      }
-      CooBarChartDataSeries serie = CooBarChartDataSeries(
-        dataPoints: barChartDataPoints,
-        barColor: Colors.amber,
-      );
-      barchartDataSeries.add(serie);
-    }
-    {
-      List<CooBarChartDataPoint> barChartDataPoints = [];
-      int dataSeriesSize = 14;
-      final List<double> values =
-          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
-      var time = DateTime.now();
-      for (int i = 0; i < dataSeriesSize; i++) {
-        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
-        time = time.add(const Duration(days: 1));
-      }
-      CooBarChartDataSeries serie = CooBarChartDataSeries(
-        dataPoints: barChartDataPoints,
-        barColor: Colors.blueGrey,
-      );
-      barchartDataSeries.add(serie);
-    }
-    {
-      List<CooBarChartDataPoint> barChartDataPoints = [];
-      int dataSeriesSize = 14;
-      final List<double> values =
-          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
-      var time = DateTime.now();
-      for (int i = 0; i < dataSeriesSize; i++) {
-        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
-        time = time.add(const Duration(days: 1));
-      }
-      CooBarChartDataSeries serie = CooBarChartDataSeries(
-        dataPoints: barChartDataPoints,
-        barColor: Colors.deepPurpleAccent,
-      );
-      barchartDataSeries.add(serie);
-    }
-    {
-      List<CooBarChartDataPoint> barChartDataPoints = [];
-      int dataSeriesSize = 14;
-      final List<double> values =
-          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
-      var time = DateTime.now();
-      for (int i = 0; i < dataSeriesSize; i++) {
-        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
-        time = time.add(const Duration(days: 1));
-      }
-      CooBarChartDataSeries serie = CooBarChartDataSeries(
-        dataPoints: barChartDataPoints,
-        barColor: Colors.greenAccent,
-      );
-      barchartDataSeries.add(serie);
-    }
-    {
-      List<CooBarChartDataPoint> barChartDataPoints = [];
-      int dataSeriesSize = 14;
-      final List<double> values =
-          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
-      var time = DateTime.now();
-      for (int i = 0; i < dataSeriesSize; i++) {
-        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
-        time = time.add(const Duration(days: 1));
-      }
-      CooBarChartDataSeries serie = CooBarChartDataSeries(
-        dataPoints: barChartDataPoints,
-        barColor: Colors.orange,
-      );
-      barchartDataSeries.add(serie);
-    }
-    {
-      List<CooBarChartDataPoint> barChartDataPoints = [];
-      int dataSeriesSize = 14;
-      final List<double> values =
-          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
-      var time = DateTime.now();
-      for (int i = 0; i < dataSeriesSize; i++) {
-        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
-        time = time.add(const Duration(days: 1));
-      }
-      CooBarChartDataSeries serie = CooBarChartDataSeries(
-        dataPoints: barChartDataPoints,
-        barColor: Colors.teal,
-      );
-      barchartDataSeries.add(serie);
-    }
-    {
-      List<CooBarChartDataPoint> barChartDataPoints = [];
-      int dataSeriesSize = 14;
-      final List<double> values =
-          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
-      var time = DateTime.now();
-      for (int i = 0; i < dataSeriesSize; i++) {
-        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
-        time = time.add(const Duration(days: 1));
-      }
-      CooBarChartDataSeries serie = CooBarChartDataSeries(
-        dataPoints: barChartDataPoints,
-        barColor: Colors.cyan,
-      );
-      barchartDataSeries.add(serie);
-    }
-    {
-      List<CooBarChartDataPoint> barChartDataPoints = [];
-      int dataSeriesSize = 14;
-      final List<double> values =
-          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
-      var time = DateTime.now();
-      for (int i = 0; i < dataSeriesSize; i++) {
-        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
-        time = time.add(const Duration(days: 1));
-      }
-      CooBarChartDataSeries serie = CooBarChartDataSeries(
-        dataPoints: barChartDataPoints,
-        barColor: Colors.brown,
-      );
-      barchartDataSeries.add(serie);
-    }
-    {
-      List<CooBarChartDataPoint> barChartDataPoints = [];
-      int dataSeriesSize = 14;
-      final List<double> values =
-          LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
-      var time = DateTime.now();
-      for (int i = 0; i < dataSeriesSize; i++) {
-        barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
-        time = time.add(const Duration(days: 1));
-      }
-      CooBarChartDataSeries serie = CooBarChartDataSeries(
-        dataPoints: barChartDataPoints,
-        barColor: Colors.pinkAccent,
-      );
-      barchartDataSeries.add(serie);
-    }
+    // {
+    //   List<CooBarChartDataPoint> barChartDataPoints3 = [];
+    //   int dataSeries1Size = 14;
+    //   final List<double> values =
+    //       LineChartDemoUtil.generateRandomDataPoints(count: dataSeries1Size, minValue: 20, maxValue: 40);
+    //   var time = DateTime.now();
+    //   for (int i = 0; i < dataSeries1Size; i++) {
+    //     barChartDataPoints3.add(CooBarChartDataPoint(value: values[i], time: time));
+    //     time = time.add(const Duration(days: 1));
+    //   }
+    //   CooBarChartDataSeries serie3 = CooBarChartDataSeries(
+    //     dataPoints: barChartDataPoints3,
+    //     barColor: Colors.blue,
+    //   );
+    //   barchartDataSeries.add(serie3);
+    // }
+    // {
+    //   List<CooBarChartDataPoint> barChartDataPoints = [];
+    //   int dataSeriesSize = 14;
+    //   final List<double> values =
+    //       LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+    //   var time = DateTime.now();
+    //   for (int i = 0; i < dataSeriesSize; i++) {
+    //     barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+    //     time = time.add(const Duration(days: 1));
+    //   }
+    //   CooBarChartDataSeries serie = CooBarChartDataSeries(
+    //     dataPoints: barChartDataPoints,
+    //     barColor: Colors.red,
+    //   );
+    //   barchartDataSeries.add(serie);
+    // }
+    // {
+    //   List<CooBarChartDataPoint> barChartDataPoints = [];
+    //   int dataSeriesSize = 14;
+    //   final List<double> values =
+    //       LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+    //   var time = DateTime.now();
+    //   for (int i = 0; i < dataSeriesSize; i++) {
+    //     barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+    //     time = time.add(const Duration(days: 1));
+    //   }
+    //   CooBarChartDataSeries serie = CooBarChartDataSeries(
+    //     dataPoints: barChartDataPoints,
+    //     barColor: Colors.amber,
+    //   );
+    //   barchartDataSeries.add(serie);
+    // }
+    // {
+    //   List<CooBarChartDataPoint> barChartDataPoints = [];
+    //   int dataSeriesSize = 14;
+    //   final List<double> values =
+    //       LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+    //   var time = DateTime.now();
+    //   for (int i = 0; i < dataSeriesSize; i++) {
+    //     barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+    //     time = time.add(const Duration(days: 1));
+    //   }
+    //   CooBarChartDataSeries serie = CooBarChartDataSeries(
+    //     dataPoints: barChartDataPoints,
+    //     barColor: Colors.blueGrey,
+    //   );
+    //   barchartDataSeries.add(serie);
+    // }
+    // {
+    //   List<CooBarChartDataPoint> barChartDataPoints = [];
+    //   int dataSeriesSize = 14;
+    //   final List<double> values =
+    //       LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+    //   var time = DateTime.now();
+    //   for (int i = 0; i < dataSeriesSize; i++) {
+    //     barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+    //     time = time.add(const Duration(days: 1));
+    //   }
+    //   CooBarChartDataSeries serie = CooBarChartDataSeries(
+    //     dataPoints: barChartDataPoints,
+    //     barColor: Colors.deepPurpleAccent,
+    //   );
+    //   barchartDataSeries.add(serie);
+    // }
+    // {
+    //   List<CooBarChartDataPoint> barChartDataPoints = [];
+    //   int dataSeriesSize = 14;
+    //   final List<double> values =
+    //       LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+    //   var time = DateTime.now();
+    //   for (int i = 0; i < dataSeriesSize; i++) {
+    //     barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+    //     time = time.add(const Duration(days: 1));
+    //   }
+    //   CooBarChartDataSeries serie = CooBarChartDataSeries(
+    //     dataPoints: barChartDataPoints,
+    //     barColor: Colors.greenAccent,
+    //   );
+    //   barchartDataSeries.add(serie);
+    // }
+    // {
+    //   List<CooBarChartDataPoint> barChartDataPoints = [];
+    //   int dataSeriesSize = 14;
+    //   final List<double> values =
+    //       LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+    //   var time = DateTime.now();
+    //   for (int i = 0; i < dataSeriesSize; i++) {
+    //     barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+    //     time = time.add(const Duration(days: 1));
+    //   }
+    //   CooBarChartDataSeries serie = CooBarChartDataSeries(
+    //     dataPoints: barChartDataPoints,
+    //     barColor: Colors.orange,
+    //   );
+    //   barchartDataSeries.add(serie);
+    // }
+    // {
+    //   List<CooBarChartDataPoint> barChartDataPoints = [];
+    //   int dataSeriesSize = 14;
+    //   final List<double> values =
+    //       LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+    //   var time = DateTime.now();
+    //   for (int i = 0; i < dataSeriesSize; i++) {
+    //     barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+    //     time = time.add(const Duration(days: 1));
+    //   }
+    //   CooBarChartDataSeries serie = CooBarChartDataSeries(
+    //     dataPoints: barChartDataPoints,
+    //     barColor: Colors.teal,
+    //   );
+    //   barchartDataSeries.add(serie);
+    // }
+    // {
+    //   List<CooBarChartDataPoint> barChartDataPoints = [];
+    //   int dataSeriesSize = 14;
+    //   final List<double> values =
+    //       LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+    //   var time = DateTime.now();
+    //   for (int i = 0; i < dataSeriesSize; i++) {
+    //     barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+    //     time = time.add(const Duration(days: 1));
+    //   }
+    //   CooBarChartDataSeries serie = CooBarChartDataSeries(
+    //     dataPoints: barChartDataPoints,
+    //     barColor: Colors.cyan,
+    //   );
+    //   barchartDataSeries.add(serie);
+    // }
+    // {
+    //   List<CooBarChartDataPoint> barChartDataPoints = [];
+    //   int dataSeriesSize = 14;
+    //   final List<double> values =
+    //       LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+    //   var time = DateTime.now();
+    //   for (int i = 0; i < dataSeriesSize; i++) {
+    //     barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+    //     time = time.add(const Duration(days: 1));
+    //   }
+    //   CooBarChartDataSeries serie = CooBarChartDataSeries(
+    //     dataPoints: barChartDataPoints,
+    //     barColor: Colors.brown,
+    //   );
+    //   barchartDataSeries.add(serie);
+    // }
+    // {
+    //   List<CooBarChartDataPoint> barChartDataPoints = [];
+    //   int dataSeriesSize = 14;
+    //   final List<double> values =
+    //       LineChartDemoUtil.generateRandomDataPoints(count: dataSeriesSize, minValue: 11, maxValue: 24);
+    //   var time = DateTime.now();
+    //   for (int i = 0; i < dataSeriesSize; i++) {
+    //     barChartDataPoints.add(CooBarChartDataPoint(value: values[i], time: time));
+    //     time = time.add(const Duration(days: 1));
+    //   }
+    //   CooBarChartDataSeries serie = CooBarChartDataSeries(
+    //     dataPoints: barChartDataPoints,
+    //     barColor: Colors.pinkAccent,
+    //   );
+    //   barchartDataSeries.add(serie);
+    // }
   }
 
   // Zeichnet den Kachelmannchart "14 Tage Trend" ()
