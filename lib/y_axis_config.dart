@@ -5,7 +5,7 @@ class YAxisConfig {
   const YAxisConfig({
     this.showAxis = true,
     this.showYAxisLables = true,
-    this.labelCount = 5,
+    this.labelCount,
     this.minLabelValue,
     this.maxLabelValue,
     this.addValuePadding = true,
@@ -21,7 +21,7 @@ class YAxisConfig {
 
   // Anzahl Labels auf der Y-Achse. Es werden die hier konfigurierte Anzahl Labels für die Bezeichner der Y-Achse
   // angezeigt. Dabei werden die Werte zwischen Min- und Max-Werten berechnet.
-  final int labelCount;
+  final int? labelCount;
 
   /// Welcher ist das kleinste Label, der angezeigt werden soll?
   /// Wenn null wird dieses Label berechnet.

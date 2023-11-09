@@ -51,7 +51,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
   var xAxisConfig = const XAxisConfig();
   var yAxisConfig = const YAxisConfig();
 
-  bool chartBackgroundColorBlack = false;
+  bool chartBackgroundColorBlack = true;
 
   CooChartType chartType = CooChartType.bar;
 
@@ -59,6 +59,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
   bool showDataPoints = false;
   bool showDataLabels = false;
   bool showDataLine = false;
+
+  int? yAxisLabelCount;
 
   /// X-Achse Config
 
@@ -75,7 +77,9 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _genrateRandomCooLinechartDataPoints();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
-    _generateLargeVorhersageHourly();
+    // _generateLargeVorhersageHourly();
+    // _generateLargeVorhersageHourly();
+    _generate10DataPointsLargeNumer();
     // _generateEmptyLists();
   }
 
@@ -166,10 +170,6 @@ class _LineChartDemoState extends State<LineChartDemo> {
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
-                    child: const Text('Random Daten generieren'),
-                  ),
-                  ElevatedButton(
                     onPressed: () => setState(() => _create0To10To0ValuesChartDataPoints()),
                     child: const Text('0 -> 10 ->0'),
                   ),
@@ -186,6 +186,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
                     child: const Text('NULL Value Test'),
                   ),
                   ElevatedButton(
+                    onPressed: () => setState(() => _generate10DataPointsLargeNumer()),
+                    child: const Text('10 große Zahlen'),
+                  ),
+                  ElevatedButton(
                     onPressed: () => setState(() => _generateKachelmann14TageWetterTrend()),
                     child: const Text('Kachelmann 14-Tage'),
                   ),
@@ -196,6 +200,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   ElevatedButton(
                     onPressed: () => setState(() => _generateLargeVorhersageHourly()),
                     child: const Text('Große Datenmennge'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
+                    child: const Text('Random Daten generieren'),
                   ),
                 ],
               ),
@@ -314,15 +322,27 @@ class _LineChartDemoState extends State<LineChartDemo> {
                     onPressed: () => setState(() => chartBackgroundColorBlack = !chartBackgroundColorBlack),
                     child: Text('Schwarzer Hintergrund ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
                   ),
-                  Text('Anzahl Labels Y-Achse: ${yAxisConfig.labelCount} '),
+                  Text('Anzahl Labels Y-Achse: ${yAxisLabelCount ?? '-'} '),
                   ElevatedButton(
-                    onPressed: () =>
-                        setState(() => yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisConfig.labelCount - 1)),
+                    onPressed: () => setState(() {
+                      if (yAxisLabelCount == null) {
+                        yAxisLabelCount = 5;
+                      } else {
+                        yAxisLabelCount = yAxisLabelCount! - 1;
+                      }
+                      yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisLabelCount);
+                    }),
                     child: const Text('-'),
                   ),
                   ElevatedButton(
-                    onPressed: () =>
-                        setState(() => yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisConfig.labelCount + 1)),
+                    onPressed: () => setState(() {
+                      if (yAxisLabelCount == null) {
+                        yAxisLabelCount = 5;
+                      } else {
+                        yAxisLabelCount = yAxisLabelCount! + 1;
+                      }
+                      yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisLabelCount);
+                    }),
                     child: const Text('+'),
                   ),
                 ],
@@ -344,6 +364,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisStepLineBottomLabelLineChartCallback = null;
     xAxisStepLineTopLabelBarChartCallback = null;
     xAxisStepLineBottomLabelBarChartCallback = null;
+    yAxisLabelCount = null;
   }
 
   _create0To10To0ValuesChartDataPoints() {
@@ -1397,14 +1418,48 @@ class _LineChartDemoState extends State<LineChartDemo> {
     ));
   }
 
-  _generateLargeVorhersageHourly() {
+  _generate10DataPointsLargeNumer() {
     _resetToDefault();
     linechartDataSeries.clear();
     chartType = CooChartType.line;
     yAxisConfig = yAxisConfig.copyWith(
-      labelCount: 10,
-      labelPostfix: '°C',
+      addValuePadding: false,
     );
+
+    var time = DateTime.now();
+
+    final List<CooLineChartDataPoint> cooLinechartDataPoints = [];
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 998, time: time));
+    time = time.add(const Duration(hours: 1));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 999, time: time));
+    time = time.add(const Duration(hours: 1));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 1000, time: time));
+    time = time.add(const Duration(hours: 1));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 1001, time: time));
+    time = time.add(const Duration(hours: 1));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 1002, time: time));
+    time = time.add(const Duration(hours: 1));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 1003, time: time));
+    time = time.add(const Duration(hours: 1));
+    cooLinechartDataPoints.add(CooLineChartDataPoint(value: 1004, time: time));
+
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'dd.MM.',
+    );
+
+    linechartDataSeries.add(CooLineChartDataSeries(
+      dataPoints: cooLinechartDataPoints,
+      showDataPoints: true,
+      showDataLabels: true,
+    ));
+  }
+
+  _generateLargeVorhersageHourly() {
+    _resetToDefault();
+    linechartDataSeries.clear();
+    chartType = CooChartType.line;
+    yAxisConfig = yAxisConfig.copyWith();
 
     xAxisStepLineBottomLabelLineChartCallback = (index, cooLineChartDataPoints) {
       return 'basdfasdfasfsadfasdfasdfasd';
@@ -1416,7 +1471,6 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     final now = DateTime.now();
     final mitternacht = now.copyWith(hour: 0, minute: 0, microsecond: 0, millisecond: 0).add(const Duration(days: 1));
-    final hourDiff = mitternacht.difference(now).inHours;
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'H',
@@ -1428,11 +1482,15 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     {
       final dataPoints1 = LineChartDemoUtil.createDataPoints(
-        maxDataPointCount: 70,
-        minValue: 20,
-        maxValue: 22,
+        maxDataPointCount: 12,
+        minValue: 990,
+        maxValue: 1040,
       );
-      linechartDataSeries.add(CooLineChartDataSeries(dataPoints: dataPoints1, showDataPoints: false));
+      linechartDataSeries.add(CooLineChartDataSeries(
+        dataPoints: dataPoints1,
+        showDataPoints: true,
+        showDataLabels: true,
+      ));
     }
     // {
     //   final dataPoints1 = LineChartDemoUtil.createDataPoints(

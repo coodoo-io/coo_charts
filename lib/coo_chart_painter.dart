@@ -139,9 +139,11 @@ class CooChartPainter extends CustomPainter {
   double? yAxisMaxValue; // Größter Wert auf der Y-Achsen-Skala
   double? yAxisMinValue; // Kleinster Wert auf der Y-AchsenSkale
   double yAxisSteps = 0.0; // globale Hilfsvariable zum Berechnen der Datenpunkte
+  int yAxisLabelCount = -1; // gobale Hilfsvariable um die Anzahl Labels auf der Y-Achse zu bestimmen
 
   /// Alle zeitlichen Datenpunkte sortiert hintereinander
   List<DateTime> allDateTimeXAxisValues = [];
+  Set<double> allDataPointValues = {};
 
   // Abstand zwischen zwei Datenpunkte auf der X-Achse
   double xSegmentWidth = 0.0;
@@ -334,7 +336,6 @@ class CooChartPainter extends CustomPainter {
         minDataPointValue: minDataPointValue,
         yAxisMinValue: yAxisMinValue,
         yAxisMaxValue: yAxisMaxValue,
-        yAxisConfig: yAxisConfig,
       );
 
       final segmentWidthCurve = xSegmentWidth / 3; // each datapoint segment width
@@ -535,7 +536,6 @@ class CooChartPainter extends CustomPainter {
         minDataPointValue: minDataPointValue,
         yAxisMinValue: yAxisMinValue,
         yAxisMaxValue: yAxisMaxValue,
-        yAxisConfig: yAxisConfig,
       );
 
       List<double?> dataPointMaxValues = localLinechartDataSeries.dataPoints.map((e) => e.maxValue).toList();
@@ -544,7 +544,6 @@ class CooChartPainter extends CustomPainter {
         minDataPointValue: minDataPointValue,
         yAxisMinValue: yAxisMinValue,
         yAxisMaxValue: yAxisMaxValue,
-        yAxisConfig: yAxisConfig,
       );
 
       List<double?> dataPointMinalues = localLinechartDataSeries.dataPoints.map((e) => e.minValue).toList();
@@ -553,7 +552,6 @@ class CooChartPainter extends CustomPainter {
         minDataPointValue: minDataPointValue,
         yAxisMinValue: yAxisMinValue,
         yAxisMaxValue: yAxisMaxValue,
-        yAxisConfig: yAxisConfig,
       );
 
       final Color barColor = localLinechartDataSeries.barColor ?? CooChartConstants().colorShemas[i].dataPointColor;
@@ -719,14 +717,12 @@ class CooChartPainter extends CustomPainter {
       minDataPointValue: minDataPointValue,
       yAxisMinValue: yAxisMinValue!,
       yAxisMaxValue: yAxisMaxValue!,
-      yAxisConfig: yAxisConfig,
     );
     List<double?> maxPointsNormalized = CooChartPainterUtil.normalizeChartDataPoints(
       linechartDataPoints: maxPoints,
       minDataPointValue: minDataPointValue,
       yAxisMinValue: yAxisMinValue!,
       yAxisMaxValue: yAxisMaxValue!,
-      yAxisConfig: yAxisConfig,
     );
 
     final segmentWidthCurve = xSegmentWidth / 3; // each datapoint segment width
@@ -1254,9 +1250,9 @@ class CooChartPainter extends CustomPainter {
       }
     }
 
-    final double yOffsetInterval = (chartHeight - bottomColumnHeight - topColumnHeight) / (yAxisConfig.labelCount - 1);
+    final double yOffsetInterval = (chartHeight - bottomColumnHeight - topColumnHeight) / (yAxisLabelCount - 1);
 
-    for (int i = 0; i < yAxisConfig.labelCount; i++) {
+    for (int i = 0; i < yAxisLabelCount; i++) {
       double y = chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
 
       // Don't draw the first horizontal grid line because there is already the x-Axis line
@@ -1391,31 +1387,44 @@ class CooChartPainter extends CustomPainter {
     // double Werte. Sind es nur int Values als erste Werte werden immer ints als Range angeben.
     bool firstIsADoubleValue = false;
 
+    // Min und Max-Werte sind mit 0 initialisiert.
+    // Damit das Ermitteln korrekt funktioniert werden zwei Flags benötigt um zu initial den ersten Wert zu seten.
+    bool minValueSet = false;
+    bool maxValueSet = true;
+
     for (var linechartDataSerie in linechartDataSeries) {
       {
         // Alle Datenwerte  prüfen
-        List<double?> values = linechartDataSerie.dataPoints.map((e) => e.value).toList();
-        values.removeWhere((element) => element == null);
+        List<double> notNulValues = [];
 
-        if (values.isEmpty) {
+        List<double?> values = linechartDataSerie.dataPoints.map((e) => e.value).toList();
+        for (var val in values) {
+          if (val != null) {
+            notNulValues.add(val);
+          }
+        }
+        if (notNulValues.isEmpty) {
           continue;
         }
+        allDataPointValues.addAll(notNulValues);
 
         // check first
-        if (!firstIsADoubleValue && values[0]! % 1 != 0) {
+        if (!firstIsADoubleValue && notNulValues[0] % 1 != 0) {
           firstIsADoubleValue = true;
         }
 
         // Min- und Max-Value herausfinden (Nulls beachten und ignorieren)
-        final maxValueTmp = values.cast<double>().reduce(max);
-        if (maxDataPointValue < maxValueTmp) {
+        final maxValueTmp = notNulValues.cast<double>().reduce(max);
+        if (!maxValueSet || maxDataPointValue < maxValueTmp) {
           maxDataPointValue = maxValueTmp;
           yAxisMaxValue = maxValueTmp;
+          maxValueSet = true;
         }
-        final minValueTmp = values.cast<double>().reduce(min);
-        if (minDataPointValue > minValueTmp) {
+        final minValueTmp = notNulValues.cast<double>().reduce(min);
+        if (!minValueSet || minDataPointValue > minValueTmp) {
           minDataPointValue = minValueTmp;
           yAxisMinValue = minValueTmp;
+          minValueSet = true;
         }
       }
 
@@ -1478,18 +1487,35 @@ class CooChartPainter extends CustomPainter {
       }
     }
 
+    // Bevor der zu vewendente Label Count berechnet wird, dem vom User gewählten setzen
+    if (yAxisConfig.labelCount != null) {
+      final lCount = yAxisConfig.labelCount!;
+      if (lCount > 2) {
+        yAxisLabelCount = yAxisConfig.labelCount!;
+      } else {
+        // Es wurde ein Labelcount angegeben der aber nicht gültig ist. In diesem Fall werden nur 2 Labels gesetzt:
+        // Min und Max
+        yAxisLabelCount = 2;
+      }
+    }
+
     // Soll unter- und oberhalb der Linie etwas Platz eingerechnet werden?
     if (yAxisConfig.addValuePadding) {
       // Es darf unten und oben etwas Platz gelassen werden- daher wird dynamisch etwas oben und unten dazugerechnet.
-      // Liegt kein Wert unterhalb von und und ist die Differenz zu 0 im Vergleich zum Max -> obere Grenze kleiner,
+      // Wir setzen hier 5 Linien als Default, weil es dynamisch berechnet wird und hübsch aussieht
+      if (yAxisLabelCount < 0) {
+        yAxisLabelCount = 5;
+      }
+
+      // Liegt kein Wert unterhalb von 0 und ist die Differenz zu 0 im Vergleich zum Max -> obere Grenze kleiner,
       // wird unten immer bei 0 in der Y-Achsen-Skala angefangen
-      var orgStep = ((maxDataPointValue - minDataPointValue) / (yAxisConfig.labelCount));
+      var orgStep = ((maxDataPointValue - minDataPointValue) / (yAxisLabelCount));
 
       var maxValueInt = (maxDataPointValue + (orgStep)).toInt();
       var minValueInt = (minDataPointValue - (orgStep)).toInt();
       int diff = maxValueInt - minValueInt;
       // tmpStep wird benötigt um Puffer zu addieren. Man könnte auch 10% vom Range nehmen..
-      var tmpStep = ((diff / yAxisConfig.labelCount) + 1).toInt();
+      var tmpStep = ((diff / yAxisLabelCount) + 1).toInt();
 
       if (yAxisConfig.minLabelValue != null && yAxisConfig.minLabelValue! < minDataPointValue) {
         yAxisMinValue = yAxisConfig.minLabelValue;
@@ -1507,35 +1533,42 @@ class CooChartPainter extends CustomPainter {
         yAxisMaxValue = yAxisConfig.maxLabelValue;
       } else {
         // Der max-Value muss aus den ermittelten Steps berechnet werden
-        yAxisMaxValue = yAxisMinValue! + (tmpStep * (yAxisConfig.labelCount - 1));
+        yAxisMaxValue = yAxisMinValue! + (tmpStep * (yAxisLabelCount - 1));
 
         // Manchmal kommt es vor, dass die Ermittlung des Puffers und des Steps zu gering ist
         // In diesem Fall muss die Step-Größe um eins erhöht werden um das max zu ermitteln
-        if (yAxisMaxValue! < maxDataPointValue) {
+        if (yAxisMaxValue! <= maxDataPointValue) {
           tmpStep += 1;
-          yAxisMaxValue = yAxisMinValue! + (tmpStep * (yAxisConfig.labelCount - 1));
+          yAxisMaxValue = yAxisMinValue! + (tmpStep * (yAxisLabelCount - 1));
         }
       }
 
       // Jetzt die Stepgröße nochmal berechnen
-      yAxisSteps = ((yAxisMaxValue! - yAxisMinValue!) / (yAxisConfig.labelCount - 1));
+      yAxisSteps = ((yAxisMaxValue! - yAxisMinValue!) / (yAxisLabelCount - 1));
 
       // Die Stepgröße soll ein int sein um keine krummen Zahlen auf der Y-Achse zu bekommen
       if (yAxisSteps % 1 != 0) {
         yAxisSteps = (yAxisSteps + 1).toInt().toDouble();
-        yAxisMaxValue = yAxisMinValue! + (yAxisSteps * (yAxisConfig.labelCount - 1));
+        yAxisMaxValue = yAxisMinValue! + (yAxisSteps * (yAxisLabelCount - 1));
       }
     } else {
-      // Der niedrigste
-      // Daten punkt soll unten direkt auf der X-Achse liegen. Kein Puffer dazwischenrechnen
-      yAxisSteps = ((maxDataPointValue - minDataPointValue) / (yAxisConfig.labelCount - 1));
+      // Der niedrigste Datenpunkt soll unten direkt auf der X-Achse liegen. Kein Puffer dazwischenrechnen
+      if (yAxisLabelCount < 0) {
+        // Es ist kein Labecount vom User gesetzt -> jeder Punkt bekommt eine Linie
+        yAxisLabelCount = allDataPointValues.length;
+      }
+      yAxisSteps = (allDataPointValues.length / yAxisLabelCount);
 
-      // Sonderfall: wenn zwischen min und Max die anzahl an möglichen Skalierungspunkten als ganze Zahlen
-      // verwendet werden können, dann bekommt max oben ein bisschen padding
-      var scalePotential = maxDataPointValue / yAxisConfig.labelCount;
-      if (scalePotential > 0) {
-        yAxisSteps = (scalePotential + 1).toInt().toDouble();
-        yAxisMaxValue = yAxisMinValue! + (yAxisSteps * (yAxisConfig.labelCount - 1));
+      yAxisMaxValue = yAxisMinValue! + (yAxisSteps * (yAxisLabelCount - 1));
+
+      if (yAxisSteps != 1) {
+        // Sonderfall: wenn zwischen min und Max die anzahl an möglichen Skalierungspunkten als ganze Zahlen
+        // verwendet werden können, dann bekommt max oben ein bisschen padding
+        var scalePotential = maxDataPointValue / yAxisLabelCount;
+        if (scalePotential > 0) {
+          yAxisSteps = (scalePotential + 1).toInt().toDouble();
+          yAxisMaxValue = yAxisMinValue! + (yAxisSteps * (yAxisLabelCount - 1));
+        }
       }
     }
   }

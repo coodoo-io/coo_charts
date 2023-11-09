@@ -1,12 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:coo_charts/chart_column_block_config_image.dart';
 import 'package:coo_charts/chart_column_blocks.dart';
 import 'package:coo_charts/chart_padding.enum.dart';
-import 'package:coo_charts/y_axis_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -168,7 +166,6 @@ class CooChartPainterUtil {
       {required List<double?> linechartDataPoints,
       required double yAxisMinValue,
       required double yAxisMaxValue,
-      required YAxisConfig yAxisConfig,
       required double minDataPointValue}) {
     if (linechartDataPoints.isEmpty) {
       return List.empty();
@@ -183,10 +180,7 @@ class CooChartPainterUtil {
 
     // Falls der kleinste Wert > 0 ist müssen alle Punkte um diesen Wert verringert werden.
     // Aber nur, wenn es nicht mit padding ausgespielt wird
-    double valueOverZeroDiff = 0.0;
-    if (!yAxisConfig.addValuePadding) {
-      valueOverZeroDiff = minDataPointValue > 0 ? yAxisMinValue : 0;
-    }
+    double valueOverZeroDiff = minDataPointValue > 0 ? yAxisMinValue : 0;
 
     var maxDataPoint =
         yAxisMaxValue + minDataPointDiff - valueOverZeroDiff; // negativen Ausgleich addieren, falls vorhanden
