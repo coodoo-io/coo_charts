@@ -77,9 +77,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _genrateRandomCooLinechartDataPoints();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
-    // _generateLargeVorhersageHourly();
-    // _generateLargeVorhersageHourly();
-    _generate10DataPointsLargeNumer();
+    _generateLargeVorhersageHourly();
+    // _generate10DataPointsLargeNumer();
     // _generateEmptyLists();
   }
 
@@ -1471,25 +1470,26 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     final now = DateTime.now();
     final mitternacht = now.copyWith(hour: 0, minute: 0, microsecond: 0, millisecond: 0).add(const Duration(days: 1));
+    final hoursDiff = now.difference(mitternacht).inHours;
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'H',
       showTopLabels: true,
       showBottomLabels: true,
       stepAxisLine: 24,
-      stepAxisLineStart: 10,
+      stepAxisLineStart: hoursDiff,
     );
 
     {
       final dataPoints1 = LineChartDemoUtil.createDataPoints(
-        maxDataPointCount: 12,
+        maxDataPointCount: 500,
         minValue: 990,
         maxValue: 1040,
       );
       linechartDataSeries.add(CooLineChartDataSeries(
         dataPoints: dataPoints1,
         showDataPoints: true,
-        showDataLabels: true,
+        showDataLabels: false,
       ));
     }
     // {
