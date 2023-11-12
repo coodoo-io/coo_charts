@@ -1,5 +1,5 @@
-import 'package:coo_charts/chart_column_block_data.dart';
-import 'package:coo_charts/chart_column_block_config.dart';
+import 'package:coo_charts/common/blocks/chart_column_block_data.dart';
+import 'package:coo_charts/common/blocks/chart_column_block_config.dart';
 
 /// Adds a info line with blocks over or under a colum.
 ///

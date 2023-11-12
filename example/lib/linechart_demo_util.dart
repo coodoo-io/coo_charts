@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:coo_charts/coo_line_chart_data_point.dart';
-import 'package:coo_charts/coo_line_chart_data_series.dart';
+import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
+import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
 
 class LineChartDemoUtil {
   static List<CooLineChartDataSeries> generateLargeForecastHourlyList({

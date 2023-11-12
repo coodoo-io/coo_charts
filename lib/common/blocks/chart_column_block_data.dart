@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:coo_charts/chart_column_block_config_image.dart';
+import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 
 /// If data points column legends are enabled this data class is needed for every column
 class ChartColumnBlockData {

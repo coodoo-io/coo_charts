@@ -2,9 +2,9 @@
 
 import 'dart:ui' as ui;
 
-import 'package:coo_charts/chart_column_block_config_image.dart';
-import 'package:coo_charts/chart_column_blocks.dart';
-import 'package:coo_charts/chart_padding.enum.dart';
+import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
+import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
+import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';

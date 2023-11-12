@@ -1,9 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:ui';
 
-import 'package:coo_charts/chart_padding.enum.dart';
-import 'package:coo_charts/x_axis_config.dart';
-import 'package:coo_charts/y_axis_config.dart';
+import 'package:coo_charts/common/chart_padding.enum.dart';
+import 'package:coo_charts/common/x_axis_config.dart';
+import 'package:coo_charts/common/y_axis_config.dart';
 
 // Common chart config for every chart Type
 class ChartConfig {
