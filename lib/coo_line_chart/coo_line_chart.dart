@@ -24,6 +24,7 @@ class CooLineChart extends StatefulWidget {
     this.columnBlocks,
     this.chartConfig = const ChartConfig(),
     this.yAxisConfig = const YAxisConfig(),
+    this.yAxisOppositeConfig,
     this.xAxisConfig = const XAxisConfig(),
     this.padding = const ChartPadding(),
     this.onDataPointTab,
@@ -37,7 +38,8 @@ class CooLineChart extends StatefulWidget {
   final ChartConfig chartConfig;
 
   /// Die Konfiguration der Y-Achse
-  final YAxisConfig yAxisConfig;
+  final YAxisConfig yAxisConfig; // Left axis
+  final YAxisConfig? yAxisOppositeConfig; // opposite (right) y-axis
   final XAxisConfig xAxisConfig;
 
   final ChartPadding padding;
@@ -133,6 +135,7 @@ class _CooLineChartState extends State<CooLineChart> {
                 xAxisConfig: widget.xAxisConfig,
                 centerDataPointBetweenVerticalGrid: widget.chartConfig.centerDataPointBetweenVerticalGrid,
                 yAxisConfig: widget.yAxisConfig,
+                yAxisOppositeConfig: widget.yAxisOppositeConfig,
                 columLegendsAssetImages: columLegendsAssetImages,
                 columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
                 onLineChartDataPointTabCallback: widget.onDataPointTab,

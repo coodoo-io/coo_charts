@@ -5,6 +5,8 @@ import 'dart:ui' as ui;
 import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
+import 'package:coo_charts/common/y_axis_config.dart';
+import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -197,5 +199,87 @@ class CooChartPainterUtil {
     }
 
     return normalizedDataPoints;
+  }
+
+  /// Malt die Labels auf der Y-Achse und alle horizontalen X-Linien des Datengrids
+  ///
+  /// Berechnet die Höhe der einzelnen Zeilen anhand der gegebenen Label-Counts.
+  /// Labels werden links neben dem Chart gemalt.
+  ///
+  static void drawYAxisLabelAndHorizontalGridLine({
+    required Canvas canvas,
+    required double chartWidth,
+    required double chartHeight,
+    required YAxisConfig yAxisConfig,
+    required List<CooLineChartDataSeries> linechartDataSeries,
+    required bool showYAxisLables,
+    required bool showGridHorizontal,
+    required int yAxisLabelCount,
+    required double yAxisSteps,
+    required double? yAxisMinValue,
+    required ChartPadding padding,
+    required Paint gridPaint,
+    required TextPainter axisLabelPainter,
+    ChartColumnBlocks? columnBlocks,
+  }) {
+    // Blocks werden für die korrekte Berechnung der Labelposition benötigt
+    bool showColumnBottomDatas = false;
+    double bottomColumnHeight = 0;
+    bool showColumnTopDatas = false;
+    double topColumnHeight = 0;
+    if (columnBlocks != null) {
+      showColumnBottomDatas = columnBlocks.showBottomBlocks && columnBlocks.bottomDatas.isNotEmpty;
+      if (showColumnBottomDatas) {
+        bottomColumnHeight = columnBlocks.bottomConfig.height.toDouble();
+      }
+
+      showColumnTopDatas = columnBlocks.showTopBlocks && columnBlocks.topDatas.isNotEmpty;
+      if (showColumnTopDatas) {
+        topColumnHeight = columnBlocks.topConfig.height.toDouble();
+      }
+    }
+
+    final double yOffsetInterval = (chartHeight - bottomColumnHeight - topColumnHeight) / (yAxisLabelCount - 1);
+
+    for (int i = 0; i < yAxisLabelCount; i++) {
+      double y = chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
+
+      // Don't draw the first horizontal grid line because there is already the x-Axis line
+      // Falls die Column Legende angezeigt werden soll dann die erste Line auch zeichnen
+      if ((i != 0 && showGridHorizontal) || showColumnBottomDatas) {
+        canvas.drawLine(Offset(padding.left.toDouble(), y), Offset(chartWidth + padding.left, y), gridPaint);
+      }
+
+      // Draw Y-axis scale points
+      var yAxisLabelValue = (i * yAxisSteps + yAxisMinValue!);
+      late String label;
+      if (yAxisLabelValue is int || yAxisLabelValue % 1 == 0) {
+        // Zahl ist eine ganze Zahl und wird ohne Kommastelle
+        label = yAxisLabelValue.toInt().toString();
+      } else {
+        label = yAxisLabelValue.toStringAsFixed(2);
+      }
+
+      if (yAxisConfig.labelPostfix != null) {
+        label = '$label ${yAxisConfig.labelPostfix}';
+      }
+
+      axisLabelPainter.text = TextSpan(
+        text: label,
+        style: const TextStyle(
+          fontSize: 12,
+          color: Colors.grey,
+        ),
+      );
+
+      if (showYAxisLables) {
+        axisLabelPainter.layout();
+
+        // Die Labels an der Y-Achse sollen rechtsbündig sein.
+        // Somit muss der Padding mit der Größe des Textes berechnet werden
+        var w = axisLabelPainter.width;
+        axisLabelPainter.paint(canvas, Offset(padding.left - w - 10, y - axisLabelPainter.height / 2));
+      }
+    }
   }
 }

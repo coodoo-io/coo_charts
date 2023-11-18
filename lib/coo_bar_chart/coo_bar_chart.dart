@@ -24,6 +24,7 @@ class CooBarChart extends StatefulWidget {
     this.columnBlocks,
     this.chartConfig = const ChartConfig(),
     this.yAxisConfig = const YAxisConfig(),
+    this.yAxisOppositeConfig = const YAxisConfig(),
     this.xAxisConfig = const XAxisConfig(),
     this.padding = const ChartPadding(),
     this.onDataPointTab,
@@ -38,6 +39,7 @@ class CooBarChart extends StatefulWidget {
 
   /// Die Konfiguration der Y-Achse
   final YAxisConfig yAxisConfig;
+  final YAxisConfig yAxisOppositeConfig;
   final XAxisConfig xAxisConfig;
 
   final ChartPadding padding;
@@ -133,6 +135,7 @@ class _CooBarChartState extends State<CooBarChart> {
                 xAxisConfig: widget.xAxisConfig,
                 centerDataPointBetweenVerticalGrid: true,
                 yAxisConfig: widget.yAxisConfig,
+                yAxisOppositeConfig: widget.yAxisOppositeConfig,
                 columLegendsAssetImages: columLegendsAssetImages,
                 columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
                 onBarChartDataPointTabCallback: widget.onDataPointTab,

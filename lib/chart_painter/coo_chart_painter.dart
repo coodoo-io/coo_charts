@@ -46,6 +46,7 @@ class CooChartPainter extends CustomPainter {
     required this.centerDataPointBetweenVerticalGrid,
     required this.xAxisConfig,
     required this.yAxisConfig,
+    required this.yAxisOppositeConfig,
     required this.padding,
     required this.columLegendsAssetImages,
     required this.columLegendsAssetSvgPictureInfos,
@@ -119,6 +120,7 @@ class CooChartPainter extends CustomPainter {
 
   /// Die Konfiguration für X- und Y-Achse
   final YAxisConfig yAxisConfig;
+  final YAxisConfig? yAxisOppositeConfig;
   final XAxisConfig xAxisConfig;
 
   /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
@@ -251,13 +253,21 @@ class CooChartPainter extends CustomPainter {
       chartHeight: chartHeight,
     );
 
-    _drawYAxisLabelAndHorizontalGridLine(
+    CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
       canvas: canvas,
       chartWidth: chartWidth,
       chartHeight: chartHeight,
+      yAxisConfig: yAxisConfig,
       linechartDataSeries: linechartDataSeries,
       showYAxisLables: yAxisConfig.showYAxisLables,
       columnBlocks: columnBlocks,
+      showGridHorizontal: showGridHorizontal,
+      yAxisLabelCount: yAxisLabelCount,
+      yAxisSteps: yAxisSteps,
+      yAxisMinValue: yAxisMinValue,
+      padding: padding,
+      gridPaint: _gridPaint,
+      axisLabelPainter: _axisLabelPainter,
     );
 
     _drawColumnBlocks(
@@ -1217,79 +1227,6 @@ class CooChartPainter extends CustomPainter {
             _axisLabelPainter.paint(canvas, Offset(xPos, yPos));
           }
         }
-      }
-    }
-  }
-
-  /// Malt die Labels auf der Y-Achse und alle horizontalen X-Linien des Datengrids
-  ///
-  /// Berechnet die Höhe der einzelnen Zeilen anhand der gegebenen Label-Counts.
-  /// Labels werden links neben dem Chart gemalt.
-  ///
-  void _drawYAxisLabelAndHorizontalGridLine({
-    required Canvas canvas,
-    required double chartWidth,
-    required double chartHeight,
-    required List<CooLineChartDataSeries> linechartDataSeries,
-    required bool showYAxisLables,
-    ChartColumnBlocks? columnBlocks,
-  }) {
-    bool showColumnBottomDatas = false;
-    double bottomColumnHeight = 0;
-    bool showColumnTopDatas = false;
-    double topColumnHeight = 0;
-    if (columnBlocks != null) {
-      showColumnBottomDatas = columnBlocks.showBottomBlocks && columnBlocks.bottomDatas.isNotEmpty;
-      if (showColumnBottomDatas) {
-        bottomColumnHeight = columnBlocks.bottomConfig.height.toDouble();
-      }
-
-      showColumnTopDatas = columnBlocks.showTopBlocks && columnBlocks.topDatas.isNotEmpty;
-      if (showColumnTopDatas) {
-        topColumnHeight = columnBlocks.topConfig.height.toDouble();
-      }
-    }
-
-    final double yOffsetInterval = (chartHeight - bottomColumnHeight - topColumnHeight) / (yAxisLabelCount - 1);
-
-    for (int i = 0; i < yAxisLabelCount; i++) {
-      double y = chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
-
-      // Don't draw the first horizontal grid line because there is already the x-Axis line
-      // Falls die Column Legende angezeigt werden soll dann die erste Line auch zeichnen
-      if ((i != 0 && showGridHorizontal) || showColumnBottomDatas) {
-        canvas.drawLine(Offset(padding.left.toDouble(), y), Offset(chartWidth + padding.left, y), _gridPaint);
-      }
-
-      // Draw Y-axis scale points
-      var yAxisLabelValue = (i * yAxisSteps + yAxisMinValue!);
-      late String label;
-      if (yAxisLabelValue is int || yAxisLabelValue % 1 == 0) {
-        // Zahl ist eine ganze Zahl und wird ohne Kommastelle
-        label = yAxisLabelValue.toInt().toString();
-      } else {
-        label = yAxisLabelValue.toStringAsFixed(2);
-      }
-
-      if (yAxisConfig.labelPostfix != null) {
-        label = '$label ${yAxisConfig.labelPostfix}';
-      }
-
-      _axisLabelPainter.text = TextSpan(
-        text: label,
-        style: const TextStyle(
-          fontSize: 12,
-          color: Colors.grey,
-        ),
-      );
-
-      if (showYAxisLables) {
-        _axisLabelPainter.layout();
-
-        // Die Labels an der Y-Achse sollen rechtsbündig sein.
-        // Somit muss der Padding mit der Größe des Textes berechnet werden
-        var w = _axisLabelPainter.width;
-        _axisLabelPainter.paint(canvas, Offset(padding.left - w - 10, y - _axisLabelPainter.height / 2));
       }
     }
   }
