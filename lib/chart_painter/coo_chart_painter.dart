@@ -141,7 +141,6 @@ class CooChartPainter extends CustomPainter {
   double? yAxisMaxValue; // Größter Wert auf der Y-Achsen-Skala
   double? yAxisMinValue; // Kleinster Wert auf der Y-AchsenSkale
   double yAxisSteps = 0.0; // globale Hilfsvariable zum Berechnen der Datenpunkte
-  int yAxisLabelCount = -1; // gobale Hilfsvariable um die Anzahl Labels auf der Y-Achse zu bestimmen
 
   /// Alle zeitlichen Datenpunkte sortiert hintereinander
   List<DateTime> allDateTimeXAxisValues = [];
@@ -259,10 +258,8 @@ class CooChartPainter extends CustomPainter {
       chartHeight: chartHeight,
       yAxisConfig: yAxisConfig,
       linechartDataSeries: linechartDataSeries,
-      showYAxisLables: yAxisConfig.showYAxisLables,
       columnBlocks: columnBlocks,
       showGridHorizontal: showGridHorizontal,
-      yAxisLabelCount: yAxisLabelCount,
       yAxisSteps: yAxisSteps,
       yAxisMinValue: yAxisMinValue,
       padding: padding,
@@ -1425,25 +1422,10 @@ class CooChartPainter extends CustomPainter {
     }
 
     // Bevor der zu vewendente Label Count berechnet wird, dem vom User gewählten setzen
-    if (yAxisConfig.labelCount != null) {
-      final lCount = yAxisConfig.labelCount!;
-      if (lCount > 2) {
-        yAxisLabelCount = yAxisConfig.labelCount!;
-      } else {
-        // Es wurde ein Labelcount angegeben der aber nicht gültig ist. In diesem Fall werden nur 2 Labels gesetzt:
-        // Min und Max
-        yAxisLabelCount = 2;
-      }
-    }
+    int yAxisLabelCount = CooChartPainterUtil.getYAxisLabelCount(yAxisConfig);
 
     // Soll unter- und oberhalb der Linie etwas Platz eingerechnet werden?
     if (yAxisConfig.addValuePadding) {
-      // Es darf unten und oben etwas Platz gelassen werden- daher wird dynamisch etwas oben und unten dazugerechnet.
-      // Wir setzen hier 5 Linien als Default, weil es dynamisch berechnet wird und hübsch aussieht
-      if (yAxisLabelCount < 0) {
-        yAxisLabelCount = 5;
-      }
-
       // Liegt kein Wert unterhalb von 0 und ist die Differenz zu 0 im Vergleich zum Max -> obere Grenze kleiner,
       // wird unten immer bei 0 in der Y-Achsen-Skala angefangen
       var orgStep = ((maxDataPointValue - minDataPointValue) / (yAxisLabelCount));

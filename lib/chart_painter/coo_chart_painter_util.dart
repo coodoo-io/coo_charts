@@ -212,9 +212,7 @@ class CooChartPainterUtil {
     required double chartHeight,
     required YAxisConfig yAxisConfig,
     required List<CooLineChartDataSeries> linechartDataSeries,
-    required bool showYAxisLables,
     required bool showGridHorizontal,
-    required int yAxisLabelCount,
     required double yAxisSteps,
     required double? yAxisMinValue,
     required ChartPadding padding,
@@ -239,6 +237,7 @@ class CooChartPainterUtil {
       }
     }
 
+    final int yAxisLabelCount = CooChartPainterUtil.getYAxisLabelCount(yAxisConfig);
     final double yOffsetInterval = (chartHeight - bottomColumnHeight - topColumnHeight) / (yAxisLabelCount - 1);
 
     for (int i = 0; i < yAxisLabelCount; i++) {
@@ -272,7 +271,7 @@ class CooChartPainterUtil {
         ),
       );
 
-      if (showYAxisLables) {
+      if (yAxisConfig.showYAxisLables) {
         axisLabelPainter.layout();
 
         // Die Labels an der Y-Achse sollen rechtsbündig sein.
@@ -281,5 +280,32 @@ class CooChartPainterUtil {
         axisLabelPainter.paint(canvas, Offset(padding.left - w - 10, y - axisLabelPainter.height / 2));
       }
     }
+  }
+
+  /// Get the number of labels for y-axis. can be configured by user or calculated.
+  static int getYAxisLabelCount(YAxisConfig yAxisConfig) {
+    int yAxisLabelCount = -1; // gobale Hilfsvariable um die Anzahl Labels auf der Y-Achse zu bestimmen
+
+    // Bevor der zu vewendente Label Count berechnet wird, dem vom User gewählten setzen
+    if (yAxisConfig.labelCount != null) {
+      final lCount = yAxisConfig.labelCount!;
+      if (lCount > 2) {
+        yAxisLabelCount = yAxisConfig.labelCount!;
+      } else {
+        // Es wurde ein Labelcount angegeben der aber nicht gültig ist. In diesem Fall werden nur 2 Labels gesetzt:
+        // Min und Max
+        yAxisLabelCount = 2;
+      }
+    }
+
+    // Soll unter- und oberhalb der Linie etwas Platz eingerechnet werden?
+    if (yAxisConfig.addValuePadding) {
+      // Es darf unten und oben etwas Platz gelassen werden- daher wird dynamisch etwas oben und unten dazugerechnet.
+      // Wir setzen hier 5 Linien als Default, weil es dynamisch berechnet wird und hübsch aussieht
+      if (yAxisLabelCount < 0) {
+        yAxisLabelCount = 5;
+      }
+    }
+    return yAxisLabelCount;
   }
 }
