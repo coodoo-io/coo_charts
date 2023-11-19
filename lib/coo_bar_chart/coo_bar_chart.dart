@@ -127,6 +127,7 @@ class _CooBarChartState extends State<CooBarChart> {
             child: CustomPaint(
               painter: CooChartPainter(
                 metadata: metadata,
+                metadataOpposite: null,
                 chartType: CooChartType.bar,
                 linechartDataSeries: [],
                 barchartDataSeries: widget.dataSeries,

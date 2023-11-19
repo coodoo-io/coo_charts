@@ -363,6 +363,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   _resetToDefault() {
     yAxisConfig = const YAxisConfig();
+    yAxisOppositeConfig = null;
     xAxisConfig = const XAxisConfig();
     chartConfig = const ChartConfig();
 
@@ -542,11 +543,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
         ));
       }
       linechartDataSeries.add(CooLineChartDataSeries(
-        dataPoints: cooLinechartDataPoints,
-        label: 'Random',
-        showDataLabels: true,
-        showDataPoints: true,
-      ));
+          dataPoints: cooLinechartDataPoints,
+          label: 'Random',
+          showDataLabels: true,
+          showDataPoints: true,
+          opposite: true));
     }
   }
 

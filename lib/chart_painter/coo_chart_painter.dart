@@ -26,6 +26,7 @@ import 'package:intl/intl.dart';
 class CooChartPainter extends CustomPainter {
   CooChartPainter({
     required this.metadata,
+    required this.metadataOpposite,
     required this.chartType,
     required this.linechartDataSeries,
     required this.barchartDataSeries,
@@ -59,6 +60,7 @@ class CooChartPainter extends CustomPainter {
   });
 
   final ChartPainterMetadata metadata;
+  final ChartPainterMetadata? metadataOpposite;
   final CooChartType chartType;
 
   final List<CooLineChartDataSeries> linechartDataSeries;
@@ -126,33 +128,8 @@ class CooChartPainter extends CustomPainter {
     ..color = Colors.red
     ..strokeWidth = 1;
 
-  final _linePaint = Paint()
-    ..color = Colors.green
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 2.0;
-
-  final _lineAreaPaint = Paint()
-    ..color = Colors.red
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 2.0;
-
-  final Paint _pointPaint = Paint()
-    ..color = Colors.red
-    ..strokeWidth = 4
-    ..style = PaintingStyle.fill;
-
-  final Paint _pointPaintHighlight = Paint()
-    ..color = Colors.yellow
-    ..strokeWidth = 8
-    ..style = PaintingStyle.fill;
-
   final TextPainter _axisLabelPainter = TextPainter(
     textAlign: TextAlign.left,
-    textDirection: ui.TextDirection.ltr,
-  );
-
-  final TextPainter _dataLabelPainter = TextPainter(
-    textAlign: TextAlign.center,
     textDirection: ui.TextDirection.ltr,
   );
 
@@ -195,18 +172,28 @@ class CooChartPainter extends CustomPainter {
 
     CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
       canvas: canvas,
-      chartWidth: metadata.chartWidth,
-      chartHeight: metadata.chartHeight,
+      metadata: metadata,
       yAxisConfig: yAxisConfig,
-      linechartDataSeries: linechartDataSeries,
       columnBlocks: columnBlocks,
       showGridHorizontal: showGridHorizontal,
-      yAxisSteps: metadata.yAxisSteps,
-      yAxisMinValue: metadata.yAxisMinValue,
       padding: padding,
       gridPaint: _gridPaint,
       axisLabelPainter: _axisLabelPainter,
+      opposite: false,
     );
+    if (yAxisOppositeConfig != null && metadataOpposite != null) {
+      CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
+        canvas: canvas,
+        metadata: metadataOpposite!,
+        yAxisConfig: yAxisOppositeConfig!,
+        columnBlocks: columnBlocks,
+        showGridHorizontal: showGridHorizontal,
+        padding: padding,
+        gridPaint: _gridPaint,
+        axisLabelPainter: _axisLabelPainter,
+        opposite: true,
+      );
+    }
 
     _drawColumnBlocks(
       canvas: canvas,
@@ -217,18 +204,36 @@ class CooChartPainter extends CustomPainter {
     );
 
     if (chartType == CooChartType.line) {
-      _drawDataLinechartDataPointsAndPath(
-        linechartDataSeries: linechartDataSeries,
+      CooChartPainterUtil.drawDataLinechartDataPointsAndPath(
+        metadata: metadata,
+        padding: padding,
+        centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+        curvedLine: curvedLine,
+        highlightPoints: highlightPoints,
+        mouseInRectYIndex: mouseInRectYIndex,
+        linechartDataSeries: linechartDataSeries.where((element) => element.opposite == false).toList(),
         columnBlocks: columnBlocks,
         canvas: canvas,
-        chartWidth: metadata.chartWidth,
-        chartHeigt: metadata.chartHeight,
         mousePosition: mousePosition,
         minDataPointValue: metadata.minDataPointValue,
-        yAxisConfig: yAxisConfig,
-        yAxisMaxValue: metadata.yAxisMaxValue,
-        yAxisMinValue: metadata.yAxisMinValue,
       );
+    }
+    if (metadataOpposite != null) {
+      if (chartType == CooChartType.line) {
+        CooChartPainterUtil.drawDataLinechartDataPointsAndPath(
+          metadata: metadataOpposite!,
+          padding: padding,
+          centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+          curvedLine: curvedLine,
+          highlightPoints: highlightPoints,
+          mouseInRectYIndex: mouseInRectYIndex,
+          linechartDataSeries: linechartDataSeries.where((element) => element.opposite == true).toList(),
+          columnBlocks: columnBlocks,
+          canvas: canvas,
+          mousePosition: mousePosition,
+          minDataPointValue: metadata.minDataPointValue,
+        );
+      }
     }
     if (chartType == CooChartType.bar) {
       _drawDataBarchartBars(
@@ -261,188 +266,6 @@ class CooChartPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CooChartPainter oldDelegate) {
     return mousePosition != oldDelegate.mousePosition;
-  }
-
-  void _drawDataLinechartDataPointsAndPath({
-    required Canvas canvas,
-    required double chartWidth,
-    required double chartHeigt,
-    required Offset? mousePosition,
-    required List<CooLineChartDataSeries> linechartDataSeries,
-    required double yAxisMinValue,
-    required double yAxisMaxValue,
-    required YAxisConfig yAxisConfig,
-    required double minDataPointValue,
-    ChartColumnBlocks? columnBlocks,
-  }) {
-    final columnBottomDatasHeight =
-        columnBlocks != null && columnBlocks.showBottomBlocks ? columnBlocks.bottomConfig.height.toDouble() : 0;
-    // Die Segment-width muss über alle vorhandenen Datenpunkte aller Reihen berechnet werden.
-    for (var i = 0; i < linechartDataSeries.length; i++) {
-      CooLineChartDataSeries localLinechartDataSeries = linechartDataSeries[i];
-      List<String?> dataSeriesLabels = List.empty(growable: true);
-      List<double?> dataPointValues = localLinechartDataSeries.dataPoints.map((e) => e.value).toList();
-
-      // Alle Punkte auf einen Bereich zwischen 0.0 und 1.0 bringen um sie in der Fläche relativ berechnen zu können
-      List<double?> dataSeriesNormalizedValues = CooChartPainterUtil.normalizeChartDataPoints(
-        linechartDataPoints: dataPointValues,
-        minDataPointValue: minDataPointValue,
-        yAxisMinValue: yAxisMinValue,
-        yAxisMaxValue: yAxisMaxValue,
-      );
-
-      final segmentWidthCurve = metadata.xSegmentWidth / 3; // each datapoint segment width
-
-      /// calculate datapoint positions
-      var lineDataPoints = List<Offset?>.empty(growable: true);
-      double lastX = 0;
-      double lastY = 0;
-
-      var lineChartDataPointsPath = Path();
-      bool startPointAdded = false;
-      dataPointsLoop:
-      for (var i = 0; i < dataSeriesNormalizedValues.length; i++) {
-        // Lables für den späteren plotten parsen
-        CooLineChartDataPoint dataPoint = localLinechartDataSeries.dataPoints[i];
-        if (localLinechartDataSeries.showDataLabels) {
-          if (dataPoint.label != null) {
-            dataSeriesLabels.add(dataPoint.label!.trim());
-          } else if (dataPoint.value != null) {
-            dataSeriesLabels.add(dataPoint.value.toString());
-          } else {
-            dataSeriesLabels.add(null);
-          }
-        }
-
-        final dataValue = dataSeriesNormalizedValues[i];
-        if (dataValue == null) {
-          lineDataPoints.add(null);
-          continue dataPointsLoop;
-        }
-
-        // Berechnen der Position zum Plotten der Linie
-        double x;
-        if (i == 0) {
-          x = 0.0 + padding.left;
-        } else {
-          x = (i * metadata.xSegmentWidth) + padding.left;
-        }
-        if (centerDataPointBetweenVerticalGrid) {
-          x += metadata.xSegementWidthHalf; // add center offset
-        }
-
-        final startYPos = metadata.canvasHeight - padding.top - padding.bottom - columnBottomDatasHeight;
-        final y = startYPos - (dataValue * startYPos) + padding.top;
-
-        if (!startPointAdded) {
-          lineChartDataPointsPath.moveTo(x, y);
-          startPointAdded = true;
-        } else {
-          if (curvedLine) {
-            var x1 = lastX + (1 * segmentWidthCurve);
-            var y1 = lastY;
-            var x2 = lastX + (2 * segmentWidthCurve);
-            var y2 = y;
-            var x3 = lastX + (3 * segmentWidthCurve);
-            var y3 = y;
-            lineChartDataPointsPath.cubicTo(x1, y1, x2, y2, x3, y3);
-          } else {
-            lineChartDataPointsPath.lineTo(x, y);
-          }
-        }
-
-        var chartPoint = Offset(x, y);
-        lineDataPoints.add(chartPoint);
-
-        lastX = x;
-        lastY = y;
-      }
-
-      // Linechart Min- & Max-Area malen
-      if (localLinechartDataSeries.showMinMaxArea) {
-        _drawMinMaxDataPointArea(
-          canvas: canvas,
-          chartWidth: chartWidth,
-          chartHeigt: chartHeigt,
-          dataSeries: localLinechartDataSeries,
-          minMaxPoints: localLinechartDataSeries.dataPoints,
-          mousePosition: mousePosition,
-          dataPointColumnLegendHeight: columnBottomDatasHeight,
-        );
-      }
-      // Linechart Verbindungsline malen
-      if (localLinechartDataSeries.showDataLine) {
-        if (localLinechartDataSeries.dataLineColor != null) {
-          _linePaint.color = localLinechartDataSeries.dataLineColor!;
-
-          // Falls die Linefarbe angegeben wurde wird diese als default für die Datenpunkte, Highlight und Font gesetzt.
-          _pointPaint.color = localLinechartDataSeries.dataLineColor!;
-          _pointPaintHighlight.color = localLinechartDataSeries.dataLineColor!;
-        }
-        canvas.drawPath(
-          lineChartDataPointsPath,
-          _linePaint,
-        );
-      }
-
-      if (localLinechartDataSeries.dataPointColor != null) {
-        _pointPaint.color = localLinechartDataSeries.dataPointColor!;
-      }
-      if (localLinechartDataSeries.dataPointHighlightColor != null) {
-        _pointPaintHighlight.color = localLinechartDataSeries.dataPointHighlightColor!;
-      }
-
-      // Linechart Datenpunkte malen und Punkt Highlighten, wenn maus Datenzeile trifft
-      drawLineDataPointsLoop:
-      for (var i = 0; i < lineDataPoints.length; i++) {
-        Offset? dataPointOffset = lineDataPoints[i];
-        if (dataPointOffset == null) {
-          // gibt nichts zu sehen..
-          continue drawLineDataPointsLoop;
-        }
-
-        // Wird der Punkt gerade mit der Maus angeklickt?
-        if (highlightPoints && mouseInRectYIndex == i) {
-          canvas.drawCircle(dataPointOffset, 8, _pointPaintHighlight);
-        } else if (localLinechartDataSeries.showDataPoints) {
-          canvas.drawCircle(dataPointOffset, 4, _pointPaint);
-        }
-
-        // Data Point Label malen
-        if (localLinechartDataSeries.showDataLabels) {
-          String? label = dataSeriesLabels[i];
-          if (label != null) {
-            _dataLabelPainter.text = TextSpan(text: label, style: localLinechartDataSeries.dataPointLabelTextStyle);
-            _dataLabelPainter.layout();
-
-            double xPosCenter;
-            double yPos;
-            switch (localLinechartDataSeries.dataPointLabelPosition) {
-              case DataPointLabelPos.top:
-                // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-                xPosCenter = (dataPointOffset.dx) - (_dataLabelPainter.width / 2);
-                yPos = dataPointOffset.dy - 25 + (localLinechartDataSeries.dataPointLabelPadding * -1);
-                break;
-              case DataPointLabelPos.right:
-                xPosCenter = (dataPointOffset.dx) + 10 + localLinechartDataSeries.dataPointLabelPadding;
-                yPos = dataPointOffset.dy - (_dataLabelPainter.height / 2);
-                break;
-              case DataPointLabelPos.left:
-                xPosCenter = (dataPointOffset.dx) - 30 + (localLinechartDataSeries.dataPointLabelPadding * -1);
-                yPos = dataPointOffset.dy - (_dataLabelPainter.height / 2);
-                break;
-              case DataPointLabelPos.bottom:
-                // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-                xPosCenter = (dataPointOffset.dx) - (_dataLabelPainter.width / 2);
-                yPos = dataPointOffset.dy + 10 + localLinechartDataSeries.dataPointLabelPadding;
-                break;
-            }
-
-            _dataLabelPainter.paint(canvas, Offset(xPosCenter, yPos));
-          }
-        }
-      }
-    }
   }
 
   void _drawDataBarchartBars({
@@ -647,146 +470,6 @@ class CooChartPainter extends CustomPainter {
         }
       }
     }
-  }
-
-  void _drawMinMaxDataPointArea({
-    required Canvas canvas,
-    required double chartWidth,
-    required double chartHeigt,
-    required Offset? mousePosition,
-    required CooLineChartDataSeries dataSeries,
-    required List<CooLineChartDataPoint> minMaxPoints,
-    required dataPointColumnLegendHeight,
-  }) {
-    // Min- Max-Datenpunkte in eine Reihe bringen um eine Form zu bilden
-    List<double?> minPoints = minMaxPoints.map((e) => e.minValue).toList();
-    List<double?> maxPoints = minMaxPoints.map((e) => e.maxValue).toList();
-
-    // Alle hintereinander ergibt das custom paint path die zweite reihe reversed,
-    // damit es einen ordentlichen Kreis ergib
-
-    List<double?> minPointsNormalized = CooChartPainterUtil.normalizeChartDataPoints(
-      linechartDataPoints: minPoints,
-      minDataPointValue: metadata.minDataPointValue,
-      yAxisMinValue: metadata.yAxisMinValue,
-      yAxisMaxValue: metadata.yAxisMaxValue,
-    );
-    List<double?> maxPointsNormalized = CooChartPainterUtil.normalizeChartDataPoints(
-      linechartDataPoints: maxPoints,
-      minDataPointValue: metadata.minDataPointValue,
-      yAxisMinValue: metadata.yAxisMinValue,
-      yAxisMaxValue: metadata.yAxisMaxValue,
-    );
-
-    final segmentWidthCurve = metadata.xSegmentWidth / 3; // each datapoint segment width
-
-    /// calculate datapoint positions
-    var lineDataPoints = List<Offset?>.empty(growable: true);
-    double lastX = 0;
-    double lastY = 0;
-
-    var lineChartDataPointsPath = Path();
-    bool startPointAdded = false;
-    minValueLoop:
-    for (var i = 0; i < minMaxPoints.length; i++) {
-      final dataValue = minPointsNormalized[i];
-      if (dataValue == null) {
-        lineDataPoints.add(null);
-        continue minValueLoop;
-      }
-
-      double x;
-      if (i == 0) {
-        x = 0.0 + padding.left;
-      } else {
-        x = (i * metadata.xSegmentWidth) + padding.left;
-      }
-      if (centerDataPointBetweenVerticalGrid) {
-        x += metadata.xSegementWidthHalf; // add center offset
-      }
-
-      final startYPos = metadata.canvasHeight - padding.top - padding.bottom - dataPointColumnLegendHeight;
-      final y = startYPos - (dataValue * (startYPos)) + padding.top;
-
-      if (!startPointAdded) {
-        lineChartDataPointsPath.moveTo(x, y);
-        startPointAdded = true;
-      } else {
-        if (curvedLine) {
-          var x1 = lastX + (1 * segmentWidthCurve);
-          var y1 = lastY;
-          var x2 = lastX + (2 * segmentWidthCurve);
-          var y2 = y;
-          var x3 = lastX + (3 * segmentWidthCurve);
-          var y3 = y;
-          lineChartDataPointsPath.cubicTo(x1, y1, x2, y2, x3, y3);
-        } else {
-          lineChartDataPointsPath.lineTo(x, y);
-        }
-      }
-
-      var chartPoint = Offset(x, y);
-      lineDataPoints.add(chartPoint);
-
-      lastX = x;
-      lastY = y;
-    }
-    maxValueLoop:
-    for (var i = minMaxPoints.length - 1; i >= 0; i--) {
-      final dataValue = maxPointsNormalized[i];
-      if (dataValue == null) {
-        lineDataPoints.add(null);
-        continue maxValueLoop;
-      }
-
-      double x;
-      if (i == 0) {
-        x = 0.0 + padding.left;
-      } else {
-        x = (i * metadata.xSegmentWidth) + padding.left;
-      }
-      if (centerDataPointBetweenVerticalGrid) {
-        x += metadata.xSegementWidthHalf; // add center offset
-      }
-
-      final startYPos = metadata.canvasHeight - padding.top - padding.bottom - dataPointColumnLegendHeight;
-      final y = startYPos - (dataValue * (startYPos)) + padding.top;
-
-      if (!startPointAdded) {
-        lineChartDataPointsPath.moveTo(x, y);
-        startPointAdded = true;
-      } else {
-        if (curvedLine) {
-          var x1 = lastX + (1 * segmentWidthCurve);
-          var y1 = lastY;
-          var x2 = lastX + (2 * segmentWidthCurve);
-          var y2 = y;
-          var x3 = lastX + (3 * segmentWidthCurve);
-          var y3 = y;
-          lineChartDataPointsPath.cubicTo(x1, y1, x2, y2, x3, y3);
-        } else {
-          lineChartDataPointsPath.lineTo(x, y);
-        }
-      }
-
-      var chartPoint = Offset(x, y);
-      lineDataPoints.add(chartPoint);
-
-      lastX = x;
-      lastY = y;
-    }
-
-    lineChartDataPointsPath.close();
-
-    // Linechart Verbindungsline malen
-    if (dataSeries.minMaxAreaColor != null) {
-      _lineAreaPaint.color = dataSeries.minMaxAreaColor!;
-      _lineAreaPaint.style = PaintingStyle.fill;
-    }
-    canvas.drawPath(
-      lineChartDataPointsPath,
-      _lineAreaPaint,
-    );
   }
 
   ///

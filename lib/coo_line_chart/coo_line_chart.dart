@@ -99,7 +99,17 @@ class _CooLineChartState extends State<CooLineChart> {
       }
 
       ChartPainterMetadata metadata = ChartPainterInit.initializeValues(
-        linechartDataSeries: widget.dataSeries,
+        linechartDataSeries: widget.dataSeries.where((element) => element.opposite == false).toList(),
+        barchartDataSeries: [],
+        canvasHeight: height,
+        canvasWidth: width,
+        chartConfig: widget.chartConfig,
+        padding: widget.padding,
+        xAxisConfig: widget.xAxisConfig,
+        yAxisConfig: widget.yAxisConfig,
+      );
+      ChartPainterMetadata metadataOpposite = ChartPainterInit.initializeValues(
+        linechartDataSeries: widget.dataSeries.where((element) => element.opposite == true).toList(),
         barchartDataSeries: [],
         canvasHeight: height,
         canvasWidth: width,
@@ -127,6 +137,7 @@ class _CooLineChartState extends State<CooLineChart> {
             child: CustomPaint(
               painter: CooChartPainter(
                 metadata: metadata,
+                metadataOpposite: metadataOpposite,
                 chartType: CooChartType.line,
                 linechartDataSeries: widget.dataSeries,
                 barchartDataSeries: [],
