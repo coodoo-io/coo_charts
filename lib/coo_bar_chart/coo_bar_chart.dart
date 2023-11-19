@@ -1,5 +1,7 @@
 import 'dart:ui' as ui;
 
+import 'package:coo_charts/chart_painter/chart_painter_init.dart';
+import 'package:coo_charts/chart_painter/chart_painter_metadata.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
@@ -96,6 +98,17 @@ class _CooBarChartState extends State<CooBarChart> {
         width = constraints.maxWidth;
       }
 
+      ChartPainterMetadata metadata = ChartPainterInit.initializeValues(
+        linechartDataSeries: [],
+        barchartDataSeries: widget.dataSeries,
+        canvasHeight: height,
+        canvasWidth: width,
+        chartConfig: widget.chartConfig,
+        padding: widget.padding,
+        xAxisConfig: widget.xAxisConfig,
+        yAxisConfig: widget.yAxisConfig,
+      );
+
       return GestureDetector(
         child: MouseRegion(
           onHover: (event) {
@@ -113,12 +126,11 @@ class _CooBarChartState extends State<CooBarChart> {
             height: height,
             child: CustomPaint(
               painter: CooChartPainter(
+                metadata: metadata,
                 chartType: CooChartType.bar,
                 linechartDataSeries: [],
                 barchartDataSeries: widget.dataSeries,
                 columnBlocks: widget.columnBlocks,
-                canvasWidth: width,
-                canvasHeight: height,
                 canvasBackgroundColor: widget.chartConfig.canvasBackgroundColor,
                 canvasBackgroundPaintingStyle: widget.chartConfig.canvasBackgroundPaintingStyle,
                 padding: widget.padding,
