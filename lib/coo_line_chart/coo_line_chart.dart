@@ -1,5 +1,7 @@
 import 'dart:ui' as ui;
 
+import 'package:coo_charts/chart_painter/chart_painter_init.dart';
+import 'package:coo_charts/chart_painter/chart_painter_metadata.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
@@ -24,6 +26,7 @@ class CooLineChart extends StatefulWidget {
     this.columnBlocks,
     this.chartConfig = const ChartConfig(),
     this.yAxisConfig = const YAxisConfig(),
+    this.yAxisOppositeConfig,
     this.xAxisConfig = const XAxisConfig(),
     this.padding = const ChartPadding(),
     this.onDataPointTab,
@@ -37,7 +40,8 @@ class CooLineChart extends StatefulWidget {
   final ChartConfig chartConfig;
 
   /// Die Konfiguration der Y-Achse
-  final YAxisConfig yAxisConfig;
+  final YAxisConfig yAxisConfig; // Left axis
+  final YAxisConfig? yAxisOppositeConfig; // opposite (right) y-axis
   final XAxisConfig xAxisConfig;
 
   final ChartPadding padding;
@@ -94,6 +98,27 @@ class _CooLineChartState extends State<CooLineChart> {
         width = constraints.maxWidth;
       }
 
+      ChartPainterMetadata metadata = ChartPainterInit.initializeValues(
+        linechartDataSeries: widget.dataSeries.where((element) => element.opposite == false).toList(),
+        barchartDataSeries: [],
+        canvasHeight: height,
+        canvasWidth: width,
+        chartConfig: widget.chartConfig,
+        padding: widget.padding,
+        xAxisConfig: widget.xAxisConfig,
+        yAxisConfig: widget.yAxisConfig,
+      );
+      ChartPainterMetadata metadataOpposite = ChartPainterInit.initializeValues(
+        linechartDataSeries: widget.dataSeries.where((element) => element.opposite == true).toList(),
+        barchartDataSeries: [],
+        canvasHeight: height,
+        canvasWidth: width,
+        chartConfig: widget.chartConfig,
+        padding: widget.padding,
+        xAxisConfig: widget.xAxisConfig,
+        yAxisConfig: widget.yAxisConfig,
+      );
+
       return GestureDetector(
         child: MouseRegion(
           onHover: (event) {
@@ -111,12 +136,12 @@ class _CooLineChartState extends State<CooLineChart> {
             height: height,
             child: CustomPaint(
               painter: CooChartPainter(
+                metadata: metadata,
+                metadataOpposite: metadataOpposite,
                 chartType: CooChartType.line,
                 linechartDataSeries: widget.dataSeries,
                 barchartDataSeries: [],
                 columnBlocks: widget.columnBlocks,
-                canvasWidth: width,
-                canvasHeight: height,
                 canvasBackgroundColor: widget.chartConfig.canvasBackgroundColor,
                 canvasBackgroundPaintingStyle: widget.chartConfig.canvasBackgroundPaintingStyle,
                 padding: widget.padding,
@@ -133,6 +158,7 @@ class _CooLineChartState extends State<CooLineChart> {
                 xAxisConfig: widget.xAxisConfig,
                 centerDataPointBetweenVerticalGrid: widget.chartConfig.centerDataPointBetweenVerticalGrid,
                 yAxisConfig: widget.yAxisConfig,
+                yAxisOppositeConfig: widget.yAxisOppositeConfig,
                 columLegendsAssetImages: columLegendsAssetImages,
                 columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
                 onLineChartDataPointTabCallback: widget.onDataPointTab,

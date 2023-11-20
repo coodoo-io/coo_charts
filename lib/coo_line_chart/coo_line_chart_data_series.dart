@@ -15,6 +15,7 @@ class CooLineChartDataSeries {
     this.dataPointHighlightColor,
     this.dataLineColor,
     this.minMaxAreaColor,
+    this.opposite = false,
     this.dataPointLabelTextStyle = const TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.bold,
@@ -56,6 +57,11 @@ class CooLineChartDataSeries {
 
   // Define the padding from the data point to the labels
   final int dataPointLabelPadding;
+
+  /// Whether to display the axis of this dataseries on the opposite side of the normal.
+  /// The normal is on the left side for vertical axes and bottom for horizontal,
+  /// so the opposite sides will be right and top respectively.
+  final bool opposite;
 
   CooLineChartDataSeries copyWith({
     List<CooLineChartDataPoint>? dataPoints,

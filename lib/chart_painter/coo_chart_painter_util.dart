@@ -2,9 +2,14 @@
 
 import 'dart:ui' as ui;
 
+import 'package:coo_charts/chart_painter/chart_painter_metadata.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
+import 'package:coo_charts/common/data_point_label_pos.enum.dart';
+import 'package:coo_charts/common/y_axis_config.dart';
+import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
+import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -197,5 +202,484 @@ class CooChartPainterUtil {
     }
 
     return normalizedDataPoints;
+  }
+
+  /// Malt die Labels auf der Y-Achse und alle horizontalen X-Linien des Datengrids
+  ///
+  /// Berechnet die Höhe der einzelnen Zeilen anhand der gegebenen Label-Counts.
+  /// Labels werden links neben dem Chart gemalt.
+  ///
+  static void drawYAxisLabelAndHorizontalGridLine({
+    required Canvas canvas,
+    required ChartPainterMetadata metadata,
+    required YAxisConfig yAxisConfig,
+    required bool showGridHorizontal,
+    required ChartPadding padding,
+    required Paint gridPaint,
+    required TextPainter axisLabelPainter,
+    ChartColumnBlocks? columnBlocks,
+    required bool opposite, // if true the right y-axis labels will be printed
+  }) {
+    if (!showGridHorizontal && !yAxisConfig.showYAxisLables) {
+      // Wenn kein Grid und keine Labels gezeichnet werden sollen, muss auch nichts berechnet werden
+      return;
+    }
+
+    // Blocks werden für die korrekte Berechnung der Labelposition benötigt
+    bool showColumnBottomDatas = false;
+    double bottomColumnHeight = 0;
+    bool showColumnTopDatas = false;
+    double topColumnHeight = 0;
+    if (columnBlocks != null) {
+      showColumnBottomDatas = columnBlocks.showBottomBlocks && columnBlocks.bottomDatas.isNotEmpty;
+      if (showColumnBottomDatas) {
+        bottomColumnHeight = columnBlocks.bottomConfig.height.toDouble();
+      }
+
+      showColumnTopDatas = columnBlocks.showTopBlocks && columnBlocks.topDatas.isNotEmpty;
+      if (showColumnTopDatas) {
+        topColumnHeight = columnBlocks.topConfig.height.toDouble();
+      }
+    }
+
+    final int yAxisLabelCount = CooChartPainterUtil.getYAxisLabelCount(yAxisConfig);
+    final double yOffsetInterval =
+        (metadata.chartHeight - bottomColumnHeight - topColumnHeight) / (yAxisLabelCount - 1);
+
+    for (int i = 0; i < yAxisLabelCount; i++) {
+      double y = metadata.chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
+
+      // Don't draw the first horizontal grid line because there is already the x-Axis line
+      // Falls die Column Legende angezeigt werden soll dann die erste Line auch zeichnen
+      if ((i != 0 && showGridHorizontal) || showColumnBottomDatas) {
+        canvas.drawLine(Offset(padding.left.toDouble(), y), Offset(metadata.chartWidth + padding.left, y), gridPaint);
+      }
+
+      // Draw Y-axis scale points
+      var yAxisLabelValue = (i * metadata.yAxisSteps + metadata.yAxisMinValue);
+      late String label;
+      if (yAxisLabelValue is int || yAxisLabelValue % 1 == 0) {
+        // Zahl ist eine ganze Zahl und wird ohne Kommastelle
+        label = yAxisLabelValue.toInt().toString();
+      } else {
+        label = yAxisLabelValue.toStringAsFixed(2);
+      }
+
+      if (yAxisConfig.labelPostfix != null) {
+        label = '$label ${yAxisConfig.labelPostfix}';
+      }
+
+      axisLabelPainter.text = TextSpan(
+        text: label,
+        style: const TextStyle(
+          fontSize: 12,
+          color: Colors.grey,
+        ),
+      );
+
+      if (yAxisConfig.showYAxisLables) {
+        axisLabelPainter.layout();
+
+        // Die Labels an der Y-Achse sollen rechtsbündig sein.
+        // Somit muss der Padding mit der Größe des Textes berechnet werden
+        var w = axisLabelPainter.width;
+
+        double xLabelPos;
+
+        if (opposite == false) {
+          // Linke Seite
+          xLabelPos = padding.left - w - 10;
+        } else {
+          // rechte Seite
+          xLabelPos = metadata.canvasWidth - padding.right + 10;
+        }
+        final yLabelPos = y - axisLabelPainter.height / 2;
+        axisLabelPainter.paint(canvas, Offset(xLabelPos, yLabelPos));
+      }
+    }
+  }
+
+  /// Get the number of labels for y-axis. can be configured by user or calculated.
+  static int getYAxisLabelCount(YAxisConfig yAxisConfig) {
+    int yAxisLabelCount = -1; // gobale Hilfsvariable um die Anzahl Labels auf der Y-Achse zu bestimmen
+
+    // Bevor der zu vewendente Label Count berechnet wird, dem vom User gewählten setzen
+    if (yAxisConfig.labelCount != null) {
+      final lCount = yAxisConfig.labelCount!;
+      if (lCount > 2) {
+        yAxisLabelCount = yAxisConfig.labelCount!;
+      } else {
+        // Es wurde ein Labelcount angegeben der aber nicht gültig ist. In diesem Fall werden nur 2 Labels gesetzt:
+        // Min und Max
+        yAxisLabelCount = 2;
+      }
+    }
+
+    // Soll unter- und oberhalb der Linie etwas Platz eingerechnet werden?
+    if (yAxisConfig.addValuePadding) {
+      // Es darf unten und oben etwas Platz gelassen werden- daher wird dynamisch etwas oben und unten dazugerechnet.
+      // Wir setzen hier 5 Linien als Default, weil es dynamisch berechnet wird und hübsch aussieht
+      if (yAxisLabelCount < 0) {
+        yAxisLabelCount = 5;
+      }
+    }
+    return yAxisLabelCount;
+  }
+
+  static void drawDataLinechartDataPointsAndPath({
+    required ChartPainterMetadata metadata,
+    required Canvas canvas,
+    required ChartPadding padding,
+    required Offset? mousePosition,
+    required List<CooLineChartDataSeries> linechartDataSeries,
+    required bool centerDataPointBetweenVerticalGrid,
+    required bool curvedLine,
+    required bool highlightPoints,
+    required int mouseInRectYIndex,
+    ChartColumnBlocks? columnBlocks,
+  }) {
+    // TODO move to theme
+    final linePaint = Paint()
+      ..color = Colors.green
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    final Paint pointPaint = Paint()
+      ..color = Colors.red
+      ..strokeWidth = 4
+      ..style = PaintingStyle.fill;
+
+    final Paint pointPaintHighlight = Paint()
+      ..color = Colors.yellow
+      ..strokeWidth = 8
+      ..style = PaintingStyle.fill;
+
+    final TextPainter dataLabelPainter = TextPainter(
+      textAlign: TextAlign.center,
+      textDirection: ui.TextDirection.ltr,
+    );
+
+    final columnBottomDatasHeight =
+        columnBlocks != null && columnBlocks.showBottomBlocks ? columnBlocks.bottomConfig.height.toDouble() : 0;
+    // Die Segment-width muss über alle vorhandenen Datenpunkte aller Reihen berechnet werden.
+    for (var i = 0; i < linechartDataSeries.length; i++) {
+      CooLineChartDataSeries localLinechartDataSeries = linechartDataSeries[i];
+      List<String?> dataSeriesLabels = List.empty(growable: true);
+      List<double?> dataPointValues = localLinechartDataSeries.dataPoints.map((e) => e.value).toList();
+
+      // Alle Punkte auf einen Bereich zwischen 0.0 und 1.0 bringen um sie in der Fläche relativ berechnen zu können
+      List<double?> dataSeriesNormalizedValues = CooChartPainterUtil.normalizeChartDataPoints(
+        linechartDataPoints: dataPointValues,
+        minDataPointValue: metadata.minDataPointValue,
+        yAxisMinValue: metadata.yAxisMinValue,
+        yAxisMaxValue: metadata.yAxisMaxValue,
+      );
+
+      final segmentWidthCurve = metadata.xSegmentWidth / 3; // each datapoint segment width
+
+      /// calculate datapoint positions
+      var lineDataPoints = List<Offset?>.empty(growable: true);
+      double lastX = 0;
+      double lastY = 0;
+
+      var lineChartDataPointsPath = Path();
+      bool startPointAdded = false;
+      dataPointsLoop:
+      for (var i = 0; i < dataSeriesNormalizedValues.length; i++) {
+        // Lables für den späteren plotten parsen
+        CooLineChartDataPoint dataPoint = localLinechartDataSeries.dataPoints[i];
+        if (localLinechartDataSeries.showDataLabels) {
+          if (dataPoint.label != null) {
+            dataSeriesLabels.add(dataPoint.label!.trim());
+          } else if (dataPoint.value != null) {
+            dataSeriesLabels.add(dataPoint.value.toString());
+          } else {
+            dataSeriesLabels.add(null);
+          }
+        }
+
+        final dataValue = dataSeriesNormalizedValues[i];
+        if (dataValue == null) {
+          lineDataPoints.add(null);
+          continue dataPointsLoop;
+        }
+
+        // Berechnen der Position zum Plotten der Linie
+        double x;
+        if (i == 0) {
+          x = 0.0 + padding.left;
+        } else {
+          x = (i * metadata.xSegmentWidth) + padding.left;
+        }
+        if (centerDataPointBetweenVerticalGrid) {
+          x += metadata.xSegementWidthHalf; // add center offset
+        }
+
+        final startYPos = metadata.canvasHeight - padding.top - padding.bottom - columnBottomDatasHeight;
+        final y = startYPos - (dataValue * startYPos) + padding.top;
+
+        if (!startPointAdded) {
+          lineChartDataPointsPath.moveTo(x, y);
+          startPointAdded = true;
+        } else {
+          if (curvedLine) {
+            var x1 = lastX + (1 * segmentWidthCurve);
+            var y1 = lastY;
+            var x2 = lastX + (2 * segmentWidthCurve);
+            var y2 = y;
+            var x3 = lastX + (3 * segmentWidthCurve);
+            var y3 = y;
+            lineChartDataPointsPath.cubicTo(x1, y1, x2, y2, x3, y3);
+          } else {
+            lineChartDataPointsPath.lineTo(x, y);
+          }
+        }
+
+        var chartPoint = Offset(x, y);
+        lineDataPoints.add(chartPoint);
+
+        lastX = x;
+        lastY = y;
+      }
+
+      // Linechart Min- & Max-Area malen
+      if (localLinechartDataSeries.showMinMaxArea) {
+        _drawMinMaxDataPointArea(
+          canvas: canvas,
+          chartWidth: metadata.chartWidth,
+          chartHeigt: metadata.chartHeight,
+          metadata: metadata,
+          dataSeries: localLinechartDataSeries,
+          minMaxPoints: localLinechartDataSeries.dataPoints,
+          mousePosition: mousePosition,
+          dataPointColumnLegendHeight: columnBottomDatasHeight,
+          centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+          curvedLine: curvedLine,
+          padding: padding,
+        );
+      }
+      // Linechart Verbindungsline malen
+      if (localLinechartDataSeries.showDataLine) {
+        if (localLinechartDataSeries.dataLineColor != null) {
+          linePaint.color = localLinechartDataSeries.dataLineColor!;
+
+          // Falls die Linefarbe angegeben wurde wird diese als default für die Datenpunkte, Highlight und Font gesetzt.
+          pointPaint.color = localLinechartDataSeries.dataLineColor!;
+          pointPaintHighlight.color = localLinechartDataSeries.dataLineColor!;
+        }
+        canvas.drawPath(
+          lineChartDataPointsPath,
+          linePaint,
+        );
+      }
+
+      if (localLinechartDataSeries.dataPointColor != null) {
+        pointPaint.color = localLinechartDataSeries.dataPointColor!;
+      }
+      if (localLinechartDataSeries.dataPointHighlightColor != null) {
+        pointPaintHighlight.color = localLinechartDataSeries.dataPointHighlightColor!;
+      }
+
+      // Linechart Datenpunkte malen und Punkt Highlighten, wenn maus Datenzeile trifft
+      drawLineDataPointsLoop:
+      for (var i = 0; i < lineDataPoints.length; i++) {
+        Offset? dataPointOffset = lineDataPoints[i];
+        if (dataPointOffset == null) {
+          // gibt nichts zu sehen..
+          continue drawLineDataPointsLoop;
+        }
+
+        // Wird der Punkt gerade mit der Maus angeklickt?
+        if (highlightPoints && mouseInRectYIndex == i) {
+          canvas.drawCircle(dataPointOffset, 8, pointPaintHighlight);
+        } else if (localLinechartDataSeries.showDataPoints) {
+          canvas.drawCircle(dataPointOffset, 4, pointPaint);
+        }
+
+        // Data Point Label malen
+        if (localLinechartDataSeries.showDataLabels) {
+          String? label = dataSeriesLabels[i];
+          if (label != null) {
+            dataLabelPainter.text = TextSpan(text: label, style: localLinechartDataSeries.dataPointLabelTextStyle);
+            dataLabelPainter.layout();
+
+            double xPosCenter;
+            double yPos;
+            switch (localLinechartDataSeries.dataPointLabelPosition) {
+              case DataPointLabelPos.top:
+                // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
+                xPosCenter = (dataPointOffset.dx) - (dataLabelPainter.width / 2);
+                yPos = dataPointOffset.dy - 25 + (localLinechartDataSeries.dataPointLabelPadding * -1);
+                break;
+              case DataPointLabelPos.right:
+                xPosCenter = (dataPointOffset.dx) + 10 + localLinechartDataSeries.dataPointLabelPadding;
+                yPos = dataPointOffset.dy - (dataLabelPainter.height / 2);
+                break;
+              case DataPointLabelPos.left:
+                xPosCenter = (dataPointOffset.dx) - 30 + (localLinechartDataSeries.dataPointLabelPadding * -1);
+                yPos = dataPointOffset.dy - (dataLabelPainter.height / 2);
+                break;
+              case DataPointLabelPos.bottom:
+                // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
+                xPosCenter = (dataPointOffset.dx) - (dataLabelPainter.width / 2);
+                yPos = dataPointOffset.dy + 10 + localLinechartDataSeries.dataPointLabelPadding;
+                break;
+            }
+
+            dataLabelPainter.paint(canvas, Offset(xPosCenter, yPos));
+          }
+        }
+      }
+    }
+  }
+
+  static void _drawMinMaxDataPointArea({
+    required Canvas canvas,
+    required double chartWidth,
+    required double chartHeigt,
+    required ChartPadding padding,
+    required ChartPainterMetadata metadata,
+    required Offset? mousePosition,
+    required CooLineChartDataSeries dataSeries,
+    required List<CooLineChartDataPoint> minMaxPoints,
+    required bool centerDataPointBetweenVerticalGrid,
+    required bool curvedLine,
+    required dataPointColumnLegendHeight,
+  }) {
+    // TODO move to theme
+    final lineAreaPaint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    // Min- Max-Datenpunkte in eine Reihe bringen um eine Form zu bilden
+    List<double?> minPoints = minMaxPoints.map((e) => e.minValue).toList();
+    List<double?> maxPoints = minMaxPoints.map((e) => e.maxValue).toList();
+
+    // Alle hintereinander ergibt das custom paint path die zweite reihe reversed,
+    // damit es einen ordentlichen Kreis ergib
+
+    List<double?> minPointsNormalized = CooChartPainterUtil.normalizeChartDataPoints(
+      linechartDataPoints: minPoints,
+      minDataPointValue: metadata.minDataPointValue,
+      yAxisMinValue: metadata.yAxisMinValue,
+      yAxisMaxValue: metadata.yAxisMaxValue,
+    );
+    List<double?> maxPointsNormalized = CooChartPainterUtil.normalizeChartDataPoints(
+      linechartDataPoints: maxPoints,
+      minDataPointValue: metadata.minDataPointValue,
+      yAxisMinValue: metadata.yAxisMinValue,
+      yAxisMaxValue: metadata.yAxisMaxValue,
+    );
+
+    final segmentWidthCurve = metadata.xSegmentWidth / 3; // each datapoint segment width
+
+    /// calculate datapoint positions
+    var lineDataPoints = List<Offset?>.empty(growable: true);
+    double lastX = 0;
+    double lastY = 0;
+
+    var lineChartDataPointsPath = Path();
+    bool startPointAdded = false;
+    minValueLoop:
+    for (var i = 0; i < minMaxPoints.length; i++) {
+      final dataValue = minPointsNormalized[i];
+      if (dataValue == null) {
+        lineDataPoints.add(null);
+        continue minValueLoop;
+      }
+
+      double x;
+      if (i == 0) {
+        x = 0.0 + padding.left;
+      } else {
+        x = (i * metadata.xSegmentWidth) + padding.left;
+      }
+      if (centerDataPointBetweenVerticalGrid) {
+        x += metadata.xSegementWidthHalf; // add center offset
+      }
+
+      final startYPos = metadata.canvasHeight - padding.top - padding.bottom - dataPointColumnLegendHeight;
+      final y = startYPos - (dataValue * (startYPos)) + padding.top;
+
+      if (!startPointAdded) {
+        lineChartDataPointsPath.moveTo(x, y);
+        startPointAdded = true;
+      } else {
+        if (curvedLine) {
+          var x1 = lastX + (1 * segmentWidthCurve);
+          var y1 = lastY;
+          var x2 = lastX + (2 * segmentWidthCurve);
+          var y2 = y;
+          var x3 = lastX + (3 * segmentWidthCurve);
+          var y3 = y;
+          lineChartDataPointsPath.cubicTo(x1, y1, x2, y2, x3, y3);
+        } else {
+          lineChartDataPointsPath.lineTo(x, y);
+        }
+      }
+
+      var chartPoint = Offset(x, y);
+      lineDataPoints.add(chartPoint);
+
+      lastX = x;
+      lastY = y;
+    }
+    maxValueLoop:
+    for (var i = minMaxPoints.length - 1; i >= 0; i--) {
+      final dataValue = maxPointsNormalized[i];
+      if (dataValue == null) {
+        lineDataPoints.add(null);
+        continue maxValueLoop;
+      }
+
+      double x;
+      if (i == 0) {
+        x = 0.0 + padding.left;
+      } else {
+        x = (i * metadata.xSegmentWidth) + padding.left;
+      }
+      if (centerDataPointBetweenVerticalGrid) {
+        x += metadata.xSegementWidthHalf; // add center offset
+      }
+
+      final startYPos = metadata.canvasHeight - padding.top - padding.bottom - dataPointColumnLegendHeight;
+      final y = startYPos - (dataValue * (startYPos)) + padding.top;
+
+      if (!startPointAdded) {
+        lineChartDataPointsPath.moveTo(x, y);
+        startPointAdded = true;
+      } else {
+        if (curvedLine) {
+          var x1 = lastX + (1 * segmentWidthCurve);
+          var y1 = lastY;
+          var x2 = lastX + (2 * segmentWidthCurve);
+          var y2 = y;
+          var x3 = lastX + (3 * segmentWidthCurve);
+          var y3 = y;
+          lineChartDataPointsPath.cubicTo(x1, y1, x2, y2, x3, y3);
+        } else {
+          lineChartDataPointsPath.lineTo(x, y);
+        }
+      }
+
+      var chartPoint = Offset(x, y);
+      lineDataPoints.add(chartPoint);
+
+      lastX = x;
+      lastY = y;
+    }
+
+    lineChartDataPointsPath.close();
+
+    // Linechart Verbindungsline malen
+    if (dataSeries.minMaxAreaColor != null) {
+      lineAreaPaint.color = dataSeries.minMaxAreaColor!;
+      lineAreaPaint.style = PaintingStyle.fill;
+    }
+    canvas.drawPath(
+      lineChartDataPointsPath,
+      lineAreaPaint,
+    );
   }
 }
