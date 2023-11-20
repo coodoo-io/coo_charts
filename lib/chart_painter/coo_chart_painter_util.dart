@@ -332,7 +332,6 @@ class CooChartPainterUtil {
     required ChartPadding padding,
     required Offset? mousePosition,
     required List<CooLineChartDataSeries> linechartDataSeries,
-    required double minDataPointValue,
     required bool centerDataPointBetweenVerticalGrid,
     required bool curvedLine,
     required bool highlightPoints,
@@ -371,7 +370,7 @@ class CooChartPainterUtil {
       // Alle Punkte auf einen Bereich zwischen 0.0 und 1.0 bringen um sie in der Fläche relativ berechnen zu können
       List<double?> dataSeriesNormalizedValues = CooChartPainterUtil.normalizeChartDataPoints(
         linechartDataPoints: dataPointValues,
-        minDataPointValue: minDataPointValue,
+        minDataPointValue: metadata.minDataPointValue,
         yAxisMinValue: metadata.yAxisMinValue,
         yAxisMaxValue: metadata.yAxisMaxValue,
       );

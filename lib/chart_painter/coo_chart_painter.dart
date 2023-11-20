@@ -14,7 +14,6 @@ import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
-import 'package:coo_charts/common/data_point_label_pos.enum.dart';
 import 'package:coo_charts/extensions/iterable.extension.dart';
 import 'package:coo_charts/common/x_axis_config.dart';
 import 'package:coo_charts/common/x_axis_value_type.enum.dart';
@@ -215,7 +214,6 @@ class CooChartPainter extends CustomPainter {
         columnBlocks: columnBlocks,
         canvas: canvas,
         mousePosition: mousePosition,
-        minDataPointValue: metadata.minDataPointValue,
       );
     }
     if (metadataOpposite != null) {
@@ -231,7 +229,6 @@ class CooChartPainter extends CustomPainter {
           columnBlocks: columnBlocks,
           canvas: canvas,
           mousePosition: mousePosition,
-          minDataPointValue: metadata.minDataPointValue,
         );
       }
     }

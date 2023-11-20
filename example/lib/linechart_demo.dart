@@ -528,6 +528,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
           dataPoints: cooLinechartDataPoints,
           label: 'Random',
           showDataLabels: true,
+          dataLineColor: Colors.purple,
         ),
       );
     }
