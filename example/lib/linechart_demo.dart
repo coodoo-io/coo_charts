@@ -1375,7 +1375,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateKachelmannVorhersageXL() {
     _resetToDefault();
     chartType = CooChartType.line;
-    yAxisConfig = yAxisConfig.copyWith(labelCount: 20, labelPostfix: '°C');
+    yAxisConfig = yAxisConfig.copyWith(
+      labelCount: 20,
+      labelPostfix: '°C',
+      minLabelValue: 0,
+    );
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'E',

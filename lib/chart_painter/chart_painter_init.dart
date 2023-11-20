@@ -149,18 +149,13 @@ class ChartPainterInit {
       var minValueInt = (minDataPointValue - (orgStep)).toInt();
       int diff = maxValueInt - minValueInt;
       // tmpStep wird benötigt um Puffer zu addieren. Man könnte auch 10% vom Range nehmen..
-      var tmpStep = ((diff / yAxisLabelCount) + 1).toInt();
+      var tmpStep = ((diff / (yAxisLabelCount - 1)) + 1).toInt();
+      // var tmpStep = diff * 0.25;
 
       if (yAxisConfig.minLabelValue != null && yAxisConfig.minLabelValue! < minDataPointValue) {
         yAxisMinValue = yAxisConfig.minLabelValue!;
       } else {
         yAxisMinValue = minValueInt.toDouble();
-
-        // Wenn kein Wert unter 0 vorhanden ist kann Min auf 0 gesetzt werden
-        // Für den Betrachter optisch besser.
-        if (minDataPointValue >= 0 && yAxisMinValue < 0) {
-          yAxisMinValue = 0;
-        }
       }
 
       if (yAxisConfig.maxLabelValue != null && yAxisConfig.maxLabelValue! > maxDataPointValue) {
