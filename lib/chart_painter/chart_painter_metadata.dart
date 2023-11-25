@@ -43,6 +43,9 @@ class ChartPainterMetadata with _$ChartPainterMetadata {
     required double yAxisSteps,
 
     /// Layout Attributes
+    /// The width and height of the constraints
+    required double layoutWidth,
+    required double layoutHeight,
 
     /// The height of the given canvas
     required double canvasWidth,

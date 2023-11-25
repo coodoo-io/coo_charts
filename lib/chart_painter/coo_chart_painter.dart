@@ -56,6 +56,7 @@ class CooChartPainter extends CustomPainter {
     this.xAxisStepLineBottomLabelLineChartCallback,
     this.xAxisStepLineTopLabelBarChartCallback,
     this.xAxisStepLineBottomLabelBarChartCallback,
+    this.drawYAxis = true,
   });
 
   final ChartPainterMetadata metadata;
@@ -110,6 +111,8 @@ class CooChartPainter extends CustomPainter {
   final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelBarChartCallback;
 
   final Map<Rect, int> chartRectYPos = {}; // Merken welches Rect bei welcher Y-Pos liegt
+
+  final bool drawYAxis;
 
   final Paint _gridPaint = Paint()
     ..color = Colors.grey.withOpacity(0.4)
@@ -169,29 +172,31 @@ class CooChartPainter extends CustomPainter {
       chartHeight: metadata.chartHeight,
     );
 
-    CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
-      canvas: canvas,
-      metadata: metadata,
-      yAxisConfig: yAxisConfig,
-      columnBlocks: columnBlocks,
-      showGridHorizontal: showGridHorizontal,
-      padding: padding,
-      gridPaint: _gridPaint,
-      axisLabelPainter: _axisLabelPainter,
-      opposite: false,
-    );
-    if (yAxisOppositeConfig != null && metadataOpposite != null) {
+    if (drawYAxis) {
       CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
         canvas: canvas,
-        metadata: metadataOpposite!,
-        yAxisConfig: yAxisOppositeConfig!,
+        metadata: metadata,
+        yAxisConfig: yAxisConfig,
         columnBlocks: columnBlocks,
         showGridHorizontal: showGridHorizontal,
         padding: padding,
         gridPaint: _gridPaint,
         axisLabelPainter: _axisLabelPainter,
-        opposite: true,
+        opposite: false,
       );
+      if (yAxisOppositeConfig != null && metadataOpposite != null) {
+        CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
+          canvas: canvas,
+          metadata: metadataOpposite!,
+          yAxisConfig: yAxisOppositeConfig!,
+          columnBlocks: columnBlocks,
+          showGridHorizontal: showGridHorizontal,
+          padding: padding,
+          gridPaint: _gridPaint,
+          axisLabelPainter: _axisLabelPainter,
+          opposite: true,
+        );
+      }
     }
 
     _drawColumnBlocks(
