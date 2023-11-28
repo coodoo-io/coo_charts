@@ -1,7 +1,9 @@
 name: coo_charts
 description: A flutter charts project for highly configurable professional charts.
 version: 0.0.1+2
-homepage: "https://github.com/coodoo-io/coo_charts"
+homepage: https://github.com/coodoo-io/coo_charts_demo # <- change this to the demo website
+repository: https://github.com/coodoo-io/coo_charts
+issue_tracker: https://github.com/coodoo-io/coo_charts/issues
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
