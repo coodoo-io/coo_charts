@@ -526,11 +526,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
         ));
       }
       linechartDataSeries.add(CooLineChartDataSeries(
-          dataPoints: cooLinechartDataPoints,
-          label: 'Random',
-          showDataLabels: true,
-          showDataPoints: true,
-          opposite: true));
+        dataPoints: cooLinechartDataPoints,
+        label: 'Random',
+        showDataLabels: true,
+        showDataPoints: true,
+        opposite: true,
+      ));
     }
   }
 
