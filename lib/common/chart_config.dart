@@ -42,14 +42,20 @@ class ChartConfig with _$ChartConfig {
     /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
     @Default(true) bool centerDataPointBetweenVerticalGrid,
 
-    // TODO move to theme
+    /// TODO move to theme
     Color? canvasBackgroundColor,
 
-    // TODO move to theme
+    /// TODO move to theme
     Color? hightlightColumnColor,
+
+    /// Experimental - Background painting style
     @Default(PaintingStyle.fill) PaintingStyle canvasBackgroundPaintingStyle,
-    // Breite des Canvas. Wenn null dann wird die Breite des gegbenen Layouts verwendet. Falls Größer wird das
-    // Canvas scrollbar.
-    canvasWidth,
+
+    /// Is the canvas scrollable? if true a canvasWidth can be given and the axis are fix.
+    @Default(false) bool scrollable,
+
+    /// Width of the canvas. if scrollable is true or the width is greater than the available space the chart
+    /// will be scrollable/draggable
+    double? canvasWidth,
   }) = _ChartConfig;
 }

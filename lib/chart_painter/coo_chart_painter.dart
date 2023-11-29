@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:coo_charts/chart_painter/chart_painter_metadata.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_config.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
+import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/chart_tab_info.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_point.dart';
@@ -24,6 +25,7 @@ import 'package:intl/intl.dart';
 
 class CooChartPainter extends CustomPainter {
   CooChartPainter({
+    required this.chartConfig,
     required this.metadata,
     required this.metadataOpposite,
     required this.chartType,
@@ -59,6 +61,7 @@ class CooChartPainter extends CustomPainter {
     this.drawYAxis = true,
   });
 
+  final ChartConfig chartConfig;
   final ChartPainterMetadata metadata;
   final ChartPainterMetadata? metadataOpposite;
   final CooChartType chartType;
@@ -175,6 +178,7 @@ class CooChartPainter extends CustomPainter {
     if (drawYAxis) {
       CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
         canvas: canvas,
+        config: chartConfig,
         metadata: metadata,
         yAxisConfig: yAxisConfig,
         columnBlocks: columnBlocks,
@@ -187,6 +191,7 @@ class CooChartPainter extends CustomPainter {
       if (yAxisOppositeConfig != null && metadataOpposite != null) {
         CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
           canvas: canvas,
+          config: chartConfig,
           metadata: metadataOpposite!,
           yAxisConfig: yAxisOppositeConfig!,
           columnBlocks: columnBlocks,

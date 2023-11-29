@@ -100,28 +100,23 @@ class _CooLineChartState extends State<CooLineChart> {
       if (constraints.maxWidth != double.infinity) {
         width = constraints.maxWidth;
       }
-      width = 9000;
 
       ChartPainterMetadata metadata = ChartPainterInit.initializeValues(
+        chartConfig: widget.chartConfig,
         linechartDataSeries: widget.dataSeries.where((element) => element.opposite == false).toList(),
         barchartDataSeries: [],
         layoutHeight: height,
         layoutWidth: width,
-        canvasHeight: height,
-        canvasWidth: width,
-        chartConfig: widget.chartConfig,
         padding: widget.padding,
         xAxisConfig: widget.xAxisConfig,
         yAxisConfig: widget.yAxisConfig,
       );
       ChartPainterMetadata metadataOpposite = ChartPainterInit.initializeValues(
+        chartConfig: widget.chartConfig,
         linechartDataSeries: widget.dataSeries.where((element) => element.opposite == true).toList(),
         barchartDataSeries: [],
         layoutHeight: height,
         layoutWidth: width,
-        canvasHeight: height,
-        canvasWidth: width,
-        chartConfig: widget.chartConfig,
         padding: widget.padding,
         xAxisConfig: widget.xAxisConfig,
         yAxisConfig: widget.yAxisConfig,
@@ -139,6 +134,10 @@ class _CooLineChartState extends State<CooLineChart> {
       } else if (_mousePointer != null) {
         scrollPositionMousePointer = _mousePointer;
       }
+
+      final padding = widget.chartConfig.scrollable
+          ? ChartPadding(left: 0, right: 0, top: widget.padding.top, bottom: widget.padding.bottom)
+          : widget.padding;
 
       return Stack(
         children: [
@@ -158,8 +157,9 @@ class _CooLineChartState extends State<CooLineChart> {
                 scrollDirection: Axis.horizontal,
                 controller: scrollController,
                 child: CustomPaint(
-                  size: Size(width, height),
+                  size: Size(metadata.canvasWidth, metadata.canvasHeight),
                   painter: CooChartPainter(
+                      chartConfig: widget.chartConfig,
                       metadata: metadata,
                       metadataOpposite: metadataOpposite,
                       chartType: CooChartType.line,
@@ -168,7 +168,7 @@ class _CooLineChartState extends State<CooLineChart> {
                       columnBlocks: widget.columnBlocks,
                       canvasBackgroundColor: widget.chartConfig.canvasBackgroundColor,
                       canvasBackgroundPaintingStyle: widget.chartConfig.canvasBackgroundPaintingStyle,
-                      padding: ChartPadding(left: 0, right: 0, top: widget.padding.top, bottom: widget.padding.bottom),
+                      padding: padding,
                       mousePosition: scrollPositionMousePointer,
                       chartTabInfo: chartTabInfo,
                       curvedLine: widget.chartConfig.curvedLine,
@@ -188,7 +188,7 @@ class _CooLineChartState extends State<CooLineChart> {
                       onLineChartDataPointTabCallback: widget.onDataPointTab,
                       xAxisStepLineTopLabelLineChartCallback: widget.xAxisStepLineTopLabelCallback,
                       xAxisStepLineBottomLabelLineChartCallback: widget.xAxisStepLineBottomLabelCallback,
-                      drawYAxis: false),
+                      drawYAxis: widget.chartConfig.scrollable == false),
                 ),
               ),
             ),
@@ -198,17 +198,19 @@ class _CooLineChartState extends State<CooLineChart> {
               setState(() {});
             },
           ),
-          CustomPaint(
-            painter: CooChartYAxisPainter(
-              chartConfig: widget.chartConfig,
-              columnBlocks: widget.columnBlocks,
-              metadata: metadata,
-              metadataOpposite: metadataOpposite,
-              padding: widget.padding,
-              yAxisConfig: widget.yAxisConfig,
-              yAxisOppositeConfig: widget.yAxisOppositeConfig,
-            ),
-          )
+          widget.chartConfig.scrollable
+              ? CustomPaint(
+                  painter: CooChartYAxisPainter(
+                    chartConfig: widget.chartConfig,
+                    columnBlocks: widget.columnBlocks,
+                    metadata: metadata,
+                    metadataOpposite: metadataOpposite,
+                    padding: widget.padding,
+                    yAxisConfig: widget.yAxisConfig,
+                    yAxisOppositeConfig: widget.yAxisOppositeConfig,
+                  ),
+                )
+              : const SizedBox.shrink()
         ],
       );
     });

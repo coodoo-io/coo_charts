@@ -45,6 +45,7 @@ class CooChartYAxisPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
       canvas: canvas,
+      config: chartConfig,
       metadata: metadata,
       yAxisConfig: yAxisConfig,
       columnBlocks: columnBlocks,
@@ -57,6 +58,7 @@ class CooChartYAxisPainter extends CustomPainter {
     if (yAxisOppositeConfig != null && metadataOpposite != null) {
       CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
         canvas: canvas,
+        config: chartConfig,
         metadata: metadataOpposite!,
         yAxisConfig: yAxisOppositeConfig!,
         columnBlocks: columnBlocks,

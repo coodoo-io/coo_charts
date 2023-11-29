@@ -40,14 +40,24 @@ mixin _$ChartConfig {
 
   /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
   bool get centerDataPointBetweenVerticalGrid =>
-      throw _privateConstructorUsedError; // TODO move to theme
-  Color? get canvasBackgroundColor =>
-      throw _privateConstructorUsedError; // TODO move to theme
+      throw _privateConstructorUsedError;
+
+  /// TODO move to theme
+  Color? get canvasBackgroundColor => throw _privateConstructorUsedError;
+
+  /// TODO move to theme
   Color? get hightlightColumnColor => throw _privateConstructorUsedError;
+
+  /// Experimental - Background painting style
   PaintingStyle get canvasBackgroundPaintingStyle =>
-      throw _privateConstructorUsedError; // Breite des Canvas. Wenn null dann wird die Breite des gegbenen Layouts verwendet. Falls Größer wird das
-// Canvas scrollbar.
-  dynamic get canvasWidth => throw _privateConstructorUsedError;
+      throw _privateConstructorUsedError;
+
+  /// Is the canvas scrollable? if true a canvasWidth can be given and the axis are fix.
+  bool get scrollable => throw _privateConstructorUsedError;
+
+  /// Width of the canvas. if scrollable is true or the width is greater than the available space the chart
+  /// will be scrollable/draggable
+  double? get canvasWidth => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ChartConfigCopyWith<ChartConfig> get copyWith =>
@@ -75,7 +85,8 @@ abstract class $ChartConfigCopyWith<$Res> {
       Color? canvasBackgroundColor,
       Color? hightlightColumnColor,
       PaintingStyle canvasBackgroundPaintingStyle,
-      dynamic canvasWidth});
+      bool scrollable,
+      double? canvasWidth});
 }
 
 /// @nodoc
@@ -105,6 +116,7 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
     Object? canvasBackgroundColor = freezed,
     Object? hightlightColumnColor = freezed,
     Object? canvasBackgroundPaintingStyle = null,
+    Object? scrollable = null,
     Object? canvasWidth = freezed,
   }) {
     return _then(_value.copyWith(
@@ -165,10 +177,14 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
           ? _value.canvasBackgroundPaintingStyle
           : canvasBackgroundPaintingStyle // ignore: cast_nullable_to_non_nullable
               as PaintingStyle,
+      scrollable: null == scrollable
+          ? _value.scrollable
+          : scrollable // ignore: cast_nullable_to_non_nullable
+              as bool,
       canvasWidth: freezed == canvasWidth
           ? _value.canvasWidth
           : canvasWidth // ignore: cast_nullable_to_non_nullable
-              as dynamic,
+              as double?,
     ) as $Val);
   }
 }
@@ -196,7 +212,8 @@ abstract class _$$ChartConfigImplCopyWith<$Res>
       Color? canvasBackgroundColor,
       Color? hightlightColumnColor,
       PaintingStyle canvasBackgroundPaintingStyle,
-      dynamic canvasWidth});
+      bool scrollable,
+      double? canvasWidth});
 }
 
 /// @nodoc
@@ -224,6 +241,7 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
     Object? canvasBackgroundColor = freezed,
     Object? hightlightColumnColor = freezed,
     Object? canvasBackgroundPaintingStyle = null,
+    Object? scrollable = null,
     Object? canvasWidth = freezed,
   }) {
     return _then(_$ChartConfigImpl(
@@ -284,7 +302,14 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
           ? _value.canvasBackgroundPaintingStyle
           : canvasBackgroundPaintingStyle // ignore: cast_nullable_to_non_nullable
               as PaintingStyle,
-      canvasWidth: freezed == canvasWidth ? _value.canvasWidth! : canvasWidth,
+      scrollable: null == scrollable
+          ? _value.scrollable
+          : scrollable // ignore: cast_nullable_to_non_nullable
+              as bool,
+      canvasWidth: freezed == canvasWidth
+          ? _value.canvasWidth
+          : canvasWidth // ignore: cast_nullable_to_non_nullable
+              as double?,
     ));
   }
 }
@@ -307,6 +332,7 @@ class _$ChartConfigImpl implements _ChartConfig {
       this.canvasBackgroundColor,
       this.hightlightColumnColor,
       this.canvasBackgroundPaintingStyle = PaintingStyle.fill,
+      this.scrollable = false,
       this.canvasWidth});
 
   /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
@@ -355,23 +381,33 @@ class _$ChartConfigImpl implements _ChartConfig {
   @override
   @JsonKey()
   final bool centerDataPointBetweenVerticalGrid;
-// TODO move to theme
+
+  /// TODO move to theme
   @override
   final Color? canvasBackgroundColor;
-// TODO move to theme
+
+  /// TODO move to theme
   @override
   final Color? hightlightColumnColor;
+
+  /// Experimental - Background painting style
   @override
   @JsonKey()
   final PaintingStyle canvasBackgroundPaintingStyle;
-// Breite des Canvas. Wenn null dann wird die Breite des gegbenen Layouts verwendet. Falls Größer wird das
-// Canvas scrollbar.
+
+  /// Is the canvas scrollable? if true a canvasWidth can be given and the axis are fix.
   @override
-  final dynamic canvasWidth;
+  @JsonKey()
+  final bool scrollable;
+
+  /// Width of the canvas. if scrollable is true or the width is greater than the available space the chart
+  /// will be scrollable/draggable
+  @override
+  final double? canvasWidth;
 
   @override
   String toString() {
-    return 'ChartConfig(curvedLine: $curvedLine, crosshair: $crosshair, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, canvasBackgroundColor: $canvasBackgroundColor, hightlightColumnColor: $hightlightColumnColor, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, canvasWidth: $canvasWidth)';
+    return 'ChartConfig(curvedLine: $curvedLine, crosshair: $crosshair, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, canvasBackgroundColor: $canvasBackgroundColor, hightlightColumnColor: $hightlightColumnColor, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, scrollable: $scrollable, canvasWidth: $canvasWidth)';
   }
 
   @override
@@ -415,8 +451,10 @@ class _$ChartConfigImpl implements _ChartConfig {
                     canvasBackgroundPaintingStyle) ||
                 other.canvasBackgroundPaintingStyle ==
                     canvasBackgroundPaintingStyle) &&
-            const DeepCollectionEquality()
-                .equals(other.canvasWidth, canvasWidth));
+            (identical(other.scrollable, scrollable) ||
+                other.scrollable == scrollable) &&
+            (identical(other.canvasWidth, canvasWidth) ||
+                other.canvasWidth == canvasWidth));
   }
 
   @override
@@ -436,7 +474,8 @@ class _$ChartConfigImpl implements _ChartConfig {
       canvasBackgroundColor,
       hightlightColumnColor,
       canvasBackgroundPaintingStyle,
-      const DeepCollectionEquality().hash(canvasWidth));
+      scrollable,
+      canvasWidth);
 
   @JsonKey(ignore: true)
   @override
@@ -461,7 +500,8 @@ abstract class _ChartConfig implements ChartConfig {
       final Color? canvasBackgroundColor,
       final Color? hightlightColumnColor,
       final PaintingStyle canvasBackgroundPaintingStyle,
-      final dynamic canvasWidth}) = _$ChartConfigImpl;
+      final bool scrollable,
+      final double? canvasWidth}) = _$ChartConfigImpl;
 
   @override
 
@@ -491,15 +531,27 @@ abstract class _ChartConfig implements ChartConfig {
 
   /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
   bool get centerDataPointBetweenVerticalGrid;
-  @override // TODO move to theme
+  @override
+
+  /// TODO move to theme
   Color? get canvasBackgroundColor;
-  @override // TODO move to theme
+  @override
+
+  /// TODO move to theme
   Color? get hightlightColumnColor;
   @override
+
+  /// Experimental - Background painting style
   PaintingStyle get canvasBackgroundPaintingStyle;
-  @override // Breite des Canvas. Wenn null dann wird die Breite des gegbenen Layouts verwendet. Falls Größer wird das
-// Canvas scrollbar.
-  dynamic get canvasWidth;
+  @override
+
+  /// Is the canvas scrollable? if true a canvasWidth can be given and the axis are fix.
+  bool get scrollable;
+  @override
+
+  /// Width of the canvas. if scrollable is true or the width is greater than the available space the chart
+  /// will be scrollable/draggable
+  double? get canvasWidth;
   @override
   @JsonKey(ignore: true)
   _$$ChartConfigImplCopyWith<_$ChartConfigImpl> get copyWith =>

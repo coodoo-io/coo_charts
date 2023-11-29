@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:coo_charts/chart_painter/chart_painter_metadata.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
+import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/data_point_label_pos.enum.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
@@ -211,6 +212,7 @@ class CooChartPainterUtil {
   ///
   static void drawYAxisLabelAndHorizontalGridLine({
     required Canvas canvas,
+    required ChartConfig config,
     required ChartPainterMetadata metadata,
     required YAxisConfig yAxisConfig,
     required bool showGridHorizontal,
@@ -291,7 +293,7 @@ class CooChartPainterUtil {
           xLabelPos = padding.left - w - 10;
         } else {
           // rechte Seite
-          xLabelPos = metadata.canvasWidth - padding.right + 10;
+          xLabelPos = (config.scrollable ? metadata.layoutWidth : metadata.canvasWidth) - padding.right + 10;
         }
         final yLabelPos = y - axisLabelPainter.height / 2;
         axisLabelPainter.paint(canvas, Offset(xLabelPos, yLabelPos));

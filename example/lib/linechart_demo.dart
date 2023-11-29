@@ -489,7 +489,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateRandomDualLinechart() {
     _resetToDefault();
     chartType = CooChartType.line;
-    chartConfig = chartConfig.copyWith(canvasWidth: 4000);
+    chartConfig = chartConfig.copyWith(
+      canvasWidth: 3000,
+      scrollable: true,
+    );
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
     yAxisConfig = yAxisConfig.copyWith(labelPostfix: ' C');
     yAxisOppositeConfig = yAxisConfig.copyWith(labelPostfix: ' hPa');

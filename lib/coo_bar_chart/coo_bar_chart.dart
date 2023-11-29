@@ -103,8 +103,6 @@ class _CooBarChartState extends State<CooBarChart> {
         barchartDataSeries: widget.dataSeries,
         layoutHeight: height,
         layoutWidth: width,
-        canvasHeight: height,
-        canvasWidth: width,
         chartConfig: widget.chartConfig,
         padding: widget.padding,
         xAxisConfig: widget.xAxisConfig,
@@ -128,6 +126,7 @@ class _CooBarChartState extends State<CooBarChart> {
             height: height,
             child: CustomPaint(
               painter: CooChartPainter(
+                chartConfig: widget.chartConfig,
                 metadata: metadata,
                 metadataOpposite: null,
                 chartType: CooChartType.bar,
