@@ -112,6 +112,12 @@ class ChartPainterInit {
         List<double?> values = barchartDataSerie.dataPoints.map((e) => e.value).toList();
         values.removeWhere((element) => element == null);
 
+        // Min-Max Range beachten
+        List<double?> rangeMaxValues = barchartDataSerie.dataPoints.map((e) => e.maxValue).toList();
+        rangeMaxValues.removeWhere((element) => element == null);
+
+        values.addAll(rangeMaxValues);
+
         if (values.isEmpty) {
           continue;
         }
