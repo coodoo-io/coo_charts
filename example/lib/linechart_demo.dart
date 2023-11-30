@@ -87,277 +87,258 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Container(
-            color: Colors.blue,
-            child: const SizedBox(
-              height: 50,
-              child: Row(),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          color: Colors.blue,
+          child: const SizedBox(
+            height: 50,
+            child: Row(),
+          ),
+        ),
+        Container(
+          width: 600,
+          height: 300,
+          color: chartBackgroundColorBlack ? Colors.black : Colors.white,
+          child: switch (chartType) {
+            CooChartType.line => CooLineChart(
+                dataSeries: linechartDataSeries,
+                columnBlocks: chartColumnBlocks,
+                chartConfig: chartConfig,
+                onDataPointTab: (index, cooLinechartDataPoints) =>
+                    print('Tab $index - ${cooLinechartDataPoints[0].value}'),
+                xAxisConfig: xAxisConfig,
+                yAxisConfig: yAxisConfig,
+                yAxisOppositeConfig: yAxisOppositeConfig,
+                xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelLineChartCallback,
+                xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelLineChartCallback,
+              ),
+            CooChartType.bar => CooBarChart(
+                dataSeries: barchartDataSeries,
+                columnBlocks: chartColumnBlocks,
+                chartConfig: chartConfig,
+                xAxisConfig: xAxisConfig,
+                yAxisConfig: yAxisConfig,
+                xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelBarChartCallback,
+                xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelBarChartCallback,
+              ),
+          },
+        ),
+        Container(
+          color: Colors.amber,
+          child: Column(children: [
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () => setState(() => _generateEmptyLists()),
+                  child: const Text('Leere Liste'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _generateBarchart1Bis10()),
+                  child: const Text('Bar Chart 1-10'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _generateKachelmannSonnenscheindauerTrend()),
+                  child: const Text('Bar Chart mit Range'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _generateKachelmannWindoenForecast()),
+                  child: const Text('Candle-StickChart'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _generateMultipleBarchart()),
+                  child: const Text('Multiple Bar Charts'),
+                ),
+              ],
             ),
-          ),
-          Row(
-            children: [
-              // Container(
-              //   color: Colors.red,
-              //   child: SizedBox(
-              //     width: 20,
-              //     height: 500,
-              //   ),
-              // ),
-              Container(
-                color: chartBackgroundColorBlack ? Colors.black : Colors.white,
-                child: SizedBox(
-                    height: 500,
-                    child: switch (chartType) {
-                      CooChartType.line => CooLineChart(
-                          dataSeries: linechartDataSeries,
-                          columnBlocks: chartColumnBlocks,
-                          chartConfig: chartConfig,
-                          onDataPointTab: (index, cooLinechartDataPoints) =>
-                              print('Tab $index - ${cooLinechartDataPoints[0].value}'),
-                          xAxisConfig: xAxisConfig,
-                          yAxisConfig: yAxisConfig,
-                          yAxisOppositeConfig: yAxisOppositeConfig,
-                          xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelLineChartCallback,
-                          xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelLineChartCallback,
-                        ),
-                      CooChartType.bar => CooBarChart(
-                          dataSeries: barchartDataSeries,
-                          columnBlocks: chartColumnBlocks,
-                          chartConfig: chartConfig,
-                          xAxisConfig: xAxisConfig,
-                          yAxisConfig: yAxisConfig,
-                          xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelBarChartCallback,
-                          xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelBarChartCallback,
-                        ),
-                    }),
-              ),
-              // Container(
-              //   color: Colors.red,
-              //   child: SizedBox(
-              //     width: 20,
-              //     height: 500,
-              //   ),
-              // ),
-            ],
-          ),
-          Container(
-            color: Colors.amber,
-            child: Column(children: [
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => setState(() => _generateEmptyLists()),
-                    child: const Text('Leere Liste'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _generateBarchart1Bis10()),
-                    child: const Text('Bar Chart 1-10'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _generateKachelmannSonnenscheindauerTrend()),
-                    child: const Text('Bar Chart mit Range'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _generateKachelmannWindoenForecast()),
-                    child: const Text('Candle-StickChart'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _generateMultipleBarchart()),
-                    child: const Text('Multiple Bar Charts'),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => setState(() => _create0To10To0ValuesChartDataPoints()),
-                    child: const Text('0 -> 10 ->0'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _create0To10ValuesChartDataPoints()),
-                    child: const Text('0 -> 10'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _createMinus5To5ValuesChartDataPoints()),
-                    child: const Text('5 -> -5'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _create0To10To0WithNullValuesChartDataPoints()),
-                    child: const Text('NULL Value Test'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _generate10DataPointsLargeNumer()),
-                    child: const Text('10 große Zahlen'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _generateKachelmann14TageWetterTrend()),
-                    child: const Text('Kachelmann 14-Tage'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _generateKachelmannVorhersageXL()),
-                    child: const Text('Temperaturkurve'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _generateLargeVorhersageHourly()),
-                    child: const Text('Große Datenmennge'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
-                    child: const Text('Random Daten generieren'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => _generateRandomDualLinechart()),
-                    child: const Text('Random Daten Dual Axis generieren'),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => setState(
-                        () => chartConfig = chartConfig.copyWith(showGridHorizontal: !chartConfig.showGridHorizontal)),
-                    child: Text('Grid-Horizontal ${chartConfig.showGridHorizontal ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(
-                        () => chartConfig = chartConfig.copyWith(showGridVertical: !chartConfig.showGridVertical)),
-                    child: Text('Grid-Vertical ${chartConfig.showGridVertical ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () =>
-                        setState(() => chartConfig = chartConfig.copyWith(curvedLine: !chartConfig.curvedLine)),
-                    child: Text('Curved ${chartConfig.curvedLine ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() {
-                      showDataPoints = !showDataPoints;
-                      for (var i = 0; i < linechartDataSeries.length; i++) {
-                        final lineChart = linechartDataSeries[i].copyWith(showDataPoints: showDataPoints);
-                        linechartDataSeries[i] = lineChart;
-                      }
-                    }),
-                    child: Text('Show Data Points ${showDataPoints ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() {
-                      showDataLabels = !showDataLabels;
-                      for (var i = 0; i < linechartDataSeries.length; i++) {
-                        final lineChart = linechartDataSeries[i].copyWith(showDataLabels: showDataLabels);
-                        linechartDataSeries[i] = lineChart;
-                      }
-                    }),
-                    child: Text('Show Data Lables ${showDataLabels ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() {
-                      showDataLine = !showDataLine;
-                      for (var i = 0; i < linechartDataSeries.length; i++) {
-                        final lineChart = linechartDataSeries[i].copyWith(showDataLine: showDataLine);
-                        linechartDataSeries[i] = lineChart;
-                      }
-                    }),
-                    child: Text('Show Data Path ${showDataLine ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () =>
-                        setState(() => chartConfig = chartConfig.copyWith(crosshair: !chartConfig.crosshair)),
-                    child: Text('Crosshair ${chartConfig.crosshair ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () =>
-                        setState(() => xAxisConfig = xAxisConfig.copyWith(showTopLabels: !xAxisConfig.showTopLabels)),
-                    child: Text('Top Labels ${xAxisConfig.showTopLabels ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(
-                        () => xAxisConfig = xAxisConfig.copyWith(showBottomLabels: !xAxisConfig.showBottomLabels)),
-                    child: Text('Bottom Labels ${xAxisConfig.showBottomLabels ? '✅' : '❌'}'),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => setState(() =>
-                        chartConfig = chartConfig.copyWith(highlightMouseColumn: !chartConfig.highlightMouseColumn)),
-                    child: Text('Highlight Column ${chartConfig.highlightMouseColumn ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(
-                        () => chartConfig = chartConfig.copyWith(highlightPoints: !chartConfig.highlightPoints)),
-                    child: Text('Highlight points ${chartConfig.highlightPoints ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => chartConfig =
-                        chartConfig.copyWith(highlightPointsVerticalLine: !chartConfig.highlightPointsVerticalLine)),
-                    child:
-                        Text('Highlight points vertical line ${chartConfig.highlightPointsVerticalLine ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      chartConfig = chartConfig.copyWith(
-                          highlightPointsHorizontalLine: !chartConfig.highlightPointsHorizontalLine);
-                      setState(() {});
-                    },
-                    child: Text(
-                        'Highlight points horizontal line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}'),
-                  ),
-                  // ElevatedButton(
-                  //   onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
-                  //       highlightPointsHorizontalLine: !chartConfig.highlightPointsHorizontalLine)),
-                  //   child: Text(
-                  //       'Highlight points horizontal line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}'),
-                  // ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
-                        centerDataPointBetweenVerticalGrid: !chartConfig.centerDataPointBetweenVerticalGrid)),
-                    child: Text(
-                        'Center DataPoints between vertical Grid ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() => calcYAxisValuePadding = !calcYAxisValuePadding),
-                    child: Text('Y-Axes Value Padding ${calcYAxisValuePadding ? '✅' : '❌'}'),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => setState(() => chartBackgroundColorBlack = !chartBackgroundColorBlack),
-                    child: Text('Schwarzer Hintergrund ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
-                  ),
-                  Text('Anzahl Labels Y-Achse: ${yAxisLabelCount ?? '-'} '),
-                  ElevatedButton(
-                    onPressed: () => setState(() {
-                      if (yAxisLabelCount == null) {
-                        yAxisLabelCount = 5;
-                      } else {
-                        yAxisLabelCount = yAxisLabelCount! - 1;
-                      }
-                      yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisLabelCount);
-                    }),
-                    child: const Text('-'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => setState(() {
-                      if (yAxisLabelCount == null) {
-                        yAxisLabelCount = 5;
-                      } else {
-                        yAxisLabelCount = yAxisLabelCount! + 1;
-                      }
-                      yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisLabelCount);
-                    }),
-                    child: const Text('+'),
-                  ),
-                ],
-              )
-            ]),
-          ),
-        ],
-      ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () => setState(() => _create0To10To0ValuesChartDataPoints()),
+                  child: const Text('0 -> 10 ->0'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _create0To10ValuesChartDataPoints()),
+                  child: const Text('0 -> 10'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _createMinus5To5ValuesChartDataPoints()),
+                  child: const Text('5 -> -5'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _create0To10To0WithNullValuesChartDataPoints()),
+                  child: const Text('NULL Value Test'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _generate10DataPointsLargeNumer()),
+                  child: const Text('10 große Zahlen'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _generateKachelmann14TageWetterTrend()),
+                  child: const Text('Kachelmann 14-Tage'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _generateKachelmannVorhersageXL()),
+                  child: const Text('Temperaturkurve'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _generateLargeVorhersageHourly()),
+                  child: const Text('Große Datenmennge'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
+                  child: const Text('Random Daten generieren'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => _generateRandomDualLinechart()),
+                  child: const Text('Random Daten Dual Axis generieren'),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () => setState(
+                      () => chartConfig = chartConfig.copyWith(showGridHorizontal: !chartConfig.showGridHorizontal)),
+                  child: Text('Grid-Horizontal ${chartConfig.showGridHorizontal ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(
+                      () => chartConfig = chartConfig.copyWith(showGridVertical: !chartConfig.showGridVertical)),
+                  child: Text('Grid-Vertical ${chartConfig.showGridVertical ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () =>
+                      setState(() => chartConfig = chartConfig.copyWith(curvedLine: !chartConfig.curvedLine)),
+                  child: Text('Curved ${chartConfig.curvedLine ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() {
+                    showDataPoints = !showDataPoints;
+                    for (var i = 0; i < linechartDataSeries.length; i++) {
+                      final lineChart = linechartDataSeries[i].copyWith(showDataPoints: showDataPoints);
+                      linechartDataSeries[i] = lineChart;
+                    }
+                  }),
+                  child: Text('Show Data Points ${showDataPoints ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() {
+                    showDataLabels = !showDataLabels;
+                    for (var i = 0; i < linechartDataSeries.length; i++) {
+                      final lineChart = linechartDataSeries[i].copyWith(showDataLabels: showDataLabels);
+                      linechartDataSeries[i] = lineChart;
+                    }
+                  }),
+                  child: Text('Show Data Lables ${showDataLabels ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() {
+                    showDataLine = !showDataLine;
+                    for (var i = 0; i < linechartDataSeries.length; i++) {
+                      final lineChart = linechartDataSeries[i].copyWith(showDataLine: showDataLine);
+                      linechartDataSeries[i] = lineChart;
+                    }
+                  }),
+                  child: Text('Show Data Path ${showDataLine ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () =>
+                      setState(() => chartConfig = chartConfig.copyWith(crosshair: !chartConfig.crosshair)),
+                  child: Text('Crosshair ${chartConfig.crosshair ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () =>
+                      setState(() => xAxisConfig = xAxisConfig.copyWith(showTopLabels: !xAxisConfig.showTopLabels)),
+                  child: Text('Top Labels ${xAxisConfig.showTopLabels ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(
+                      () => xAxisConfig = xAxisConfig.copyWith(showBottomLabels: !xAxisConfig.showBottomLabels)),
+                  child: Text('Bottom Labels ${xAxisConfig.showBottomLabels ? '✅' : '❌'}'),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () => setState(() =>
+                      chartConfig = chartConfig.copyWith(highlightMouseColumn: !chartConfig.highlightMouseColumn)),
+                  child: Text('Highlight Column ${chartConfig.highlightMouseColumn ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () =>
+                      setState(() => chartConfig = chartConfig.copyWith(highlightPoints: !chartConfig.highlightPoints)),
+                  child: Text('Highlight points ${chartConfig.highlightPoints ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => chartConfig =
+                      chartConfig.copyWith(highlightPointsVerticalLine: !chartConfig.highlightPointsVerticalLine)),
+                  child: Text('Highlight points vertical line ${chartConfig.highlightPointsVerticalLine ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    chartConfig =
+                        chartConfig.copyWith(highlightPointsHorizontalLine: !chartConfig.highlightPointsHorizontalLine);
+                    setState(() {});
+                  },
+                  child:
+                      Text('Highlight points horizontal line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}'),
+                ),
+                // ElevatedButton(
+                //   onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
+                //       highlightPointsHorizontalLine: !chartConfig.highlightPointsHorizontalLine)),
+                //   child: Text(
+                //       'Highlight points horizontal line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}'),
+                // ),
+                ElevatedButton(
+                  onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
+                      centerDataPointBetweenVerticalGrid: !chartConfig.centerDataPointBetweenVerticalGrid)),
+                  child: Text(
+                      'Center DataPoints between vertical Grid ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() => calcYAxisValuePadding = !calcYAxisValuePadding),
+                  child: Text('Y-Axes Value Padding ${calcYAxisValuePadding ? '✅' : '❌'}'),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () => setState(() => chartBackgroundColorBlack = !chartBackgroundColorBlack),
+                  child: Text('Schwarzer Hintergrund ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
+                ),
+                Text('Anzahl Labels Y-Achse: ${yAxisLabelCount ?? '-'} '),
+                ElevatedButton(
+                  onPressed: () => setState(() {
+                    if (yAxisLabelCount == null) {
+                      yAxisLabelCount = 5;
+                    } else {
+                      yAxisLabelCount = yAxisLabelCount! - 1;
+                    }
+                    yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisLabelCount);
+                  }),
+                  child: const Text('-'),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() {
+                    if (yAxisLabelCount == null) {
+                      yAxisLabelCount = 5;
+                    } else {
+                      yAxisLabelCount = yAxisLabelCount! + 1;
+                    }
+                    yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisLabelCount);
+                  }),
+                  child: const Text('+'),
+                ),
+              ],
+            )
+          ]),
+        ),
+      ],
     );
   }
 
@@ -508,6 +489,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateRandomDualLinechart() {
     _resetToDefault();
     chartType = CooChartType.line;
+    chartConfig = chartConfig.copyWith(
+      canvasWidth: 3000,
+      scrollable: true,
+    );
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
     yAxisConfig = yAxisConfig.copyWith(labelPostfix: ' C');
     yAxisOppositeConfig = yAxisConfig.copyWith(labelPostfix: ' hPa');
@@ -544,11 +529,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
         ));
       }
       linechartDataSeries.add(CooLineChartDataSeries(
-          dataPoints: cooLinechartDataPoints,
-          label: 'Random',
-          showDataLabels: true,
-          showDataPoints: true,
-          opposite: true));
+        dataPoints: cooLinechartDataPoints,
+        label: 'Random',
+        showDataLabels: true,
+        showDataPoints: true,
+        opposite: true,
+      ));
     }
   }
 
@@ -708,7 +694,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartColumnBlocks = ChartColumnBlocks(
       showTopBlocks: true,
       topDatas: columnTopDatas,
-      topConfig: ChartColumnBlockConfig(height: 40),
+      topConfig: const ChartColumnBlockConfig(height: 40),
       showBottomBlocks: true,
       bottomDatas: columnBottomDatas,
     );

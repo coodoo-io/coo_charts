@@ -20,8 +20,8 @@ class ChartPainterInit {
     required YAxisConfig yAxisConfig,
     required List<CooLineChartDataSeries> linechartDataSeries,
     required List<CooBarChartDataSeries> barchartDataSeries,
-    required double canvasWidth,
-    required double canvasHeight,
+    required double layoutWidth,
+    required double layoutHeight,
     required ChartPadding padding,
   }) {
     // Prüfen ob der erste Wert ein double ist, falls ja und wenn nicht padding eingebaut werden soll sind die Steps
@@ -38,7 +38,6 @@ class ChartPainterInit {
     double yAxisMaxValue = 0;
     double minDataPointValue = 0;
     double yAxisMinValue = 0;
-
     double yAxisSteps = 0;
 
     for (var linechartDataSerie in linechartDataSeries) {
@@ -301,9 +300,19 @@ class ChartPainterInit {
         }
     }
 
+    double canvasWidth = layoutWidth;
+    if (chartConfig.scrollable) {
+      if (chartConfig.canvasWidth != null && chartConfig.canvasWidth! > layoutWidth) {
+        canvasWidth = chartConfig.canvasWidth!;
+      } else {
+        // Default doppelt so groß anzeigen
+        canvasWidth = layoutWidth * 2;
+      }
+    }
+
     // Festlegen wie viel Breite zwischen zwei Datenpunkten liegen kann
-    double chartWidth = canvasWidth - padding.left - padding.right;
-    double chartHeight = canvasHeight - padding.bottom - padding.top;
+    double chartWidth = (chartConfig.scrollable ? canvasWidth : layoutWidth) - padding.left - padding.right;
+    double chartHeight = layoutHeight - padding.bottom - padding.top;
     double xSegmentWidth;
     if (!chartConfig.centerDataPointBetweenVerticalGrid) {
       // Es sind die Punkte links und rechts auf der Y-Achse verfügbar
@@ -325,8 +334,10 @@ class ChartPainterInit {
       yAxisSteps: yAxisSteps,
       yAxisMaxValue: yAxisMaxValue,
       yAxisMinValue: yAxisMinValue,
+      layoutWidth: layoutWidth,
+      layoutHeight: layoutHeight,
       canvasWidth: canvasWidth,
-      canvasHeight: canvasHeight,
+      canvasHeight: layoutHeight,
       chartWidth: chartWidth,
       chartHeight: chartHeight,
       xSegmentWidth: xSegmentWidth,

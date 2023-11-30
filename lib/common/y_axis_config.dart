@@ -10,6 +10,7 @@ class YAxisConfig {
     this.maxLabelValue,
     this.addValuePadding = true,
     this.labelPostfix,
+    this.showAboveGrid = false,
   });
 
   /// Shoud the y-axis be printed. Default is true
@@ -41,6 +42,9 @@ class YAxisConfig {
   /// e.g. '°C' -> '2 °C', '4 °C', '6 °C' ...
   /// or 'cm' -> '2 cm', '4 cm', '6 cm'
   final String? labelPostfix;
+
+  /// If set to true the y-labels will be viewed above the grid, not next to the chart-canvas.
+  final bool showAboveGrid;
 
   YAxisConfig copyWith({
     bool? showAxis,

@@ -1,85 +1,61 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:ui';
 
-import 'package:coo_charts/common/chart_padding.enum.dart';
-import 'package:coo_charts/common/x_axis_config.dart';
-import 'package:coo_charts/common/y_axis_config.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'chart_config.freezed.dart';
 
 // Common chart config for every chart Type
-class ChartConfig {
-  const ChartConfig({
-    this.curvedLine = false,
-    this.crosshair = false,
-    this.showGridHorizontal = true,
-    this.showGridVertical = true,
-    this.showDataPath = true,
-    this.highlightMouseColumn = true,
-    this.hightlightColumnColor,
-    this.highlightPoints = true,
-    this.addYAxisValueBuffer = true,
-    this.highlightPointsVerticalLine = true,
-    this.highlightPointsHorizontalLine = false,
-    this.centerDataPointBetweenVerticalGrid = true,
-    this.canvasBackgroundColor,
-    this.canvasBackgroundPaintingStyle = PaintingStyle.fill,
-  });
+@freezed
+class ChartConfig with _$ChartConfig {
+  const factory ChartConfig({
+    /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
+    @Default(false) bool curvedLine,
 
-  final Color? canvasBackgroundColor;
-  final PaintingStyle canvasBackgroundPaintingStyle;
+    /// Soll ein Fadenkreuz angezeigt werden?
+    @Default(false) bool crosshair,
 
-  /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
-  final bool curvedLine;
+    // if true, grid horizontal lines are painted
+    @Default(true) bool showGridHorizontal,
 
-  /// Soll ein Fadenkreuz angezeigt werden?
-  final bool crosshair;
-  final bool showGridHorizontal; // if true, grid horizontal lines are painted
-  final bool showGridVertical; // if true, grid vertical lines are painted
+    // if true, grid vertical lines are painted
+    @Default(true) bool showGridVertical,
 
-  final bool showDataPath; // Soll der path auf der Kurve angezeigt werden?
-  final bool highlightMouseColumn; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
-  final Color? hightlightColumnColor;
-  final bool highlightPoints; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
-  final bool
-      highlightPointsVerticalLine; // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
+    // Soll der path auf der Kurve angezeigt werden?
+    @Default(true) bool showDataPath,
 
-  final bool
-      highlightPointsHorizontalLine; // Zeichnet eine horizontale Line über den Datenpunkt wenn die Maus in der Nähe ist.
-  final bool addYAxisValueBuffer; // Fügt einen Puffer auf der Y-Achse vor dem Min-Wert und nach dem Max-Wert hinzu
-  /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
-  final bool centerDataPointBetweenVerticalGrid;
+    // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
+    @Default(true) bool highlightMouseColumn,
 
-  ChartConfig copyWith({
+    // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
+    @Default(true) bool highlightPoints,
+
+    // Fügt einen Puffer auf der Y-Achse vor dem Min-Wert und nach dem Max-Wert hinzu
+    @Default(true) bool addYAxisValueBuffer,
+
+    // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
+    @Default(true) bool highlightPointsVerticalLine,
+
+    // Zeichnet eine horizontale Line über den Datenpunkt wenn die Maus in der Nähe ist.
+    @Default(false) bool highlightPointsHorizontalLine,
+
+    /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
+    @Default(true) bool centerDataPointBetweenVerticalGrid,
+
+    /// TODO move to theme
     Color? canvasBackgroundColor,
-    PaintingStyle? canvasBackgroundPaintingStyle,
-    bool? curvedLine,
-    bool? crosshair,
-    bool? showGridHorizontal,
-    bool? showGridVertical,
-    bool? showDataPath,
-    bool? highlightMouseColumn,
-    bool? highlightPoints,
-    bool? addYAxisValueBuffer,
-    bool? centerDataPointBetweenVerticalGrid,
-    bool? highlightPointsVerticalLine,
-    bool? highlightPointsHorizontalLine,
-    YAxisConfig? yAxisConfig,
-    XAxisConfig? xAxisConfig,
-    ChartPadding? padding,
-  }) {
-    return ChartConfig(
-      canvasBackgroundColor: canvasBackgroundColor ?? this.canvasBackgroundColor,
-      canvasBackgroundPaintingStyle: canvasBackgroundPaintingStyle ?? this.canvasBackgroundPaintingStyle,
-      curvedLine: curvedLine ?? this.curvedLine,
-      crosshair: crosshair ?? this.crosshair,
-      showGridHorizontal: showGridHorizontal ?? this.showGridHorizontal,
-      showGridVertical: showGridVertical ?? this.showGridVertical,
-      showDataPath: showDataPath ?? this.showDataPath,
-      highlightMouseColumn: highlightMouseColumn ?? this.highlightMouseColumn,
-      highlightPoints: highlightPoints ?? this.highlightPoints,
-      addYAxisValueBuffer: addYAxisValueBuffer ?? this.addYAxisValueBuffer,
-      centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid ?? this.centerDataPointBetweenVerticalGrid,
-      highlightPointsVerticalLine: highlightPointsVerticalLine ?? this.highlightPointsVerticalLine,
-      highlightPointsHorizontalLine: highlightPointsHorizontalLine ?? this.highlightPointsHorizontalLine,
-    );
-  }
+
+    /// TODO move to theme
+    Color? hightlightColumnColor,
+
+    /// Experimental - Background painting style
+    @Default(PaintingStyle.fill) PaintingStyle canvasBackgroundPaintingStyle,
+
+    /// Is the canvas scrollable? if true a canvasWidth can be given and the axis are fix.
+    @Default(false) bool scrollable,
+
+    /// Width of the canvas. if scrollable is true or the width is greater than the available space the chart
+    /// will be scrollable/draggable
+    double? canvasWidth,
+  }) = _ChartConfig;
 }

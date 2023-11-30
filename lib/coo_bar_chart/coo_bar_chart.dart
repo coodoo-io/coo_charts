@@ -101,8 +101,8 @@ class _CooBarChartState extends State<CooBarChart> {
       ChartPainterMetadata metadata = ChartPainterInit.initializeValues(
         linechartDataSeries: [],
         barchartDataSeries: widget.dataSeries,
-        canvasHeight: height,
-        canvasWidth: width,
+        layoutHeight: height,
+        layoutWidth: width,
         chartConfig: widget.chartConfig,
         padding: widget.padding,
         xAxisConfig: widget.xAxisConfig,
@@ -126,6 +126,7 @@ class _CooBarChartState extends State<CooBarChart> {
             height: height,
             child: CustomPaint(
               painter: CooChartPainter(
+                chartConfig: widget.chartConfig,
                 metadata: metadata,
                 metadataOpposite: null,
                 chartType: CooChartType.bar,
