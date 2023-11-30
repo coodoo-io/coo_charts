@@ -72,11 +72,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateKachelmannWindoenForecast();
     // _generateBarchart1Bis10();
     // _generateMultipleBarchart();
-    // _generateKachelmann14TageWetterTrend();
+    _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
     // _genrateRandomCooLinechartDataPoints();
-    _generateRandomDualLinechart();
+    // _generateRandomDualLinechart();
     // _generateKachelmannVorhersageXL();
     // _createMinus5To5ValuesChartDataPoints();
     // _generateLargeVorhersageHourly();
@@ -99,8 +99,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
           ),
         ),
         Container(
-          width: 600,
-          height: 300,
+          width: double.infinity,
+          height: 600,
           color: chartBackgroundColorBlack ? Colors.black : Colors.white,
           child: switch (chartType) {
             CooChartType.line => CooLineChart(

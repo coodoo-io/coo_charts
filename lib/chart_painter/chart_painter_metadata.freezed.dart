@@ -19,15 +19,12 @@ mixin _$ChartPainterMetadata {
 // All sich auf diesem Index befindenden LineChart Datenpunkte
 // Die exakte Punkt (X,Y) eines LineChart DataPoint Objekts müsste man in Verbidung dises Objektes noch in einem
 // eigenen Objekt halten. Dann könnte man auch den nächstgelegenen Punkt zum Maus Pointer herausfinden
-  Map<int, List<CooLineChartDataPoint>> get lineChartDataPointsByColumnIndex =>
-      throw _privateConstructorUsedError;
-  Map<int, List<CooBarChartDataPoint>> get barChartDataPointsByColumnIndex =>
-      throw _privateConstructorUsedError;
+  Map<int, List<CooLineChartDataPoint>> get lineChartDataPointsByColumnIndex => throw _privateConstructorUsedError;
+  Map<int, List<CooBarChartDataPoint>> get barChartDataPointsByColumnIndex => throw _privateConstructorUsedError;
 
   /// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
   /// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
-  List<DateTime> get allDateTimeXAxisValues =>
-      throw _privateConstructorUsedError;
+  List<DateTime> get allDateTimeXAxisValues => throw _privateConstructorUsedError;
 
   /// Die Werte aller Datenreihen werden hier gehalten. Dabei werden alle gegebenen Datenreihen angesehen und jeder
   /// Wert exakt einmal in diesem Set gespeichrt. So kanne infach über alle vorkommenden Datenwerte iteriert werden.
@@ -60,21 +57,18 @@ mixin _$ChartPainterMetadata {
 
   /// calculated height of painted chart
   double get chartWidth => throw _privateConstructorUsedError;
-  double get chartHeight =>
-      throw _privateConstructorUsedError; // Abstand zwischen zwei Datenpunkte auf der X-Achse
+  double get chartHeight => throw _privateConstructorUsedError; // Abstand zwischen zwei Datenpunkte auf der X-Achse
   double get xSegmentWidth =>
       throw _privateConstructorUsedError; // Hilfsvariable zu xSegmentWidth, damit sie nicht jedesmal berechnet werden muss
   double get xSegementWidthHalf => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $ChartPainterMetadataCopyWith<ChartPainterMetadata> get copyWith =>
-      throw _privateConstructorUsedError;
+  $ChartPainterMetadataCopyWith<ChartPainterMetadata> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $ChartPainterMetadataCopyWith<$Res> {
-  factory $ChartPainterMetadataCopyWith(ChartPainterMetadata value,
-          $Res Function(ChartPainterMetadata) then) =
+  factory $ChartPainterMetadataCopyWith(ChartPainterMetadata value, $Res Function(ChartPainterMetadata) then) =
       _$ChartPainterMetadataCopyWithImpl<$Res, ChartPainterMetadata>;
   @useResult
   $Res call(
@@ -99,8 +93,7 @@ abstract class $ChartPainterMetadataCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ChartPainterMetadataCopyWithImpl<$Res,
-        $Val extends ChartPainterMetadata>
+class _$ChartPainterMetadataCopyWithImpl<$Res, $Val extends ChartPainterMetadata>
     implements $ChartPainterMetadataCopyWith<$Res> {
   _$ChartPainterMetadataCopyWithImpl(this._value, this._then);
 
@@ -209,10 +202,9 @@ class _$ChartPainterMetadataCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$ChartPainterMetadataImplCopyWith<$Res>
-    implements $ChartPainterMetadataCopyWith<$Res> {
-  factory _$$ChartPainterMetadataImplCopyWith(_$ChartPainterMetadataImpl value,
-          $Res Function(_$ChartPainterMetadataImpl) then) =
+abstract class _$$ChartPainterMetadataImplCopyWith<$Res> implements $ChartPainterMetadataCopyWith<$Res> {
+  factory _$$ChartPainterMetadataImplCopyWith(
+          _$ChartPainterMetadataImpl value, $Res Function(_$ChartPainterMetadataImpl) then) =
       __$$ChartPainterMetadataImplCopyWithImpl<$Res>;
   @override
   @useResult
@@ -241,8 +233,8 @@ abstract class _$$ChartPainterMetadataImplCopyWith<$Res>
 class __$$ChartPainterMetadataImplCopyWithImpl<$Res>
     extends _$ChartPainterMetadataCopyWithImpl<$Res, _$ChartPainterMetadataImpl>
     implements _$$ChartPainterMetadataImplCopyWith<$Res> {
-  __$$ChartPainterMetadataImplCopyWithImpl(_$ChartPainterMetadataImpl _value,
-      $Res Function(_$ChartPainterMetadataImpl) _then)
+  __$$ChartPainterMetadataImplCopyWithImpl(
+      _$ChartPainterMetadataImpl _value, $Res Function(_$ChartPainterMetadataImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -348,10 +340,8 @@ class __$$ChartPainterMetadataImplCopyWithImpl<$Res>
 
 class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
   const _$ChartPainterMetadataImpl(
-      {required final Map<int, List<CooLineChartDataPoint>>
-          lineChartDataPointsByColumnIndex,
-      required final Map<int, List<CooBarChartDataPoint>>
-          barChartDataPointsByColumnIndex,
+      {required final Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex,
+      required final Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex,
       required final List<DateTime> allDateTimeXAxisValues,
       required final Set<double> allDataPointValues,
       required this.maxDataPointValue,
@@ -382,8 +372,7 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
 // eigenen Objekt halten. Dann könnte man auch den nächstgelegenen Punkt zum Maus Pointer herausfinden
   @override
   Map<int, List<CooLineChartDataPoint>> get lineChartDataPointsByColumnIndex {
-    if (_lineChartDataPointsByColumnIndex is EqualUnmodifiableMapView)
-      return _lineChartDataPointsByColumnIndex;
+    if (_lineChartDataPointsByColumnIndex is EqualUnmodifiableMapView) return _lineChartDataPointsByColumnIndex;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_lineChartDataPointsByColumnIndex);
   }
@@ -391,8 +380,7 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
   final Map<int, List<CooBarChartDataPoint>> _barChartDataPointsByColumnIndex;
   @override
   Map<int, List<CooBarChartDataPoint>> get barChartDataPointsByColumnIndex {
-    if (_barChartDataPointsByColumnIndex is EqualUnmodifiableMapView)
-      return _barChartDataPointsByColumnIndex;
+    if (_barChartDataPointsByColumnIndex is EqualUnmodifiableMapView) return _barChartDataPointsByColumnIndex;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_barChartDataPointsByColumnIndex);
   }
@@ -405,8 +393,7 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
   /// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
   @override
   List<DateTime> get allDateTimeXAxisValues {
-    if (_allDateTimeXAxisValues is EqualUnmodifiableListView)
-      return _allDateTimeXAxisValues;
+    if (_allDateTimeXAxisValues is EqualUnmodifiableListView) return _allDateTimeXAxisValues;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_allDateTimeXAxisValues);
   }
@@ -419,8 +406,7 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
   /// Wert exakt einmal in diesem Set gespeichrt. So kanne infach über alle vorkommenden Datenwerte iteriert werden.
   @override
   Set<double> get allDataPointValues {
-    if (_allDataPointValues is EqualUnmodifiableSetView)
-      return _allDataPointValues;
+    if (_allDataPointValues is EqualUnmodifiableSetView) return _allDataPointValues;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableSetView(_allDataPointValues);
   }
@@ -483,42 +469,26 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChartPainterMetadataImpl &&
-            const DeepCollectionEquality().equals(
-                other._lineChartDataPointsByColumnIndex,
-                _lineChartDataPointsByColumnIndex) &&
-            const DeepCollectionEquality().equals(
-                other._barChartDataPointsByColumnIndex,
-                _barChartDataPointsByColumnIndex) &&
-            const DeepCollectionEquality().equals(
-                other._allDateTimeXAxisValues, _allDateTimeXAxisValues) &&
             const DeepCollectionEquality()
-                .equals(other._allDataPointValues, _allDataPointValues) &&
-            (identical(other.maxDataPointValue, maxDataPointValue) ||
-                other.maxDataPointValue == maxDataPointValue) &&
-            (identical(other.minDataPointValue, minDataPointValue) ||
-                other.minDataPointValue == minDataPointValue) &&
+                .equals(other._lineChartDataPointsByColumnIndex, _lineChartDataPointsByColumnIndex) &&
+            const DeepCollectionEquality()
+                .equals(other._barChartDataPointsByColumnIndex, _barChartDataPointsByColumnIndex) &&
+            const DeepCollectionEquality().equals(other._allDateTimeXAxisValues, _allDateTimeXAxisValues) &&
+            const DeepCollectionEquality().equals(other._allDataPointValues, _allDataPointValues) &&
+            (identical(other.maxDataPointValue, maxDataPointValue) || other.maxDataPointValue == maxDataPointValue) &&
+            (identical(other.minDataPointValue, minDataPointValue) || other.minDataPointValue == minDataPointValue) &&
             (identical(other.maxAbsoluteValueCount, maxAbsoluteValueCount) ||
                 other.maxAbsoluteValueCount == maxAbsoluteValueCount) &&
-            (identical(other.yAxisMaxValue, yAxisMaxValue) ||
-                other.yAxisMaxValue == yAxisMaxValue) &&
-            (identical(other.yAxisMinValue, yAxisMinValue) ||
-                other.yAxisMinValue == yAxisMinValue) &&
-            (identical(other.yAxisSteps, yAxisSteps) ||
-                other.yAxisSteps == yAxisSteps) &&
-            (identical(other.layoutWidth, layoutWidth) ||
-                other.layoutWidth == layoutWidth) &&
-            (identical(other.layoutHeight, layoutHeight) ||
-                other.layoutHeight == layoutHeight) &&
-            (identical(other.canvasWidth, canvasWidth) ||
-                other.canvasWidth == canvasWidth) &&
-            (identical(other.canvasHeight, canvasHeight) ||
-                other.canvasHeight == canvasHeight) &&
-            (identical(other.chartWidth, chartWidth) ||
-                other.chartWidth == chartWidth) &&
-            (identical(other.chartHeight, chartHeight) ||
-                other.chartHeight == chartHeight) &&
-            (identical(other.xSegmentWidth, xSegmentWidth) ||
-                other.xSegmentWidth == xSegmentWidth) &&
+            (identical(other.yAxisMaxValue, yAxisMaxValue) || other.yAxisMaxValue == yAxisMaxValue) &&
+            (identical(other.yAxisMinValue, yAxisMinValue) || other.yAxisMinValue == yAxisMinValue) &&
+            (identical(other.yAxisSteps, yAxisSteps) || other.yAxisSteps == yAxisSteps) &&
+            (identical(other.layoutWidth, layoutWidth) || other.layoutWidth == layoutWidth) &&
+            (identical(other.layoutHeight, layoutHeight) || other.layoutHeight == layoutHeight) &&
+            (identical(other.canvasWidth, canvasWidth) || other.canvasWidth == canvasWidth) &&
+            (identical(other.canvasHeight, canvasHeight) || other.canvasHeight == canvasHeight) &&
+            (identical(other.chartWidth, chartWidth) || other.chartWidth == chartWidth) &&
+            (identical(other.chartHeight, chartHeight) || other.chartHeight == chartHeight) &&
+            (identical(other.xSegmentWidth, xSegmentWidth) || other.xSegmentWidth == xSegmentWidth) &&
             (identical(other.xSegementWidthHalf, xSegementWidthHalf) ||
                 other.xSegementWidthHalf == xSegementWidthHalf));
   }
@@ -548,18 +518,14 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ChartPainterMetadataImplCopyWith<_$ChartPainterMetadataImpl>
-      get copyWith =>
-          __$$ChartPainterMetadataImplCopyWithImpl<_$ChartPainterMetadataImpl>(
-              this, _$identity);
+  _$$ChartPainterMetadataImplCopyWith<_$ChartPainterMetadataImpl> get copyWith =>
+      __$$ChartPainterMetadataImplCopyWithImpl<_$ChartPainterMetadataImpl>(this, _$identity);
 }
 
 abstract class _ChartPainterMetadata implements ChartPainterMetadata {
   const factory _ChartPainterMetadata(
-      {required final Map<int, List<CooLineChartDataPoint>>
-          lineChartDataPointsByColumnIndex,
-      required final Map<int, List<CooBarChartDataPoint>>
-          barChartDataPointsByColumnIndex,
+      {required final Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex,
+      required final Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex,
       required final List<DateTime> allDateTimeXAxisValues,
       required final Set<double> allDataPointValues,
       required final double maxDataPointValue,
@@ -637,6 +603,5 @@ abstract class _ChartPainterMetadata implements ChartPainterMetadata {
   double get xSegementWidthHalf;
   @override
   @JsonKey(ignore: true)
-  _$$ChartPainterMetadataImplCopyWith<_$ChartPainterMetadataImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$ChartPainterMetadataImplCopyWith<_$ChartPainterMetadataImpl> get copyWith => throw _privateConstructorUsedError;
 }

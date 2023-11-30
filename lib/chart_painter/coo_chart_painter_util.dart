@@ -117,11 +117,9 @@ class CooChartPainterUtil {
       if (columLegendsAssetImages[assetImagePath] != null) {
         continue blockAssetImageLoop;
       }
-      // TODO ausschließlich PNGs erlauben..
       if (assetImagePath.endsWith('.png')) {
         try {
           ui.Image uiImg = await loadImage(assetImagePath, blockAssetImage.height);
-          // TODO nicht nur nach assetpath speichern sondern auch nach gwünschter größe
           columLegendsAssetImages[assetImagePath] = uiImg;
         } catch (e) {
           // TODO Logging
@@ -129,26 +127,28 @@ class CooChartPainterUtil {
         continue blockAssetImageLoop;
       }
       try {
-        PictureInfo pictureInfo = await vg.loadPicture(SvgAssetLoader(assetImagePath), null);
+        PictureInfo pictureInfo = await vg.loadPicture(
+          SvgAssetLoader(assetImagePath),
+          null,
+        );
 
-        // Change colum legend image size so that it fits into the legend column
-        // the legend column height is given
         var imageHeight = pictureInfo.size.height.toInt();
         var imageWidth = pictureInfo.size.width.toInt();
-        ui.Image svgImg = pictureInfo.picture.toImageSync(imageHeight, imageWidth);
         final height = columnBlocks.bottomConfig.height;
-        if (imageHeight > height) {
-          // Größe muss umgerechnet werden damit es in die Legende passt
-          final ByteData? assetImageByteData = await svgImg.toByteData(format: ui.ImageByteFormat.png);
-          if (assetImageByteData != null) {
-            image.Image baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List())!;
-            image.Image resizeImage = image.copyResize(baseSizeImage, height: blockAssetImage.height);
-            ui.Codec codec = await ui.instantiateImageCodec(image.encodePng(resizeImage));
-            ui.FrameInfo frameInfo = await codec.getNextFrame();
-            svgImg = frameInfo.image;
-          }
-        }
-        columLegendsAssetImages[assetImagePath] = svgImg;
+        if (imageHeight > height) {}
+
+        final newHeight = columnBlocks.bottomConfig.height.toDouble();
+        final double targetHeight = columnBlocks.bottomConfig.height.toDouble();
+        final double targetWidth = (newHeight / imageHeight) * imageWidth;
+        final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
+        final ui.Canvas canvas =
+            Canvas(pictureRecorder, Rect.fromPoints(Offset.zero, Offset(targetWidth, targetHeight)));
+        canvas.scale(targetWidth / pictureInfo.size.width, targetHeight / pictureInfo.size.height);
+        canvas.drawPicture(pictureInfo.picture);
+        final ui.Image scaledImage =
+            await pictureRecorder.endRecording().toImage(targetWidth.ceil(), targetHeight.ceil());
+
+        columLegendsAssetImages[assetImagePath] = scaledImage;
         columLegendsAssetSvgPictureInfos[assetImagePath] = pictureInfo;
       } catch (e) {
         /// Image could not be processed..
