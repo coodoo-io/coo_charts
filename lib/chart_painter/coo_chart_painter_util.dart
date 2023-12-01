@@ -134,7 +134,7 @@ class CooChartPainterUtil {
 
         var imageHeight = pictureInfo.size.height.toInt();
         var imageWidth = pictureInfo.size.width.toInt();
-        final height = columnBlocks.bottomConfig.height;
+        final height = blockAssetImage.height;
         if (imageHeight > height) {}
 
         final newHeight = columnBlocks.bottomConfig.height.toDouble();
