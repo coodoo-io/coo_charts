@@ -139,6 +139,41 @@ class _CooLineChartState extends State<CooLineChart> {
           ? ChartPadding(left: 0, right: 0, top: widget.padding.top, bottom: widget.padding.bottom)
           : widget.padding;
 
+      final chartPaint = CustomPaint(
+        size: Size(metadata.canvasWidth, metadata.canvasHeight),
+        painter: CooChartPainter(
+            chartConfig: widget.chartConfig,
+            metadata: metadata,
+            metadataOpposite: metadataOpposite,
+            chartType: CooChartType.line,
+            linechartDataSeries: widget.dataSeries,
+            barchartDataSeries: [],
+            columnBlocks: widget.columnBlocks,
+            canvasBackgroundColor: widget.chartConfig.canvasBackgroundColor,
+            canvasBackgroundPaintingStyle: widget.chartConfig.canvasBackgroundPaintingStyle,
+            padding: padding,
+            mousePosition: scrollPositionMousePointer,
+            chartTabInfo: chartTabInfo,
+            curvedLine: widget.chartConfig.curvedLine,
+            crosshair: widget.chartConfig.crosshair,
+            showGridHorizontal: widget.chartConfig.showGridHorizontal,
+            showGridVertical: widget.chartConfig.showGridVertical,
+            highlightMouseColumn: widget.chartConfig.highlightMouseColumn,
+            highlightPoints: widget.chartConfig.highlightPoints,
+            highlightPointsVerticalLine: widget.chartConfig.highlightPointsVerticalLine,
+            highlightPointsHorizontalLine: widget.chartConfig.highlightPointsHorizontalLine,
+            xAxisConfig: widget.xAxisConfig,
+            centerDataPointBetweenVerticalGrid: widget.chartConfig.centerDataPointBetweenVerticalGrid,
+            yAxisConfig: widget.yAxisConfig,
+            yAxisOppositeConfig: widget.yAxisOppositeConfig,
+            columLegendsAssetImages: columLegendsAssetImages,
+            columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
+            onLineChartDataPointTabCallback: widget.onDataPointTab,
+            xAxisStepLineTopLabelLineChartCallback: widget.xAxisStepLineTopLabelCallback,
+            xAxisStepLineBottomLabelLineChartCallback: widget.xAxisStepLineBottomLabelCallback,
+            drawYAxis: widget.chartConfig.scrollable == false),
+      );
+
       return Stack(
         children: [
           GestureDetector(
@@ -153,44 +188,13 @@ class _CooLineChartState extends State<CooLineChart> {
                   _mousePointer = null;
                 });
               },
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                controller: scrollController,
-                child: CustomPaint(
-                  size: Size(metadata.canvasWidth, metadata.canvasHeight),
-                  painter: CooChartPainter(
-                      chartConfig: widget.chartConfig,
-                      metadata: metadata,
-                      metadataOpposite: metadataOpposite,
-                      chartType: CooChartType.line,
-                      linechartDataSeries: widget.dataSeries,
-                      barchartDataSeries: [],
-                      columnBlocks: widget.columnBlocks,
-                      canvasBackgroundColor: widget.chartConfig.canvasBackgroundColor,
-                      canvasBackgroundPaintingStyle: widget.chartConfig.canvasBackgroundPaintingStyle,
-                      padding: padding,
-                      mousePosition: scrollPositionMousePointer,
-                      chartTabInfo: chartTabInfo,
-                      curvedLine: widget.chartConfig.curvedLine,
-                      crosshair: widget.chartConfig.crosshair,
-                      showGridHorizontal: widget.chartConfig.showGridHorizontal,
-                      showGridVertical: widget.chartConfig.showGridVertical,
-                      highlightMouseColumn: widget.chartConfig.highlightMouseColumn,
-                      highlightPoints: widget.chartConfig.highlightPoints,
-                      highlightPointsVerticalLine: widget.chartConfig.highlightPointsVerticalLine,
-                      highlightPointsHorizontalLine: widget.chartConfig.highlightPointsHorizontalLine,
-                      xAxisConfig: widget.xAxisConfig,
-                      centerDataPointBetweenVerticalGrid: widget.chartConfig.centerDataPointBetweenVerticalGrid,
-                      yAxisConfig: widget.yAxisConfig,
-                      yAxisOppositeConfig: widget.yAxisOppositeConfig,
-                      columLegendsAssetImages: columLegendsAssetImages,
-                      columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
-                      onLineChartDataPointTabCallback: widget.onDataPointTab,
-                      xAxisStepLineTopLabelLineChartCallback: widget.xAxisStepLineTopLabelCallback,
-                      xAxisStepLineBottomLabelLineChartCallback: widget.xAxisStepLineBottomLabelCallback,
-                      drawYAxis: widget.chartConfig.scrollable == false),
-                ),
-              ),
+              child: widget.chartConfig.scrollable
+                  ? SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      controller: scrollController,
+                      child: chartPaint,
+                    )
+                  : chartPaint,
             ),
             onTapDown: (detail) {
               chartTabInfo.tabDownDetails = detail;
