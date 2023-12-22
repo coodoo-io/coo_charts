@@ -930,7 +930,9 @@ class CooChartPainter extends CustomPainter {
         x += metadata.xSegementWidthHalf; // add center offset
       }
 
-      final TextStyle textStyle = (i == mouseInRectYIndex) ? textStyleHighlight : textStyleNormal;
+      final isHighlightColum = i == mouseInRectYIndex;
+
+      final textStyle = isHighlightColum ? textStyleHighlight : textStyleNormal;
 
       // Die letzte vertikale Linie muss bei Centered zusätzlich gezeichnet werden, das nächste Label allerdings
       // nicht, denn das wäre ein nicht vorhandener Datenpunkt zu viel
@@ -967,7 +969,10 @@ class CooChartPainter extends CustomPainter {
         }
         // Text rendern
         if (columnData.text != null) {
-          _columLegendTextPainter.text = TextSpan(text: columnData.text, style: textStyle);
+          final TextStyle blockDataTextStyle = isHighlightColum
+              ? columnData.textStyleHighlight ?? textStyleHighlight
+              : columnData.textStyle ?? textStyle;
+          _columLegendTextPainter.text = TextSpan(text: columnData.text, style: blockDataTextStyle);
           _columLegendTextPainter.layout();
 
           // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist

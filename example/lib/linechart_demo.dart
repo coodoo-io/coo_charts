@@ -657,22 +657,23 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     final bgColor = Colors.grey.withOpacity(0.2);
     final bgColorBottom = Colors.blue.withOpacity(0.2);
+    const blockTextStyle = TextStyle(color: Colors.green, fontSize: 7);
     final columnTopDatas = List<ChartColumnBlockData>.empty(growable: true);
     columnTopDatas.add(ChartColumnBlockData(
         text: 'a', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRainSvg)]));
-    columnTopDatas.add(ChartColumnBlockData(text: 'b', backgroundColor: bgColor));
-    columnTopDatas.add(ChartColumnBlockData(text: 'c', backgroundColor: bgColor));
-    columnTopDatas.add(ChartColumnBlockData(text: 'd', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'b', backgroundColor: bgColor, textStyle: blockTextStyle));
+    columnTopDatas.add(ChartColumnBlockData(text: 'c', backgroundColor: bgColor, textStyle: blockTextStyle));
+    columnTopDatas.add(ChartColumnBlockData(text: 'd', backgroundColor: bgColor, textStyle: blockTextStyle));
     columnTopDatas.add(ChartColumnBlockData(
         text: 'e', backgroundColor: bgColor, assetImages: [const BlockAssetImage(path: kIconWeatherRainSvg)]));
-    columnTopDatas.add(ChartColumnBlockData(text: 'f', backgroundColor: bgColor));
-    columnTopDatas.add(ChartColumnBlockData(text: 'g', backgroundColor: bgColor));
-    columnTopDatas.add(ChartColumnBlockData(text: 'h', backgroundColor: bgColor));
-    columnTopDatas.add(ChartColumnBlockData(text: 'i', backgroundColor: bgColor));
-    columnTopDatas.add(ChartColumnBlockData(text: 'j', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'f', backgroundColor: bgColor, textStyle: blockTextStyle));
+    columnTopDatas.add(ChartColumnBlockData(text: 'g', backgroundColor: bgColor, textStyle: blockTextStyle));
+    columnTopDatas.add(ChartColumnBlockData(text: 'h', backgroundColor: bgColor, textStyle: blockTextStyle));
+    columnTopDatas.add(ChartColumnBlockData(text: 'i', backgroundColor: bgColor, textStyle: blockTextStyle));
+    columnTopDatas.add(ChartColumnBlockData(text: 'j', backgroundColor: bgColor, textStyle: blockTextStyle));
     columnTopDatas.add(ChartColumnBlockData(text: 'k', backgroundColor: bgColor));
-    columnTopDatas.add(ChartColumnBlockData(text: 'l', backgroundColor: bgColor));
-    columnTopDatas.add(ChartColumnBlockData(text: 'm', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'l', backgroundColor: bgColor, textStyle: blockTextStyle));
+    columnTopDatas.add(ChartColumnBlockData(text: 'm', backgroundColor: bgColor, textStyle: blockTextStyle));
     columnTopDatas.add(ChartColumnBlockData(text: 'n', backgroundColor: bgColor));
 
     final columnBottomDatas = List<ChartColumnBlockData>.empty(growable: true);
