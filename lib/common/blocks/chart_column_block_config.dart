@@ -5,6 +5,8 @@ class ChartColumnBlockConfig {
   const ChartColumnBlockConfig({
     this.backgroundColorPadding = 0,
     this.height = 30,
+    this.backgroundColor,
+    this.backgroundColorHighlight,
     this.textStyle,
     this.textStyleHightlight,
   });
@@ -17,7 +19,15 @@ class ChartColumnBlockConfig {
   /// Default value is 30
   final int height;
 
-  /// TextStyle vor text value
+  /// BackgroundColor of this block
+  final Color? backgroundColor;
+
+  /// BackgroundColor of this block if column highlighted
+  final Color? backgroundColorHighlight;
+
+  /// TextStyle of the printed text
   final TextStyle? textStyle;
+
+  /// TextStyle of the printed text if column highlighted
   final TextStyle? textStyleHightlight;
 }

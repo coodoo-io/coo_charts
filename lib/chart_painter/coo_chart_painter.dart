@@ -938,9 +938,10 @@ class CooChartPainter extends CustomPainter {
       // nicht, denn das wäre ein nicht vorhandener Datenpunkt zu viel
       if (!centerDataPointBetweenVerticalGrid || i != xGridLineCount) {
         // Hintergrundfarbe rendern
-        if (columnData.backgroundColor != null) {
+        bool isBackgroundColor = config.backgroundColor != null || columnData.backgroundColor != null;
+        if (isBackgroundColor) {
           final Paint columnLegendBackground = Paint()
-            ..color = columnData.backgroundColor!
+            ..color = columnData.backgroundColor ?? config.backgroundColor!
             ..strokeWidth = 0;
 
           // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
