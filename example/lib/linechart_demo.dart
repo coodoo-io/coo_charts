@@ -671,13 +671,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
     columnTopDatas.add(ChartColumnBlockData(text: 'h', backgroundColor: bgColor, textStyle: blockTextStyle));
     columnTopDatas.add(ChartColumnBlockData(text: 'i', backgroundColor: bgColor, textStyle: blockTextStyle));
     columnTopDatas.add(ChartColumnBlockData(text: 'j', backgroundColor: bgColor, textStyle: blockTextStyle));
-    columnTopDatas.add(ChartColumnBlockData(text: 'k', backgroundColor: bgColor));
+    columnTopDatas.add(ChartColumnBlockData(text: 'k'));
     columnTopDatas.add(ChartColumnBlockData(text: 'l', backgroundColor: bgColor, textStyle: blockTextStyle));
     columnTopDatas.add(ChartColumnBlockData(text: 'm', backgroundColor: bgColor, textStyle: blockTextStyle));
     columnTopDatas.add(ChartColumnBlockData(text: 'n', backgroundColor: bgColor));
 
     final columnBottomDatas = List<ChartColumnBlockData>.empty(growable: true);
-    columnBottomDatas.add(ChartColumnBlockData(text: '0', backgroundColor: bgColorBottom));
+    columnBottomDatas.add(ChartColumnBlockData(
+        text: '0', backgroundColor: bgColorBottom, textStyle: const TextStyle(color: Colors.yellow)));
     columnBottomDatas.add(ChartColumnBlockData(text: '2', backgroundColor: bgColorBottom));
     columnBottomDatas.add(ChartColumnBlockData(text: '6', backgroundColor: bgColorBottom));
     columnBottomDatas.add(ChartColumnBlockData(text: '2', backgroundColor: bgColorBottom));
@@ -695,7 +696,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartColumnBlocks = ChartColumnBlocks(
       showTopBlocks: true,
       topDatas: columnTopDatas,
-      topConfig: const ChartColumnBlockConfig(height: 40),
+      topConfig: const ChartColumnBlockConfig(height: 40, backgroundColor: Colors.red),
       showBottomBlocks: true,
       bottomDatas: columnBottomDatas,
     );
