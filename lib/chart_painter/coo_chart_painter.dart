@@ -514,17 +514,10 @@ class CooChartPainter extends CustomPainter {
 
       var rect = Rect.fromPoints(Offset(x1, y1), Offset(x2, y2));
 
-      bool mouseOverBarHiglight = false;
-      if (mousePosition != null) {
-        bool contains = rect.contains(Offset(mousePosition.dx, mousePosition.dy));
-        mouseOverBarHiglight = contains && highlightMouseColumn;
-      }
-
-      if (mouseOverBarHiglight) {
-        canvas.drawRect(rect, backgroundRectHighlightPaint);
-      } else if (metadata.barChartDataPointsByColumnIndex[i] != null) {
+      // Falls es sich um ein Barchart handelt kann auch nur dieser "bar" gehighlightet werden.
+      if (metadata.barChartDataPointsByColumnIndex[i] != null) {
         List<CooBarChartDataPoint> barchartDataPoints = metadata.barChartDataPointsByColumnIndex[i]!;
-        // get first background color
+        // get first background color, if available
         final dataPoint = barchartDataPoints.firstWhereOrNull((element) => element.columnBackgroundColor != null);
         if (dataPoint != null) {
           final Paint columnBackgroundColor = Paint()
@@ -538,23 +531,27 @@ class CooChartPainter extends CustomPainter {
       if (chartTabInfo.tabDownDetails != null) {
         final tabDownDetails = chartTabInfo.tabDownDetails!;
         bool contains = rect.contains(Offset(tabDownDetails.localPosition.dx, tabDownDetails.localPosition.dy));
-        if (contains && chartTabInfo.tabCount != chartTabInfo.tabCountCallbackInvocation) {
-          chartTabInfo.tabCountCallbackInvocation = chartTabInfo.tabCountCallbackInvocation + 1;
+        if (contains) {
+          canvas.drawRect(rect, backgroundRectHighlightPaint);
+          // invoke callbacks, but only once a time on a column
+          if (chartTabInfo.tabCount != chartTabInfo.tabCountCallbackInvocation) {
+            chartTabInfo.tabCountCallbackInvocation = chartTabInfo.tabCountCallbackInvocation + 1;
 
-          // Linechart callback
-          if (chartType == CooChartType.line && onLineChartDataPointTabCallback != null) {
-            final selectedDataPoints = metadata.lineChartDataPointsByColumnIndex[i] ?? List.empty(growable: false);
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              onLineChartDataPointTabCallback!(i, selectedDataPoints);
-            });
-          }
+            // Linechart callback
+            if (chartType == CooChartType.line && onLineChartDataPointTabCallback != null) {
+              final selectedDataPoints = metadata.lineChartDataPointsByColumnIndex[i] ?? List.empty(growable: false);
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                onLineChartDataPointTabCallback!(i, selectedDataPoints);
+              });
+            }
 
-          // Barchchart callback
-          if (chartType == CooChartType.bar && onBarChartDataPointTabCallback != null) {
-            final selectedDataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? List.empty(growable: false);
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              onBarChartDataPointTabCallback!(i, selectedDataPoints);
-            });
+            // Barchchart callback
+            if (chartType == CooChartType.bar && onBarChartDataPointTabCallback != null) {
+              final selectedDataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? List.empty(growable: false);
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                onBarChartDataPointTabCallback!(i, selectedDataPoints);
+              });
+            }
           }
         }
       }
