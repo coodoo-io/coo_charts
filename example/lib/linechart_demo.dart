@@ -107,8 +107,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
                 dataSeries: linechartDataSeries,
                 columnBlocks: chartColumnBlocks,
                 chartConfig: chartConfig,
-                onDataPointTab: (index, cooLinechartDataPoints) =>
-                    print('Tab $index - ${cooLinechartDataPoints[0].value}'),
+                onDataPointTab: (index, cooLinechartDataPoints) => print(
+                    'Tab Index: $index | Anzahl DatPoints: ${cooLinechartDataPoints.length}- 1. DataPoint Value: ${cooLinechartDataPoints[0].value}'),
                 xAxisConfig: xAxisConfig,
                 yAxisConfig: yAxisConfig,
                 yAxisOppositeConfig: yAxisOppositeConfig,
