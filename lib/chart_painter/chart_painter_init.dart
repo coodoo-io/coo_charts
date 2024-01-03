@@ -56,11 +56,6 @@ class ChartPainterInit {
         }
         allDataPointValues.addAll(notNulValues);
 
-        // check first
-        if (!firstIsADoubleValue && notNulValues[0] % 1 != 0) {
-          firstIsADoubleValue = true;
-        }
-
         // Min- und Max-Value herausfinden (Nulls beachten und ignorieren)
         final maxValueTmp = notNulValues.cast<double>().reduce(max);
         if (!maxValueSet || maxDataPointValue < maxValueTmp) {
@@ -120,11 +115,6 @@ class ChartPainterInit {
 
         if (values.isEmpty) {
           continue;
-        }
-
-        // check first
-        if (!firstIsADoubleValue && values[0]! % 1 != 0) {
-          firstIsADoubleValue = true;
         }
 
         // Min- und Max-Value herausfinden (Nulls beachten und ignorieren)

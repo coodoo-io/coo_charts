@@ -540,6 +540,9 @@ class CooChartPainter extends CustomPainter {
             // Linechart callback
             if (chartType == CooChartType.line && onLineChartDataPointTabCallback != null) {
               final selectedDataPoints = metadata.lineChartDataPointsByColumnIndex[i] ?? List.empty(growable: false);
+              if (metadataOpposite != null && metadataOpposite!.lineChartDataPointsByColumnIndex[i] != null) {
+                selectedDataPoints.addAll(metadataOpposite!.lineChartDataPointsByColumnIndex[i]!);
+              }
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 onLineChartDataPointTabCallback!(i, selectedDataPoints);
               });
@@ -548,6 +551,9 @@ class CooChartPainter extends CustomPainter {
             // Barchchart callback
             if (chartType == CooChartType.bar && onBarChartDataPointTabCallback != null) {
               final selectedDataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? List.empty(growable: false);
+              if (metadataOpposite != null && metadataOpposite!.lineChartDataPointsByColumnIndex[i] != null) {
+                selectedDataPoints.addAll(metadataOpposite!.barChartDataPointsByColumnIndex[i]!);
+              }
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 onBarChartDataPointTabCallback!(i, selectedDataPoints);
               });
