@@ -147,13 +147,13 @@ class ChartPainterInit {
       var tmpStep = ((diff / (yAxisLabelCount - 1)) + 1).toInt();
       // var tmpStep = diff * 0.25;
 
-      if (yAxisConfig.minLabelValue != null && yAxisConfig.minLabelValue! < minDataPointValue) {
+      if (yAxisConfig.minLabelValue != null) {
         yAxisMinValue = yAxisConfig.minLabelValue!;
       } else {
         yAxisMinValue = minValueInt.toDouble();
       }
 
-      if (yAxisConfig.maxLabelValue != null && yAxisConfig.maxLabelValue! > maxDataPointValue) {
+      if (yAxisConfig.maxLabelValue != null) {
         yAxisMaxValue = yAxisConfig.maxLabelValue!;
       } else {
         // Der max-Value muss aus den ermittelten Steps berechnet werden
