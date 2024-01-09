@@ -68,7 +68,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
   @override
   initState() {
     super.initState();
-    // _generateKachelmannSonnenscheindauerTrend();
+    _generateKachelmannSonnenscheindauerTrend();
     // _generateKachelmannWindoenForecast();
     // _generateBarchart1Bis10();
     // _generateMultipleBarchart();
@@ -82,7 +82,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateLargeVorhersageHourly();
     // _generate10DataPointsLargeNumer();
     // _generateEmptyLists();
-    _generateRandomDualLinechart();
+    // _generateRandomDualLinechart();
   }
 
   @override
@@ -585,7 +585,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     sonnenscheindauer.add(CooBarChartDataPoint(
       value: 6,
       minValue: 2,
-      maxValue: 199,
+      maxValue: 12,
       time: DateTime(2023, 10, 25),
     ));
     sonnenscheindauer.add(CooBarChartDataPoint(
