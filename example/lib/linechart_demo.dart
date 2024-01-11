@@ -493,7 +493,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartConfig = chartConfig.copyWith(
       canvasWidth: 3000,
       scrollable: true,
+      colorScheme: CooChartConstants().colorSchemeDefault.copyWith(
+            canvasBackgroundColor: Colors.yellow,
+          ),
     );
+
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
     yAxisConfig = yAxisConfig.copyWith(labelPostfix: ' C');
     yAxisOppositeConfig = yAxisConfig.copyWith(labelPostfix: ' hPa');

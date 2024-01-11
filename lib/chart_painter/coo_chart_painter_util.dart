@@ -56,7 +56,7 @@ class CooChartPainterUtil {
 
     final Paint backgroundPaint = Paint()
       ..color = colorScheme.canvasBackgroundColor
-      ..strokeWidth = 10
+      ..strokeWidth = 1
       ..style = PaintingStyle.fill;
     var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
     canvas.drawRect(rect, backgroundPaint);
