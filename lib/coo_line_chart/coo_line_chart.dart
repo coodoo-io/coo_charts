@@ -154,36 +154,36 @@ class _CooLineChartState extends State<CooLineChart> {
           child: CustomPaint(
             size: Size(metadata.canvasWidth, metadata.canvasHeight),
             painter: CooChartPainter(
-                chartConfig: widget.chartConfig,
-                metadata: metadata,
-                metadataOpposite: metadataOpposite,
-                chartType: CooChartType.line,
-                linechartDataSeries: widget.dataSeries,
-                barchartDataSeries: [],
-                columnBlocks: widget.columnBlocks,
-                canvasBackgroundColor: widget.chartConfig.canvasBackgroundColor,
-                canvasBackgroundPaintingStyle: widget.chartConfig.canvasBackgroundPaintingStyle,
-                padding: padding,
-                mousePosition: scrollPositionMousePointer,
-                chartTabInfo: chartTabInfo,
-                curvedLine: widget.chartConfig.curvedLine,
-                crosshair: widget.chartConfig.crosshair,
-                showGridHorizontal: widget.chartConfig.showGridHorizontal,
-                showGridVertical: widget.chartConfig.showGridVertical,
-                highlightMouseColumn: widget.chartConfig.highlightMouseColumn,
-                highlightPoints: widget.chartConfig.highlightPoints,
-                highlightPointsVerticalLine: widget.chartConfig.highlightPointsVerticalLine,
-                highlightPointsHorizontalLine: widget.chartConfig.highlightPointsHorizontalLine,
-                xAxisConfig: widget.xAxisConfig,
-                centerDataPointBetweenVerticalGrid: widget.chartConfig.centerDataPointBetweenVerticalGrid,
-                yAxisConfig: widget.yAxisConfig,
-                yAxisOppositeConfig: widget.yAxisOppositeConfig,
-                columLegendsAssetImages: columLegendsAssetImages,
-                columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
-                onLineChartDataPointTabCallback: widget.onDataPointTab,
-                xAxisStepLineTopLabelLineChartCallback: widget.xAxisStepLineTopLabelCallback,
-                xAxisStepLineBottomLabelLineChartCallback: widget.xAxisStepLineBottomLabelCallback,
-                drawYAxis: widget.chartConfig.scrollable == false),
+              chartConfig: widget.chartConfig,
+              metadata: metadata,
+              metadataOpposite: metadataOpposite,
+              chartType: CooChartType.line,
+              linechartDataSeries: widget.dataSeries,
+              barchartDataSeries: [],
+              columnBlocks: widget.columnBlocks,
+              canvasBackgroundColor: widget.chartConfig.canvasBackgroundColor,
+              canvasBackgroundPaintingStyle: widget.chartConfig.canvasBackgroundPaintingStyle,
+              padding: padding,
+              mousePosition: scrollPositionMousePointer,
+              chartTabInfo: chartTabInfo,
+              curvedLine: widget.chartConfig.curvedLine,
+              crosshair: widget.chartConfig.crosshair,
+              showGridHorizontal: widget.chartConfig.showGridHorizontal,
+              showGridVertical: widget.chartConfig.showGridVertical,
+              highlightMouseColumn: widget.chartConfig.highlightMouseColumn,
+              highlightPoints: widget.chartConfig.highlightPoints,
+              highlightPointsVerticalLine: widget.chartConfig.highlightPointsVerticalLine,
+              highlightPointsHorizontalLine: widget.chartConfig.highlightPointsHorizontalLine,
+              xAxisConfig: widget.xAxisConfig,
+              centerDataPointBetweenVerticalGrid: widget.chartConfig.centerDataPointBetweenVerticalGrid,
+              yAxisConfig: widget.yAxisConfig,
+              yAxisOppositeConfig: widget.yAxisOppositeConfig,
+              columLegendsAssetImages: columLegendsAssetImages,
+              columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
+              onLineChartDataPointTabCallback: widget.onDataPointTab,
+              xAxisStepLineTopLabelLineChartCallback: widget.xAxisStepLineTopLabelCallback,
+              xAxisStepLineBottomLabelLineChartCallback: widget.xAxisStepLineBottomLabelCallback,
+            ),
           ),
         ),
         onTapDown: (detail) {
@@ -196,33 +196,28 @@ class _CooLineChartState extends State<CooLineChart> {
         },
       );
 
-      // scrollController.position.notifyListeners();
-      return widget.chartConfig.scrollable
-          ? Stack(
-              children: [
-                widget.chartConfig.scrollable
-                    ? SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        controller: scrollController,
-                        child: chartPaint,
-                      )
-                    : chartPaint,
-                widget.chartConfig.scrollable
-                    ? CustomPaint(
-                        painter: CooChartYAxisPainter(
-                          chartConfig: widget.chartConfig,
-                          columnBlocks: widget.columnBlocks,
-                          metadata: metadata,
-                          metadataOpposite: metadataOpposite,
-                          padding: widget.padding,
-                          yAxisConfig: widget.yAxisConfig,
-                          yAxisOppositeConfig: widget.yAxisOppositeConfig,
-                        ),
-                      )
-                    : const SizedBox.shrink()
-              ],
-            )
-          : chartPaint;
+      return Stack(
+        children: [
+          widget.chartConfig.scrollable
+              ? SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  controller: scrollController,
+                  child: chartPaint,
+                )
+              : chartPaint,
+          CustomPaint(
+            painter: CooChartYAxisPainter(
+              chartConfig: widget.chartConfig,
+              columnBlocks: widget.columnBlocks,
+              metadata: metadata,
+              metadataOpposite: metadataOpposite,
+              padding: widget.padding,
+              yAxisConfig: widget.yAxisConfig,
+              yAxisOppositeConfig: widget.yAxisOppositeConfig,
+            ),
+          )
+        ],
+      );
     });
   }
 

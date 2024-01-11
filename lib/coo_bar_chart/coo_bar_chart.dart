@@ -133,7 +133,6 @@ class _CooBarChartState extends State<CooBarChart> {
                 linechartDataSeries: [],
                 barchartDataSeries: widget.dataSeries,
                 columnBlocks: widget.columnBlocks,
-                canvasBackgroundColor: widget.chartConfig.canvasBackgroundColor,
                 canvasBackgroundPaintingStyle: widget.chartConfig.canvasBackgroundPaintingStyle,
                 padding: widget.padding,
                 mousePosition: _mousePointer,

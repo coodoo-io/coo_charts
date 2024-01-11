@@ -60,5 +60,8 @@ class ChartPainterMetadata with _$ChartPainterMetadata {
 
     // Hilfsvariable zu xSegmentWidth, damit sie nicht jedesmal berechnet werden muss
     required double xSegementWidthHalf,
+
+    /// Number of y-axis labels
+    required int yAxisLabelCount,
   }) = _ChartPainterMetadata;
 }

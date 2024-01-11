@@ -24,10 +24,6 @@ class ChartPainterInit {
     required double layoutHeight,
     required ChartPadding padding,
   }) {
-    // Prüfen ob der erste Wert ein double ist, falls ja und wenn nicht padding eingebaut werden soll sind die Steps
-    // double Werte. Sind es nur int Values als erste Werte werden immer ints als Range angeben.
-    bool firstIsADoubleValue = false;
-
     // Min und Max-Werte sind mit 0 initialisiert.
     // Damit das Ermitteln korrekt funktioniert werden zwei Flags benötigt um zu initial den ersten Wert zu seten.
     bool minValueSet = false;
@@ -132,7 +128,8 @@ class ChartPainterInit {
     }
 
     // Bevor der zu vewendente Label Count berechnet wird, dem vom User gewählten setzen
-    int yAxisLabelCount = CooChartPainterUtil.getYAxisLabelCount(yAxisConfig);
+
+    int yAxisLabelCount = ChartPainterInit.getYAxisLabelCount(yAxisConfig);
 
     // Soll unter- und oberhalb der Linie etwas Platz eingerechnet werden?
     if (yAxisConfig.addValuePadding) {
@@ -338,6 +335,34 @@ class ChartPainterInit {
       chartHeight: chartHeight,
       xSegmentWidth: xSegmentWidth,
       xSegementWidthHalf: xSegmentWidth / 2,
+      yAxisLabelCount: yAxisLabelCount,
     );
+  }
+
+  /// Get the number of labels for y-axis. can be configured by user or calculated.
+  static int getYAxisLabelCount(YAxisConfig yAxisConfig) {
+    int yAxisLabelCount = -1; // gobale Hilfsvariable um die Anzahl Labels auf der Y-Achse zu bestimmen
+
+    // Bevor der zu vewendente Label Count berechnet wird, dem vom User gewählten setzen
+    if (yAxisConfig.labelCount != null) {
+      final lCount = yAxisConfig.labelCount!;
+      if (lCount > 2) {
+        yAxisLabelCount = yAxisConfig.labelCount!;
+      } else {
+        // Es wurde ein Labelcount angegeben der aber nicht gültig ist. In diesem Fall werden nur 2 Labels gesetzt:
+        // Min und Max
+        yAxisLabelCount = 2;
+      }
+    }
+
+    // Soll unter- und oberhalb der Linie etwas Platz eingerechnet werden?
+    if (yAxisConfig.addValuePadding) {
+      // Es darf unten und oben etwas Platz gelassen werden- daher wird dynamisch etwas oben und unten dazugerechnet.
+      // Wir setzen hier 5 Linien als Default, weil es dynamisch berechnet wird und hübsch aussieht
+      if (yAxisLabelCount < 0) {
+        yAxisLabelCount = 5;
+      }
+    }
+    return yAxisLabelCount;
   }
 }

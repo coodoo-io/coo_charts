@@ -1,8 +1,5 @@
-import 'package:coo_charts_example/linechart_demo.dart';
-import 'package:coo_charts/coo_line_chart/coo_line_chart.dart';
-import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
-
+import 'package:coo_charts_example/linechart_demo.dart';
 import 'package:flutter/material.dart';
 
 void main() {

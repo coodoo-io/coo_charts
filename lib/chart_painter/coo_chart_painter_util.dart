@@ -202,12 +202,12 @@ class CooChartPainterUtil {
     return normalizedDataPoints;
   }
 
-  /// Malt die Labels auf der Y-Achse und alle horizontalen X-Linien des Datengrids
+  /// Malt die Labels auf der Y-Achse
   ///
   /// Berechnet die Höhe der einzelnen Zeilen anhand der gegebenen Label-Counts.
-  /// Labels werden links neben dem Chart gemalt.
+  /// Labels werden links oder rechts auf dem verfügbaren Canvas gemalt.
   ///
-  static void drawYAxisLabelAndHorizontalGridLine({
+  static void drawYAxisLabels({
     required Canvas canvas,
     required ChartConfig config,
     required ChartPainterMetadata metadata,
@@ -219,7 +219,7 @@ class CooChartPainterUtil {
     ChartColumnBlocks? columnBlocks,
     required bool opposite, // if true the right y-axis labels will be printed
   }) {
-    if (!showGridHorizontal && !yAxisConfig.showYAxisLables) {
+    if (!yAxisConfig.showYAxisLables) {
       // Wenn kein Grid und keine Labels gezeichnet werden sollen, muss auch nichts berechnet werden
       return;
     }
@@ -241,18 +241,12 @@ class CooChartPainterUtil {
       }
     }
 
-    final int yAxisLabelCount = CooChartPainterUtil.getYAxisLabelCount(yAxisConfig);
+    final int yAxisLabelCount = metadata.yAxisLabelCount;
     final double yOffsetInterval =
         (metadata.chartHeight - bottomColumnHeight - topColumnHeight) / (yAxisLabelCount - 1);
 
     for (int i = 0; i < yAxisLabelCount; i++) {
       double y = metadata.chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
-
-      // Don't draw the first horizontal grid line because there is already the x-Axis line
-      // Falls die Column Legende angezeigt werden soll dann die erste Line auch zeichnen
-      if ((i != 0 && showGridHorizontal) || showColumnBottomDatas) {
-        canvas.drawLine(Offset(padding.left.toDouble(), y), Offset(metadata.chartWidth + padding.left, y), gridPaint);
-      }
 
       // Draw Y-axis scale points
       var yAxisLabelValue = (i * metadata.yAxisSteps + metadata.yAxisMinValue);
@@ -298,31 +292,57 @@ class CooChartPainterUtil {
     }
   }
 
-  /// Get the number of labels for y-axis. can be configured by user or calculated.
-  static int getYAxisLabelCount(YAxisConfig yAxisConfig) {
-    int yAxisLabelCount = -1; // gobale Hilfsvariable um die Anzahl Labels auf der Y-Achse zu bestimmen
+  /// Malt die Labels auf der Y-Achse und alle horizontalen X-Linien des Datengrids
+  ///
+  /// Berechnet die Höhe der einzelnen Zeilen anhand der gegebenen Label-Counts.
+  /// Labels werden links neben dem Chart gemalt.
+  ///
+  static void drawYAxisHorizontalGridLine({
+    required Canvas canvas,
+    required ChartConfig config,
+    required ChartPainterMetadata metadata,
+    required YAxisConfig yAxisConfig,
+    required bool showGridHorizontal,
+    required ChartPadding padding,
+    required Paint gridPaint,
+    required TextPainter axisLabelPainter,
+    ChartColumnBlocks? columnBlocks,
+    required bool opposite, // if true the right y-axis labels will be printed
+  }) {
+    if (!showGridHorizontal) {
+      // Wenn kein Grid und keine Labels gezeichnet werden sollen, muss auch nichts berechnet werden
+      return;
+    }
 
-    // Bevor der zu vewendente Label Count berechnet wird, dem vom User gewählten setzen
-    if (yAxisConfig.labelCount != null) {
-      final lCount = yAxisConfig.labelCount!;
-      if (lCount > 2) {
-        yAxisLabelCount = yAxisConfig.labelCount!;
-      } else {
-        // Es wurde ein Labelcount angegeben der aber nicht gültig ist. In diesem Fall werden nur 2 Labels gesetzt:
-        // Min und Max
-        yAxisLabelCount = 2;
+    // Blocks werden für die korrekte Berechnung der Labelposition benötigt
+    bool showColumnBottomDatas = false;
+    double bottomColumnHeight = 0;
+    bool showColumnTopDatas = false;
+    double topColumnHeight = 0;
+    if (columnBlocks != null) {
+      showColumnBottomDatas = columnBlocks.showBottomBlocks && columnBlocks.bottomDatas.isNotEmpty;
+      if (showColumnBottomDatas) {
+        bottomColumnHeight = columnBlocks.bottomConfig.height.toDouble();
+      }
+
+      showColumnTopDatas = columnBlocks.showTopBlocks && columnBlocks.topDatas.isNotEmpty;
+      if (showColumnTopDatas) {
+        topColumnHeight = columnBlocks.topConfig.height.toDouble();
       }
     }
 
-    // Soll unter- und oberhalb der Linie etwas Platz eingerechnet werden?
-    if (yAxisConfig.addValuePadding) {
-      // Es darf unten und oben etwas Platz gelassen werden- daher wird dynamisch etwas oben und unten dazugerechnet.
-      // Wir setzen hier 5 Linien als Default, weil es dynamisch berechnet wird und hübsch aussieht
-      if (yAxisLabelCount < 0) {
-        yAxisLabelCount = 5;
+    final double yOffsetInterval =
+        (metadata.chartHeight - bottomColumnHeight - topColumnHeight) / (metadata.yAxisLabelCount - 1);
+
+    for (int i = 0; i < metadata.yAxisLabelCount; i++) {
+      double y = metadata.chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
+
+      // Don't draw the first horizontal grid line because there is already the x-Axis line
+      // Falls die Column Legende angezeigt werden soll dann die erste Line auch zeichnen
+      if ((i != 0 && showGridHorizontal) || showColumnBottomDatas) {
+        canvas.drawLine(Offset(padding.left.toDouble(), y), Offset(metadata.chartWidth + padding.left, y), gridPaint);
       }
     }
-    return yAxisLabelCount;
   }
 
   static void drawDataLinechartDataPointsAndPath({

@@ -48,6 +48,10 @@ class ChartConfig with _$ChartConfig {
     /// TODO move to theme
     Color? hightlightColumnColor,
 
+    /// The color of the grid lines
+    /// TODO move to theme
+    Color? gridColor,
+
     /// Experimental - Background painting style
     @Default(PaintingStyle.fill) PaintingStyle canvasBackgroundPaintingStyle,
 

@@ -52,7 +52,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
   var yAxisConfig = const YAxisConfig();
   YAxisConfig? yAxisOppositeConfig;
 
-  bool chartBackgroundColorBlack = true;
+  bool chartBackgroundColorBlack = false;
 
   CooChartType chartType = CooChartType.bar;
 
@@ -68,11 +68,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
   @override
   initState() {
     super.initState();
-    _generateKachelmannSonnenscheindauerTrend();
+    // _generateKachelmannSonnenscheindauerTrend();
     // _generateKachelmannWindoenForecast();
     // _generateBarchart1Bis10();
     // _generateMultipleBarchart();
-    // _generateKachelmann14TageWetterTrend();
+    _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
     // _genrateRandomCooLinechartDataPoints();
