@@ -239,7 +239,7 @@ class CooChartPainterUtil {
       }
     }
 
-    final labelTextStyle = TextStyle(
+    const labelTextStyle = TextStyle(
       fontSize: 12,
       color: Colors.black,
       // background: Paint()
@@ -293,7 +293,23 @@ class CooChartPainterUtil {
     double rectPosX1 = rectPosX0 + maxLabelWidth + 20;
     double rectPosY1 = metadata.chartHeight + padding.top + padding.bottom;
     var rect = Rect.fromPoints(Offset(rectPosX0, rectPosY0), Offset(rectPosX1, rectPosY1));
-    final rectPaint = Paint()..color = ui.Color.fromARGB(255, 255, 255, 255);
+
+    // paint a gradient from left to right on the rect
+
+    final rectPaint = Paint()
+      ..shader = ui.Gradient.linear(
+          Offset(rectPosX0, rectPosY0 + rectPosY1 / 2),
+          Offset(rectPosX1, rectPosY0 + rectPosY1 / 2),
+          opposite
+              ? [
+                  Colors.white.withOpacity(0.2),
+                  Colors.white,
+                ]
+              : [
+                  Colors.white,
+                  Colors.white.withOpacity(0.2),
+                ]);
+
     canvas.drawRect(rect, rectPaint);
 
     final double yOffsetInterval =
