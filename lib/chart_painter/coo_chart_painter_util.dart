@@ -214,8 +214,6 @@ class CooChartPainterUtil {
     required YAxisConfig yAxisConfig,
     required bool showGridHorizontal,
     required ChartPadding padding,
-    required Paint gridPaint,
-    required TextPainter axisLabelPainter,
     ChartColumnBlocks? columnBlocks,
     required bool opposite, // if true the right y-axis labels will be printed
   }) {
@@ -241,14 +239,26 @@ class CooChartPainterUtil {
       }
     }
 
-    final int yAxisLabelCount = metadata.yAxisLabelCount;
-    final double yOffsetInterval =
-        (metadata.chartHeight - bottomColumnHeight - topColumnHeight) / (yAxisLabelCount - 1);
+    final labelTextStyle = TextStyle(
+      fontSize: 12,
+      color: Colors.black,
+      background: Paint()
+        ..strokeWidth = 30.0
+        ..color = Colors.grey
+        ..style = PaintingStyle.stroke
+        ..strokeJoin = StrokeJoin.round,
+    );
 
-    for (int i = 0; i < yAxisLabelCount; i++) {
-      double y = metadata.chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
+    /// Draw Background Rect if scrollable, so the lines are not visible
+    final TextPainter axisLabelPainterCalc = TextPainter(
+      textAlign: TextAlign.left,
+      textDirection: ui.TextDirection.ltr,
+    );
+    // Check max width of label text
 
-      // Draw Y-axis scale points
+    final List<(String label, double length)> labels = [];
+    double maxLabelWidth = 0;
+    for (int i = 0; i < metadata.yAxisLabelCount; i++) {
       var yAxisLabelValue = (i * metadata.yAxisSteps + metadata.yAxisMinValue);
       late String label;
       if (yAxisLabelValue is int || yAxisLabelValue % 1 == 0) {
@@ -262,33 +272,60 @@ class CooChartPainterUtil {
         label = '$label ${yAxisConfig.labelPostfix}';
       }
 
+      axisLabelPainterCalc.text = TextSpan(text: label, style: labelTextStyle);
+
+      axisLabelPainterCalc.layout();
+
+      // Die Labels an der Y-Achse sollen rechtsbündig sein.
+      // Somit muss der Padding mit der Größe des Textes berechnet werden
+      if (maxLabelWidth < axisLabelPainterCalc.width) {
+        maxLabelWidth = axisLabelPainterCalc.width;
+      }
+      labels.add((label, axisLabelPainterCalc.width));
+    }
+
+    double rectPosX0 = 0;
+    double rectPosY0 = padding.top.toDouble();
+    double rectPosX1 = maxLabelWidth;
+    double rectPosY1 = metadata.chartHeight;
+    var rect = Rect.fromPoints(Offset(rectPosX0, rectPosY0), Offset(rectPosX1, rectPosY1));
+    final rectPaint = Paint()..color = ui.Color.fromARGB(255, 0, 29, 246);
+    canvas.drawRect(rect, rectPaint);
+
+    // canvas.save();
+
+    final double yOffsetInterval =
+        (metadata.chartHeight - bottomColumnHeight - topColumnHeight) / (metadata.yAxisLabelCount - 1);
+
+    final TextPainter axisLabelPainter = TextPainter(
+      textAlign: TextAlign.left,
+      textDirection: ui.TextDirection.ltr,
+    );
+    for (int i = 0; i < metadata.yAxisLabelCount; i++) {
+      double y = metadata.chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
+
+      // Draw Y-axis scale points
+
+      final String label = labels[i].$1;
+      final double labelWidth = labels[i].$2;
+
       axisLabelPainter.text = TextSpan(
         text: label,
-        style: const TextStyle(
-          fontSize: 12,
-          color: Colors.grey,
-        ),
+        style: labelTextStyle,
       );
 
-      if (yAxisConfig.showYAxisLables) {
-        axisLabelPainter.layout();
+      double xLabelPos;
 
-        // Die Labels an der Y-Achse sollen rechtsbündig sein.
-        // Somit muss der Padding mit der Größe des Textes berechnet werden
-        var w = axisLabelPainter.width;
-
-        double xLabelPos;
-
-        if (opposite == false) {
-          // Linke Seite
-          xLabelPos = padding.left - w - 10;
-        } else {
-          // rechte Seite
-          xLabelPos = (config.scrollable ? metadata.layoutWidth : metadata.canvasWidth) - padding.right + 10;
-        }
-        final yLabelPos = y - axisLabelPainter.height / 2;
-        axisLabelPainter.paint(canvas, Offset(xLabelPos, yLabelPos));
+      if (opposite == false) {
+        // Linke Seite
+        xLabelPos = padding.left - labelWidth - 10;
+      } else {
+        // rechte Seite
+        xLabelPos = (config.scrollable ? metadata.layoutWidth : metadata.canvasWidth) - padding.right + 10;
       }
+      axisLabelPainter.layout();
+      final yLabelPos = y - axisLabelPainter.height / 2;
+      axisLabelPainter.paint(canvas, Offset(xLabelPos, yLabelPos));
     }
   }
 

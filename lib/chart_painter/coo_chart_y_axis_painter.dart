@@ -33,17 +33,8 @@ class CooChartYAxisPainter extends CustomPainter {
 
   final ChartColumnBlocks? columnBlocks;
 
-  final TextPainter _axisLabelPainter = TextPainter(
-    textAlign: TextAlign.left,
-    textDirection: ui.TextDirection.ltr,
-  );
-
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint gridPaint = Paint()
-      ..color = chartConfig.gridColor ?? CooChartConstants().colorSchema.gridColor
-      ..strokeWidth = 1;
-
     CooChartPainterUtil.drawYAxisLabels(
       canvas: canvas,
       config: chartConfig,
@@ -52,8 +43,6 @@ class CooChartYAxisPainter extends CustomPainter {
       columnBlocks: columnBlocks,
       showGridHorizontal: chartConfig.showGridHorizontal,
       padding: padding,
-      gridPaint: gridPaint,
-      axisLabelPainter: _axisLabelPainter,
       opposite: false,
     );
     if (yAxisOppositeConfig != null && metadataOpposite != null) {
@@ -65,8 +54,6 @@ class CooChartYAxisPainter extends CustomPainter {
         columnBlocks: columnBlocks,
         showGridHorizontal: chartConfig.showGridHorizontal,
         padding: padding,
-        gridPaint: gridPaint,
-        axisLabelPainter: _axisLabelPainter,
         opposite: true,
       );
     }
