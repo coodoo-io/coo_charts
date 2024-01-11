@@ -242,11 +242,11 @@ class CooChartPainterUtil {
     final labelTextStyle = TextStyle(
       fontSize: 12,
       color: Colors.black,
-      background: Paint()
-        ..strokeWidth = 30.0
-        ..color = Colors.grey
-        ..style = PaintingStyle.stroke
-        ..strokeJoin = StrokeJoin.round,
+      // background: Paint()
+      //   ..strokeWidth = 30.0
+      //   ..color = Colors.grey
+      //   ..style = PaintingStyle.stroke
+      //   ..strokeJoin = StrokeJoin.round,
     );
 
     /// Draw Background Rect if scrollable, so the lines are not visible
@@ -285,14 +285,16 @@ class CooChartPainterUtil {
     }
 
     double rectPosX0 = 0;
-    double rectPosY0 = padding.top.toDouble();
-    double rectPosX1 = maxLabelWidth;
-    double rectPosY1 = metadata.chartHeight;
+    if (opposite == true) {
+      // rechte Seite
+      rectPosX0 = (config.scrollable ? metadata.layoutWidth : metadata.canvasWidth) - padding.right + 10;
+    }
+    double rectPosY0 = 0;
+    double rectPosX1 = rectPosX0 + maxLabelWidth + 20;
+    double rectPosY1 = metadata.chartHeight + padding.top + padding.bottom;
     var rect = Rect.fromPoints(Offset(rectPosX0, rectPosY0), Offset(rectPosX1, rectPosY1));
-    final rectPaint = Paint()..color = ui.Color.fromARGB(255, 0, 29, 246);
+    final rectPaint = Paint()..color = ui.Color.fromARGB(255, 255, 255, 255);
     canvas.drawRect(rect, rectPaint);
-
-    // canvas.save();
 
     final double yOffsetInterval =
         (metadata.chartHeight - bottomColumnHeight - topColumnHeight) / (metadata.yAxisLabelCount - 1);
