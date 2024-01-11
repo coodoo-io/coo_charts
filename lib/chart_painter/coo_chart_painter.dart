@@ -8,6 +8,7 @@ import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/chart_tab_info.dart';
+import 'package:coo_charts/common/coo_chart_color_scheme.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_point.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_series.dart';
 import 'package:coo_charts/common/coo_chart_constants.dart';
@@ -26,14 +27,13 @@ import 'package:intl/intl.dart';
 class CooChartPainter extends CustomPainter {
   CooChartPainter({
     required this.chartConfig,
+    required this.colorScheme,
     required this.metadata,
     required this.metadataOpposite,
     required this.chartType,
     required this.linechartDataSeries,
     required this.barchartDataSeries,
     this.columnBlocks,
-    this.canvasBackgroundColor,
-    required this.canvasBackgroundPaintingStyle,
     required this.curvedLine,
     required this.mousePosition,
     required this.chartTabInfo,
@@ -41,7 +41,6 @@ class CooChartPainter extends CustomPainter {
     required this.showGridHorizontal,
     required this.showGridVertical,
     required this.highlightMouseColumn,
-    this.highlightColumnColor,
     required this.highlightPoints,
     required this.highlightPointsVerticalLine,
     required this.highlightPointsHorizontalLine,
@@ -58,13 +57,14 @@ class CooChartPainter extends CustomPainter {
     this.xAxisStepLineBottomLabelLineChartCallback,
     this.xAxisStepLineTopLabelBarChartCallback,
     this.xAxisStepLineBottomLabelBarChartCallback,
-    this.drawYAxis = true,
   });
 
   final ChartConfig chartConfig;
   final ChartPainterMetadata metadata;
   final ChartPainterMetadata? metadataOpposite;
   final CooChartType chartType;
+
+  final CooChartColorScheme colorScheme;
 
   final List<CooLineChartDataSeries> linechartDataSeries;
   final List<CooBarChartDataSeries> barchartDataSeries;
@@ -74,8 +74,6 @@ class CooChartPainter extends CustomPainter {
   final Map<String, PictureInfo> columLegendsAssetSvgPictureInfos;
 
   final ChartPadding padding;
-  final Color? canvasBackgroundColor;
-  final PaintingStyle canvasBackgroundPaintingStyle;
 
   final Offset? mousePosition; // Position des Mauszeigers - wird für das Fadenkreuz benötigt (interne Variable)
   final ChartTabInfo chartTabInfo;
@@ -87,7 +85,6 @@ class CooChartPainter extends CustomPainter {
   final bool showGridVertical; // if true, grid vertical lines are painted
 
   final bool highlightMouseColumn; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
-  final Color? highlightColumnColor;
   final bool highlightPoints; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
   final bool
       highlightPointsVerticalLine; // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
@@ -115,18 +112,8 @@ class CooChartPainter extends CustomPainter {
 
   final Map<Rect, int> chartRectYPos = {}; // Merken welches Rect bei welcher Y-Pos liegt
 
-  final bool drawYAxis;
-
-  final Paint _gridPaint = Paint()
-    ..color = Colors.grey.withOpacity(0.4)
-    ..strokeWidth = 1;
-
   final Paint _highlightLinePaint = Paint()
     ..color = Colors.white.withOpacity(0.7)
-    ..strokeWidth = 1;
-
-  final Paint _axisPaint = Paint()
-    ..color = Colors.grey
     ..strokeWidth = 1;
 
   final Paint _mousePositionPaint = Paint()
@@ -148,21 +135,21 @@ class CooChartPainter extends CustomPainter {
     /// Chart canvas size to draw on
 
     CooChartPainterUtil.drawCanvasAndAxis(
-        canvas: canvas,
-        padding: padding,
-        axisPaint: _axisPaint,
-        canvasWidth: metadata.canvasWidth,
-        canvasHeight: metadata.canvasHeight,
-        showYAxis: yAxisConfig.showAxis,
-        showXAxis: xAxisConfig.showAxis,
-        showFullRect: true,
-        backgroundColor: canvasBackgroundColor,
-        backgroundPaintingStyle: canvasBackgroundPaintingStyle);
+      canvas: canvas,
+      colorScheme: colorScheme,
+      padding: padding,
+      canvasWidth: metadata.canvasWidth,
+      canvasHeight: metadata.canvasHeight,
+      showYAxis: yAxisConfig.showAxis,
+      showXAxis: xAxisConfig.showAxis,
+      showFullRect: true,
+    );
 
     // Berechnet die Spalten für alle Datenpunkte und setzt den Index welche Column für die
     // darüberliegende Maus gerade aktiv ist.
     _drawBackgroundRect(
       canvas: canvas,
+      colorScheme: colorScheme,
       chartWidth: metadata.chartWidth,
       chartHeigt: metadata.chartHeight,
       mousePosition: mousePosition,
@@ -171,37 +158,36 @@ class CooChartPainter extends CustomPainter {
 
     _drawXAxisLabelAndVerticalGridLine(
       canvas: canvas,
+      colorScheme: colorScheme,
       chartWidth: metadata.chartWidth,
       chartHeight: metadata.chartHeight,
     );
 
-    if (drawYAxis) {
-      CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
+    CooChartPainterUtil.drawYAxisHorizontalGridLine(
+      canvas: canvas,
+      colorScheme: colorScheme,
+      config: chartConfig,
+      metadata: metadata,
+      yAxisConfig: yAxisConfig,
+      columnBlocks: columnBlocks,
+      showGridHorizontal: showGridHorizontal,
+      padding: padding,
+      axisLabelPainter: _axisLabelPainter,
+      opposite: false,
+    );
+    if (yAxisOppositeConfig != null && metadataOpposite != null) {
+      CooChartPainterUtil.drawYAxisHorizontalGridLine(
         canvas: canvas,
+        colorScheme: colorScheme,
         config: chartConfig,
-        metadata: metadata,
-        yAxisConfig: yAxisConfig,
+        metadata: metadataOpposite!,
+        yAxisConfig: yAxisOppositeConfig!,
         columnBlocks: columnBlocks,
         showGridHorizontal: showGridHorizontal,
         padding: padding,
-        gridPaint: _gridPaint,
         axisLabelPainter: _axisLabelPainter,
-        opposite: false,
+        opposite: true,
       );
-      if (yAxisOppositeConfig != null && metadataOpposite != null) {
-        CooChartPainterUtil.drawYAxisLabelAndHorizontalGridLine(
-          canvas: canvas,
-          config: chartConfig,
-          metadata: metadataOpposite!,
-          yAxisConfig: yAxisOppositeConfig!,
-          columnBlocks: columnBlocks,
-          showGridHorizontal: showGridHorizontal,
-          padding: padding,
-          gridPaint: _gridPaint,
-          axisLabelPainter: _axisLabelPainter,
-          opposite: true,
-        );
-      }
     }
 
     _drawColumnBlocks(
@@ -337,19 +323,20 @@ class CooChartPainter extends CustomPainter {
         yAxisMaxValue: yAxisMaxValue,
       );
 
-      final Color barColor = localLinechartDataSeries.barColor ?? CooChartConstants().colorShemas[i].dataPointColor;
+      final Color barColor =
+          localLinechartDataSeries.barColor ?? CooChartConstants().getColorShemas()[i].dataPointColor;
       final Paint barPaint = Paint()
         ..color = barColor
         ..strokeWidth = 1;
 
       final Color barColorHighlight =
-          localLinechartDataSeries.barColor ?? CooChartConstants().colorShemas[i].dataPointHighlightColor;
+          localLinechartDataSeries.barColor ?? CooChartConstants().getColorShemas()[i].dataPointHighlightColor;
       final Paint barHightlightPaint = Paint()
         ..color = barColorHighlight
         ..strokeWidth = 1;
 
       final Color minMaxRangeLineColor =
-          localLinechartDataSeries.minMaxLineColor ?? CooChartConstants().minMaxRangeColor;
+          localLinechartDataSeries.minMaxLineColor ?? CooChartConstants().getColorShemas()[i].minMaxRangeColor;
       final Paint minMaxRangePaint = Paint()
         ..color = minMaxRangeLineColor
         ..strokeWidth = 1;
@@ -482,6 +469,7 @@ class CooChartPainter extends CustomPainter {
   ///
   void _drawBackgroundRect({
     required Canvas canvas,
+    required CooChartColorScheme colorScheme,
     required double chartWidth,
     required double chartHeigt,
     required Offset? mousePosition,
@@ -490,7 +478,7 @@ class CooChartPainter extends CustomPainter {
     mouseInRectYIndex = -1; // Reset
 
     final Paint backgroundRectHighlightPaint = Paint()
-      ..color = highlightColumnColor ?? CooChartConstants().columnHighlightColor
+      ..color = colorScheme.columnHighlightColor
       ..strokeWidth = 0;
 
     // das erste und das letzte Rect sind nur halb so groß, wenn der Punkt direkt bei 0 auf der Y-Achse liegt
@@ -607,9 +595,14 @@ class CooChartPainter extends CustomPainter {
   /// Definiert wird das durch [xAxisConfig.showTopLabels] und [xAxisConfig.showBottomLabels].
   void _drawXAxisLabelAndVerticalGridLine({
     required Canvas canvas,
+    required CooChartColorScheme colorScheme,
     required double chartWidth,
     required double chartHeight,
   }) {
+    final Paint gridPaint = Paint()
+      ..color = colorScheme.gridColor
+      ..strokeWidth = 1;
+
     int xGridLineCount = metadata.maxAbsoluteValueCount;
     if (!centerDataPointBetweenVerticalGrid) {
       xGridLineCount -= 1;
@@ -661,7 +654,7 @@ class CooChartPainter extends CustomPainter {
       if (i != 0 && showGridVertical) {
         if (xAxisConfig.stepAxisLine == null) {
           canvas.drawLine(
-              Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), _gridPaint);
+              Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), gridPaint);
         } else {
           bool drawLine = i == xAxisConfig.stepAxisLineStart; // Wenn i exakt der Startangabe ist
           // Wenn i auf einem vielfachen der angegebenen step liegt. Ist ein Start angegben wird dieser von i abgezogen
@@ -671,7 +664,7 @@ class CooChartPainter extends CustomPainter {
             isStepAxisLine = true;
             // Nur zeichen wenn der Start Step oder der konfigierte Step ab dem start übereinstimmt
             canvas.drawLine(
-                Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), _gridPaint);
+                Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), gridPaint);
           }
         }
       }

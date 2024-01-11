@@ -1,8 +1,4 @@
 import 'package:coo_charts_example/linechart_demo.dart';
-import 'package:coo_charts/coo_line_chart/coo_line_chart.dart';
-import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
-import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -23,8 +19,6 @@ class LineChartScrollAndTabDemo extends StatefulWidget {
 class _LineChartScrollAndTabDemoState extends State<LineChartScrollAndTabDemo> {
   @override
   Widget build(BuildContext context) {
-    late List<CooLineChartDataSeries> dataSeries = [];
-
     return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, children: [
       Container(
         color: Colors.blue,

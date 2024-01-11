@@ -3,6 +3,7 @@ import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_data.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
+import 'package:coo_charts/common/coo_chart_constants.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
 import 'package:coo_charts/common/x_axis_config.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
@@ -52,7 +53,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
   var yAxisConfig = const YAxisConfig();
   YAxisConfig? yAxisOppositeConfig;
 
-  bool chartBackgroundColorBlack = true;
+  bool chartBackgroundColorBlack = false;
 
   CooChartType chartType = CooChartType.bar;
 
@@ -68,7 +69,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
   @override
   initState() {
     super.initState();
-    _generateKachelmannSonnenscheindauerTrend();
+    // _generateKachelmannSonnenscheindauerTrend();
     // _generateKachelmannWindoenForecast();
     // _generateBarchart1Bis10();
     // _generateMultipleBarchart();
@@ -82,7 +83,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateLargeVorhersageHourly();
     // _generate10DataPointsLargeNumer();
     // _generateEmptyLists();
-    // _generateRandomDualLinechart();
+    _generateRandomDualLinechart();
   }
 
   @override
@@ -492,7 +493,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartConfig = chartConfig.copyWith(
       canvasWidth: 3000,
       scrollable: true,
+      colorScheme: CooChartConstants().colorSchemeDefault.copyWith(
+            canvasBackgroundColor: Colors.yellow,
+          ),
     );
+
     xAxisConfig = xAxisConfig.copyWith(valueType: XAxisValueType.number);
     yAxisConfig = yAxisConfig.copyWith(labelPostfix: ' C');
     yAxisOppositeConfig = yAxisConfig.copyWith(labelPostfix: ' hPa');
@@ -1562,7 +1567,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     _resetToDefault();
     linechartDataSeries.clear();
     chartType = CooChartType.line;
-    chartConfig = chartConfig.copyWith(canvasBackgroundColor: Colors.amber);
+    chartConfig = chartConfig.copyWith(
+        colorScheme: CooChartConstants().colorSchemeDefault.copyWith(canvasBackgroundColor: Colors.yellow));
     yAxisConfig = yAxisConfig.copyWith(
       showYAxisLables: false,
     );

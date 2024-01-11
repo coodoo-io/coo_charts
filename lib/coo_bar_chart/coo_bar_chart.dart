@@ -6,6 +6,7 @@ import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/chart_tab_info.dart';
+import 'package:coo_charts/common/coo_chart_constants.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_point.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_series.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter.dart';
@@ -127,14 +128,13 @@ class _CooBarChartState extends State<CooBarChart> {
             child: CustomPaint(
               painter: CooChartPainter(
                 chartConfig: widget.chartConfig,
+                colorScheme: widget.chartConfig.colorScheme ?? CooChartConstants().colorSchemeDefault,
                 metadata: metadata,
                 metadataOpposite: null,
                 chartType: CooChartType.bar,
                 linechartDataSeries: [],
                 barchartDataSeries: widget.dataSeries,
                 columnBlocks: widget.columnBlocks,
-                canvasBackgroundColor: widget.chartConfig.canvasBackgroundColor,
-                canvasBackgroundPaintingStyle: widget.chartConfig.canvasBackgroundPaintingStyle,
                 padding: widget.padding,
                 mousePosition: _mousePointer,
                 chartTabInfo: chartTabInfo,

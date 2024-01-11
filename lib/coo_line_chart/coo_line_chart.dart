@@ -9,6 +9,7 @@ import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/chart_tab_info.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
+import 'package:coo_charts/common/coo_chart_constants.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
@@ -135,10 +136,6 @@ class _CooLineChartState extends State<CooLineChart> {
         scrollPositionMousePointer = _mousePointer;
       }
 
-      final padding = widget.chartConfig.scrollable
-          ? ChartPadding(left: 0, right: 0, top: widget.padding.top, bottom: widget.padding.bottom)
-          : widget.padding;
-
       final chartPaint = GestureDetector(
         child: MouseRegion(
           onHover: (event) {
@@ -154,36 +151,35 @@ class _CooLineChartState extends State<CooLineChart> {
           child: CustomPaint(
             size: Size(metadata.canvasWidth, metadata.canvasHeight),
             painter: CooChartPainter(
-                chartConfig: widget.chartConfig,
-                metadata: metadata,
-                metadataOpposite: metadataOpposite,
-                chartType: CooChartType.line,
-                linechartDataSeries: widget.dataSeries,
-                barchartDataSeries: [],
-                columnBlocks: widget.columnBlocks,
-                canvasBackgroundColor: widget.chartConfig.canvasBackgroundColor,
-                canvasBackgroundPaintingStyle: widget.chartConfig.canvasBackgroundPaintingStyle,
-                padding: padding,
-                mousePosition: scrollPositionMousePointer,
-                chartTabInfo: chartTabInfo,
-                curvedLine: widget.chartConfig.curvedLine,
-                crosshair: widget.chartConfig.crosshair,
-                showGridHorizontal: widget.chartConfig.showGridHorizontal,
-                showGridVertical: widget.chartConfig.showGridVertical,
-                highlightMouseColumn: widget.chartConfig.highlightMouseColumn,
-                highlightPoints: widget.chartConfig.highlightPoints,
-                highlightPointsVerticalLine: widget.chartConfig.highlightPointsVerticalLine,
-                highlightPointsHorizontalLine: widget.chartConfig.highlightPointsHorizontalLine,
-                xAxisConfig: widget.xAxisConfig,
-                centerDataPointBetweenVerticalGrid: widget.chartConfig.centerDataPointBetweenVerticalGrid,
-                yAxisConfig: widget.yAxisConfig,
-                yAxisOppositeConfig: widget.yAxisOppositeConfig,
-                columLegendsAssetImages: columLegendsAssetImages,
-                columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
-                onLineChartDataPointTabCallback: widget.onDataPointTab,
-                xAxisStepLineTopLabelLineChartCallback: widget.xAxisStepLineTopLabelCallback,
-                xAxisStepLineBottomLabelLineChartCallback: widget.xAxisStepLineBottomLabelCallback,
-                drawYAxis: widget.chartConfig.scrollable == false),
+              chartConfig: widget.chartConfig,
+              colorScheme: widget.chartConfig.colorScheme ?? CooChartConstants().colorSchemeDefault,
+              metadata: metadata,
+              metadataOpposite: metadataOpposite,
+              chartType: CooChartType.line,
+              linechartDataSeries: widget.dataSeries,
+              barchartDataSeries: [],
+              columnBlocks: widget.columnBlocks,
+              padding: widget.padding,
+              mousePosition: scrollPositionMousePointer,
+              chartTabInfo: chartTabInfo,
+              curvedLine: widget.chartConfig.curvedLine,
+              crosshair: widget.chartConfig.crosshair,
+              showGridHorizontal: widget.chartConfig.showGridHorizontal,
+              showGridVertical: widget.chartConfig.showGridVertical,
+              highlightMouseColumn: widget.chartConfig.highlightMouseColumn,
+              highlightPoints: widget.chartConfig.highlightPoints,
+              highlightPointsVerticalLine: widget.chartConfig.highlightPointsVerticalLine,
+              highlightPointsHorizontalLine: widget.chartConfig.highlightPointsHorizontalLine,
+              xAxisConfig: widget.xAxisConfig,
+              centerDataPointBetweenVerticalGrid: widget.chartConfig.centerDataPointBetweenVerticalGrid,
+              yAxisConfig: widget.yAxisConfig,
+              yAxisOppositeConfig: widget.yAxisOppositeConfig,
+              columLegendsAssetImages: columLegendsAssetImages,
+              columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
+              onLineChartDataPointTabCallback: widget.onDataPointTab,
+              xAxisStepLineTopLabelLineChartCallback: widget.xAxisStepLineTopLabelCallback,
+              xAxisStepLineBottomLabelLineChartCallback: widget.xAxisStepLineBottomLabelCallback,
+            ),
           ),
         ),
         onTapDown: (detail) {
@@ -196,33 +192,28 @@ class _CooLineChartState extends State<CooLineChart> {
         },
       );
 
-      // scrollController.position.notifyListeners();
-      return widget.chartConfig.scrollable
-          ? Stack(
-              children: [
-                widget.chartConfig.scrollable
-                    ? SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        controller: scrollController,
-                        child: chartPaint,
-                      )
-                    : chartPaint,
-                widget.chartConfig.scrollable
-                    ? CustomPaint(
-                        painter: CooChartYAxisPainter(
-                          chartConfig: widget.chartConfig,
-                          columnBlocks: widget.columnBlocks,
-                          metadata: metadata,
-                          metadataOpposite: metadataOpposite,
-                          padding: widget.padding,
-                          yAxisConfig: widget.yAxisConfig,
-                          yAxisOppositeConfig: widget.yAxisOppositeConfig,
-                        ),
-                      )
-                    : const SizedBox.shrink()
-              ],
-            )
-          : chartPaint;
+      return Stack(
+        children: [
+          widget.chartConfig.scrollable
+              ? SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  controller: scrollController,
+                  child: chartPaint,
+                )
+              : chartPaint,
+          CustomPaint(
+            painter: CooChartYAxisPainter(
+              chartConfig: widget.chartConfig,
+              columnBlocks: widget.columnBlocks,
+              metadata: metadata,
+              metadataOpposite: metadataOpposite,
+              padding: widget.padding,
+              yAxisConfig: widget.yAxisConfig,
+              yAxisOppositeConfig: widget.yAxisOppositeConfig,
+            ),
+          )
+        ],
+      );
     });
   }
 

@@ -7,6 +7,7 @@ import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
+import 'package:coo_charts/common/coo_chart_color_scheme.dart';
 import 'package:coo_charts/common/data_point_label_pos.enum.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
@@ -32,15 +33,13 @@ class CooChartPainterUtil {
   /// Pos(x0,y1) ---------------------- Pos(x1,y1)
   static void drawCanvasAndAxis({
     required Canvas canvas,
-    required Paint axisPaint,
+    required CooChartColorScheme colorScheme,
     required ChartPadding padding,
     required double canvasWidth,
     required double canvasHeight,
     required bool showYAxis,
     required bool showXAxis,
     required bool showFullRect,
-    Color? backgroundColor,
-    required PaintingStyle backgroundPaintingStyle,
   }) {
     double x0 = padding.left.toDouble(); // Links erste X-Pos
     double x1 = canvasWidth - padding.right; // Rechts zweite X-Pos
@@ -51,14 +50,16 @@ class CooChartPainterUtil {
     Offset posX1Y0 = Offset(x1, y0);
     Offset posX1Y1 = Offset(x1, y1);
 
-    if (backgroundColor != null) {
-      final Paint backgroundPaint = Paint()
-        ..color = backgroundColor
-        ..strokeWidth = 10
-        ..style = backgroundPaintingStyle;
-      var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
-      canvas.drawRect(rect, backgroundPaint);
-    }
+    final Paint axisPaint = Paint()
+      ..color = colorScheme.canvasBorderColor
+      ..strokeWidth = 1;
+
+    final Paint backgroundPaint = Paint()
+      ..color = colorScheme.canvasBackgroundColor
+      ..strokeWidth = 1
+      ..style = PaintingStyle.fill;
+    var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
+    canvas.drawRect(rect, backgroundPaint);
 
     if (showXAxis) {
       // X-Achse unten
@@ -202,24 +203,22 @@ class CooChartPainterUtil {
     return normalizedDataPoints;
   }
 
-  /// Malt die Labels auf der Y-Achse und alle horizontalen X-Linien des Datengrids
+  /// Malt die Labels auf der Y-Achse
   ///
   /// Berechnet die Höhe der einzelnen Zeilen anhand der gegebenen Label-Counts.
-  /// Labels werden links neben dem Chart gemalt.
+  /// Labels werden links oder rechts auf dem verfügbaren Canvas gemalt.
   ///
-  static void drawYAxisLabelAndHorizontalGridLine({
+  static void drawYAxisLabels({
     required Canvas canvas,
     required ChartConfig config,
     required ChartPainterMetadata metadata,
     required YAxisConfig yAxisConfig,
     required bool showGridHorizontal,
     required ChartPadding padding,
-    required Paint gridPaint,
-    required TextPainter axisLabelPainter,
     ChartColumnBlocks? columnBlocks,
     required bool opposite, // if true the right y-axis labels will be printed
   }) {
-    if (!showGridHorizontal && !yAxisConfig.showYAxisLables) {
+    if (!yAxisConfig.showYAxisLables) {
       // Wenn kein Grid und keine Labels gezeichnet werden sollen, muss auch nichts berechnet werden
       return;
     }
@@ -241,20 +240,26 @@ class CooChartPainterUtil {
       }
     }
 
-    final int yAxisLabelCount = CooChartPainterUtil.getYAxisLabelCount(yAxisConfig);
-    final double yOffsetInterval =
-        (metadata.chartHeight - bottomColumnHeight - topColumnHeight) / (yAxisLabelCount - 1);
+    const labelTextStyle = TextStyle(
+      fontSize: 12,
+      color: Colors.black,
+      // background: Paint()
+      //   ..strokeWidth = 30.0
+      //   ..color = Colors.grey
+      //   ..style = PaintingStyle.stroke
+      //   ..strokeJoin = StrokeJoin.round,
+    );
 
-    for (int i = 0; i < yAxisLabelCount; i++) {
-      double y = metadata.chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
+    /// Draw Background Rect if scrollable, so the lines are not visible
+    final TextPainter axisLabelPainterCalc = TextPainter(
+      textAlign: TextAlign.left,
+      textDirection: ui.TextDirection.ltr,
+    );
+    // Check max width of label text
 
-      // Don't draw the first horizontal grid line because there is already the x-Axis line
-      // Falls die Column Legende angezeigt werden soll dann die erste Line auch zeichnen
-      if ((i != 0 && showGridHorizontal) || showColumnBottomDatas) {
-        canvas.drawLine(Offset(padding.left.toDouble(), y), Offset(metadata.chartWidth + padding.left, y), gridPaint);
-      }
-
-      // Draw Y-axis scale points
+    final List<(String label, double length)> labels = [];
+    double maxLabelWidth = 0;
+    for (int i = 0; i < metadata.yAxisLabelCount; i++) {
       var yAxisLabelValue = (i * metadata.yAxisSteps + metadata.yAxisMinValue);
       late String label;
       if (yAxisLabelValue is int || yAxisLabelValue % 1 == 0) {
@@ -268,61 +273,159 @@ class CooChartPainterUtil {
         label = '$label ${yAxisConfig.labelPostfix}';
       }
 
+      axisLabelPainterCalc.text = TextSpan(text: label, style: labelTextStyle);
+
+      axisLabelPainterCalc.layout();
+
+      // Die Labels an der Y-Achse sollen rechtsbündig sein.
+      // Somit muss der Padding mit der Größe des Textes berechnet werden
+      if (maxLabelWidth < axisLabelPainterCalc.width) {
+        maxLabelWidth = axisLabelPainterCalc.width;
+      }
+      labels.add((label, axisLabelPainterCalc.width));
+    }
+
+    double rectPosX0 = 0;
+    if (opposite == true) {
+      // rechte Seite
+      rectPosX0 = metadata.layoutWidth - maxLabelWidth;
+    }
+    double rectPosY0 = 0;
+    double rectPosX1 = rectPosX0 + maxLabelWidth + 15;
+    double rectPosY1 = metadata.chartHeight + padding.top + padding.bottom;
+    var rect = Rect.fromPoints(Offset(rectPosX0, rectPosY0), Offset(rectPosX1, rectPosY1));
+
+    // paint a gradient from left to right on the rect
+    Paint rectPaint;
+
+    rectPaint = Paint()..color = Colors.white;
+
+    // if (opposite) {
+    //   rectPaint = Paint()
+    //     ..shader = ui.Gradient.linear(
+    //         // Von rechts nach links
+    //         Offset(rectPosX1, rectPosY0 + rectPosY1 / 2),
+    //         Offset(rectPosX0, rectPosY0 + rectPosY1 / 2),
+    //         [
+    //           Colors.white,
+    //           Colors.white.withOpacity(0.7),
+    //           Colors.white.withOpacity(0),
+    //         ],
+    //         [
+    //           0.4,
+    //           0.7,
+    //           1,
+    //         ]);
+    // } else {
+    //   rectPaint = Paint()
+    //     ..shader = ui.Gradient.linear(
+    //         // Von Links nach rechts
+    //         Offset(rectPosX0, rectPosY0 + rectPosY1),
+    //         Offset(rectPosX1, rectPosY0 + rectPosY1),
+    //         [
+    //           Colors.white,
+    //           Colors.white.withOpacity(0.7),
+    //           Colors.white.withOpacity(0),
+    //         ],
+    //         [
+    //           0.4,
+    //           0.7,
+    //           1,
+    //         ]);
+    // }
+
+    canvas.drawRect(rect, rectPaint);
+
+    final double yOffsetInterval =
+        (metadata.chartHeight - bottomColumnHeight - topColumnHeight) / (metadata.yAxisLabelCount - 1);
+
+    final TextPainter axisLabelPainter = TextPainter(
+      textAlign: TextAlign.left,
+      textDirection: ui.TextDirection.ltr,
+    );
+    for (int i = 0; i < metadata.yAxisLabelCount; i++) {
+      double y = metadata.chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
+
+      // Draw Y-axis scale points
+
+      final String label = labels[i].$1;
+      final double labelWidth = labels[i].$2;
+
       axisLabelPainter.text = TextSpan(
         text: label,
-        style: const TextStyle(
-          fontSize: 12,
-          color: Colors.grey,
-        ),
+        style: labelTextStyle,
       );
 
-      if (yAxisConfig.showYAxisLables) {
-        axisLabelPainter.layout();
+      double xLabelPos;
 
-        // Die Labels an der Y-Achse sollen rechtsbündig sein.
-        // Somit muss der Padding mit der Größe des Textes berechnet werden
-        var w = axisLabelPainter.width;
-
-        double xLabelPos;
-
-        if (opposite == false) {
-          // Linke Seite
-          xLabelPos = padding.left - w - 10;
-        } else {
-          // rechte Seite
-          xLabelPos = (config.scrollable ? metadata.layoutWidth : metadata.canvasWidth) - padding.right + 10;
-        }
-        final yLabelPos = y - axisLabelPainter.height / 2;
-        axisLabelPainter.paint(canvas, Offset(xLabelPos, yLabelPos));
+      if (opposite == false) {
+        // Linke Seite
+        xLabelPos = padding.left - labelWidth - 10;
+      } else {
+        // rechte Seite
+        xLabelPos = (config.scrollable ? metadata.layoutWidth : metadata.canvasWidth) - padding.right + 10;
       }
+      axisLabelPainter.layout();
+      final yLabelPos = y - axisLabelPainter.height / 2;
+      axisLabelPainter.paint(canvas, Offset(xLabelPos, yLabelPos));
     }
   }
 
-  /// Get the number of labels for y-axis. can be configured by user or calculated.
-  static int getYAxisLabelCount(YAxisConfig yAxisConfig) {
-    int yAxisLabelCount = -1; // gobale Hilfsvariable um die Anzahl Labels auf der Y-Achse zu bestimmen
+  /// Malt die Labels auf der Y-Achse und alle horizontalen X-Linien des Datengrids
+  ///
+  /// Berechnet die Höhe der einzelnen Zeilen anhand der gegebenen Label-Counts.
+  /// Labels werden links neben dem Chart gemalt.
+  ///
+  static void drawYAxisHorizontalGridLine({
+    required Canvas canvas,
+    required CooChartColorScheme colorScheme,
+    required ChartConfig config,
+    required ChartPainterMetadata metadata,
+    required YAxisConfig yAxisConfig,
+    required bool showGridHorizontal,
+    required ChartPadding padding,
+    required TextPainter axisLabelPainter,
+    ChartColumnBlocks? columnBlocks,
+    required bool opposite, // if true the right y-axis labels will be printed
+  }) {
+    if (!showGridHorizontal) {
+      // Wenn kein Grid und keine Labels gezeichnet werden sollen, muss auch nichts berechnet werden
+      return;
+    }
 
-    // Bevor der zu vewendente Label Count berechnet wird, dem vom User gewählten setzen
-    if (yAxisConfig.labelCount != null) {
-      final lCount = yAxisConfig.labelCount!;
-      if (lCount > 2) {
-        yAxisLabelCount = yAxisConfig.labelCount!;
-      } else {
-        // Es wurde ein Labelcount angegeben der aber nicht gültig ist. In diesem Fall werden nur 2 Labels gesetzt:
-        // Min und Max
-        yAxisLabelCount = 2;
+    final Paint gridPaint = Paint()
+      ..color = colorScheme.gridColor
+      ..strokeWidth = 1;
+
+    // Blocks werden für die korrekte Berechnung der Labelposition benötigt
+    bool showColumnBottomDatas = false;
+    double bottomColumnHeight = 0;
+    bool showColumnTopDatas = false;
+    double topColumnHeight = 0;
+    if (columnBlocks != null) {
+      showColumnBottomDatas = columnBlocks.showBottomBlocks && columnBlocks.bottomDatas.isNotEmpty;
+      if (showColumnBottomDatas) {
+        bottomColumnHeight = columnBlocks.bottomConfig.height.toDouble();
+      }
+
+      showColumnTopDatas = columnBlocks.showTopBlocks && columnBlocks.topDatas.isNotEmpty;
+      if (showColumnTopDatas) {
+        topColumnHeight = columnBlocks.topConfig.height.toDouble();
       }
     }
 
-    // Soll unter- und oberhalb der Linie etwas Platz eingerechnet werden?
-    if (yAxisConfig.addValuePadding) {
-      // Es darf unten und oben etwas Platz gelassen werden- daher wird dynamisch etwas oben und unten dazugerechnet.
-      // Wir setzen hier 5 Linien als Default, weil es dynamisch berechnet wird und hübsch aussieht
-      if (yAxisLabelCount < 0) {
-        yAxisLabelCount = 5;
+    final double yOffsetInterval =
+        (metadata.chartHeight - bottomColumnHeight - topColumnHeight) / (metadata.yAxisLabelCount - 1);
+
+    for (int i = 0; i < metadata.yAxisLabelCount; i++) {
+      double y = metadata.chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
+
+      // Don't draw the first horizontal grid line because there is already the x-Axis line
+      // Falls die Column Legende angezeigt werden soll dann die erste Line auch zeichnen
+      if ((i != 0 && showGridHorizontal) || showColumnBottomDatas) {
+        canvas.drawLine(Offset(padding.left.toDouble(), y), Offset(metadata.chartWidth + padding.left, y), gridPaint);
       }
     }
-    return yAxisLabelCount;
   }
 
   static void drawDataLinechartDataPointsAndPath({
