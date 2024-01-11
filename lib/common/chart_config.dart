@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:ui';
 
+import 'package:coo_charts/common/coo_chart_color_scheme.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'chart_config.freezed.dart';
@@ -9,6 +10,9 @@ part 'chart_config.freezed.dart';
 @freezed
 class ChartConfig with _$ChartConfig {
   const factory ChartConfig({
+    /// The color schema for the whole chart. If not set the default color schema will be used
+    CooChartColorScheme? colorScheme,
+
     /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
     @Default(false) bool curvedLine,
 
@@ -41,16 +45,6 @@ class ChartConfig with _$ChartConfig {
 
     /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
     @Default(true) bool centerDataPointBetweenVerticalGrid,
-
-    /// TODO move to theme
-    Color? canvasBackgroundColor,
-
-    /// TODO move to theme
-    Color? hightlightColumnColor,
-
-    /// The color of the grid lines
-    /// TODO move to theme
-    Color? gridColor,
 
     /// Experimental - Background painting style
     @Default(PaintingStyle.fill) PaintingStyle canvasBackgroundPaintingStyle,

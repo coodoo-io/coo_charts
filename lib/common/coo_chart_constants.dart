@@ -1,65 +1,56 @@
+import 'package:coo_charts/common/coo_chart_color_scheme.dart';
 import 'package:flutter/material.dart';
-
-List<CooChartColorSchema> colorShemas = [
-  CooChartColorSchema(
-    dataPointColor: Colors.blue,
-    dataPointHighlightColor: Colors.lightBlue,
-    gridColor: Colors.grey.withOpacity(0.7),
-    columnHighlightColor: Colors.grey.withOpacity(0.3),
-    minMaxRangeColor: Colors.blueGrey,
-  ),
-  CooChartColorSchema(
-    dataPointColor: Colors.green,
-    dataPointHighlightColor: Colors.blueGrey,
-    gridColor: Colors.grey.withOpacity(0.7),
-    columnHighlightColor: Colors.grey.withOpacity(0.3),
-    minMaxRangeColor: Colors.blueGrey,
-  ),
-  CooChartColorSchema(
-    dataPointColor: Colors.deepPurple,
-    dataPointHighlightColor: Colors.purple,
-    gridColor: Colors.grey.withOpacity(0.7),
-    columnHighlightColor: Colors.grey.withOpacity(0.3),
-    minMaxRangeColor: Colors.blueGrey,
-  ),
-  CooChartColorSchema(
-    dataPointColor: Colors.orange,
-    dataPointHighlightColor: Colors.yellow,
-    gridColor: Colors.grey.withOpacity(0.7),
-    columnHighlightColor: Colors.grey.withOpacity(0.3),
-    minMaxRangeColor: Colors.blueGrey,
-  ),
-];
 
 // Singleton für alle Konstanten in diesem Chart
 class CooChartConstants {
-  static final CooChartConstants _singleton = CooChartConstants._internal(colorShemas[0]);
+  static final CooChartConstants _singleton = CooChartConstants._internal();
 
   factory CooChartConstants() {
     return _singleton;
   }
 
-  CooChartConstants._internal(this.colorSchema);
+  CooChartConstants._internal();
 
-  CooChartColorSchema colorSchema;
+  final colorSchemeDefault = CooChartColorScheme(
+    canvasBorderColor: Colors.grey.withOpacity(0.3),
+    gridColor: Colors.grey.withOpacity(0.3),
+    canvasBackgroundColor: Colors.white,
+    dataPointColor: Colors.blue,
+    dataPointHighlightColor: Colors.lightBlue,
+    columnHighlightColor: Colors.grey.withOpacity(0.3),
+    minMaxRangeColor: Colors.blueGrey,
+  );
 
-  selectColorSchema(int number) {
-    colorSchema = colorShemas[number];
+  List<CooChartColorScheme> getColorShemas() {
+    return [
+      colorSchemeDefault,
+      CooChartColorScheme(
+        canvasBorderColor: Colors.grey.withOpacity(0.3),
+        gridColor: Colors.grey.withOpacity(0.3),
+        canvasBackgroundColor: Colors.white,
+        dataPointColor: Colors.green,
+        dataPointHighlightColor: Colors.blueGrey,
+        columnHighlightColor: Colors.grey.withOpacity(0.3),
+        minMaxRangeColor: Colors.blueGrey,
+      ),
+      CooChartColorScheme(
+        canvasBorderColor: Colors.grey.withOpacity(0.3),
+        gridColor: Colors.grey.withOpacity(0.3),
+        canvasBackgroundColor: Colors.white,
+        dataPointColor: Colors.deepPurple,
+        dataPointHighlightColor: Colors.purple,
+        columnHighlightColor: Colors.grey.withOpacity(0.3),
+        minMaxRangeColor: Colors.blueGrey,
+      ),
+      CooChartColorScheme(
+        canvasBorderColor: Colors.grey.withOpacity(0.3),
+        gridColor: Colors.grey.withOpacity(0.3),
+        canvasBackgroundColor: Colors.white,
+        dataPointColor: Colors.orange,
+        dataPointHighlightColor: Colors.yellow,
+        columnHighlightColor: Colors.grey.withOpacity(0.3),
+        minMaxRangeColor: Colors.blueGrey,
+      ),
+    ];
   }
-}
-
-class CooChartColorSchema {
-  CooChartColorSchema({
-    required this.dataPointColor,
-    required this.dataPointHighlightColor,
-    required this.gridColor,
-    required this.columnHighlightColor,
-    required this.minMaxRangeColor,
-  });
-
-  final Color dataPointColor;
-  final Color dataPointHighlightColor;
-  final Color gridColor;
-  final Color columnHighlightColor;
-  final Color minMaxRangeColor;
 }

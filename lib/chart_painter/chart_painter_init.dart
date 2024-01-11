@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:coo_charts/chart_painter/chart_painter_metadata.dart';
-import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/x_axis_config.dart';

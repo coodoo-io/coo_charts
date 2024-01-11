@@ -1,11 +1,8 @@
-import 'dart:ui' as ui;
-
 import 'package:coo_charts/chart_painter/chart_painter_metadata.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
-import 'package:coo_charts/common/coo_chart_constants.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
 import 'package:flutter/material.dart';
 

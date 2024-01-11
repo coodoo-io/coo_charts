@@ -3,6 +3,7 @@ import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_data.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
+import 'package:coo_charts/common/coo_chart_constants.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
 import 'package:coo_charts/common/x_axis_config.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
@@ -1562,7 +1563,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     _resetToDefault();
     linechartDataSeries.clear();
     chartType = CooChartType.line;
-    chartConfig = chartConfig.copyWith(canvasBackgroundColor: Colors.amber);
+    chartConfig = chartConfig.copyWith(
+        colorScheme: CooChartConstants().colorSchemeDefault.copyWith(canvasBackgroundColor: Colors.yellow));
     yAxisConfig = yAxisConfig.copyWith(
       showYAxisLables: false,
     );

@@ -16,6 +16,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ChartConfig {
+  /// The color schema for the whole chart. If not set the default color schema will be used
+  CooChartColorScheme? get colorScheme => throw _privateConstructorUsedError;
+
   /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   bool get curvedLine => throw _privateConstructorUsedError;
 
@@ -42,16 +45,6 @@ mixin _$ChartConfig {
   bool get centerDataPointBetweenVerticalGrid =>
       throw _privateConstructorUsedError;
 
-  /// TODO move to theme
-  Color? get canvasBackgroundColor => throw _privateConstructorUsedError;
-
-  /// TODO move to theme
-  Color? get hightlightColumnColor => throw _privateConstructorUsedError;
-
-  /// The color of the grid lines
-  /// TODO move to theme
-  Color? get gridColor => throw _privateConstructorUsedError;
-
   /// Experimental - Background painting style
   PaintingStyle get canvasBackgroundPaintingStyle =>
       throw _privateConstructorUsedError;
@@ -75,7 +68,8 @@ abstract class $ChartConfigCopyWith<$Res> {
       _$ChartConfigCopyWithImpl<$Res, ChartConfig>;
   @useResult
   $Res call(
-      {bool curvedLine,
+      {CooChartColorScheme? colorScheme,
+      bool curvedLine,
       bool crosshair,
       bool showGridHorizontal,
       bool showGridVertical,
@@ -86,12 +80,11 @@ abstract class $ChartConfigCopyWith<$Res> {
       bool highlightPointsVerticalLine,
       bool highlightPointsHorizontalLine,
       bool centerDataPointBetweenVerticalGrid,
-      Color? canvasBackgroundColor,
-      Color? hightlightColumnColor,
-      Color? gridColor,
       PaintingStyle canvasBackgroundPaintingStyle,
       bool scrollable,
       double? canvasWidth});
+
+  $CooChartColorSchemeCopyWith<$Res>? get colorScheme;
 }
 
 /// @nodoc
@@ -107,6 +100,7 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? colorScheme = freezed,
     Object? curvedLine = null,
     Object? crosshair = null,
     Object? showGridHorizontal = null,
@@ -118,14 +112,15 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
     Object? highlightPointsVerticalLine = null,
     Object? highlightPointsHorizontalLine = null,
     Object? centerDataPointBetweenVerticalGrid = null,
-    Object? canvasBackgroundColor = freezed,
-    Object? hightlightColumnColor = freezed,
-    Object? gridColor = freezed,
     Object? canvasBackgroundPaintingStyle = null,
     Object? scrollable = null,
     Object? canvasWidth = freezed,
   }) {
     return _then(_value.copyWith(
+      colorScheme: freezed == colorScheme
+          ? _value.colorScheme
+          : colorScheme // ignore: cast_nullable_to_non_nullable
+              as CooChartColorScheme?,
       curvedLine: null == curvedLine
           ? _value.curvedLine
           : curvedLine // ignore: cast_nullable_to_non_nullable
@@ -171,18 +166,6 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
           ? _value.centerDataPointBetweenVerticalGrid
           : centerDataPointBetweenVerticalGrid // ignore: cast_nullable_to_non_nullable
               as bool,
-      canvasBackgroundColor: freezed == canvasBackgroundColor
-          ? _value.canvasBackgroundColor
-          : canvasBackgroundColor // ignore: cast_nullable_to_non_nullable
-              as Color?,
-      hightlightColumnColor: freezed == hightlightColumnColor
-          ? _value.hightlightColumnColor
-          : hightlightColumnColor // ignore: cast_nullable_to_non_nullable
-              as Color?,
-      gridColor: freezed == gridColor
-          ? _value.gridColor
-          : gridColor // ignore: cast_nullable_to_non_nullable
-              as Color?,
       canvasBackgroundPaintingStyle: null == canvasBackgroundPaintingStyle
           ? _value.canvasBackgroundPaintingStyle
           : canvasBackgroundPaintingStyle // ignore: cast_nullable_to_non_nullable
@@ -197,6 +180,18 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
               as double?,
     ) as $Val);
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $CooChartColorSchemeCopyWith<$Res>? get colorScheme {
+    if (_value.colorScheme == null) {
+      return null;
+    }
+
+    return $CooChartColorSchemeCopyWith<$Res>(_value.colorScheme!, (value) {
+      return _then(_value.copyWith(colorScheme: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -208,7 +203,8 @@ abstract class _$$ChartConfigImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {bool curvedLine,
+      {CooChartColorScheme? colorScheme,
+      bool curvedLine,
       bool crosshair,
       bool showGridHorizontal,
       bool showGridVertical,
@@ -219,12 +215,12 @@ abstract class _$$ChartConfigImplCopyWith<$Res>
       bool highlightPointsVerticalLine,
       bool highlightPointsHorizontalLine,
       bool centerDataPointBetweenVerticalGrid,
-      Color? canvasBackgroundColor,
-      Color? hightlightColumnColor,
-      Color? gridColor,
       PaintingStyle canvasBackgroundPaintingStyle,
       bool scrollable,
       double? canvasWidth});
+
+  @override
+  $CooChartColorSchemeCopyWith<$Res>? get colorScheme;
 }
 
 /// @nodoc
@@ -238,6 +234,7 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? colorScheme = freezed,
     Object? curvedLine = null,
     Object? crosshair = null,
     Object? showGridHorizontal = null,
@@ -249,14 +246,15 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
     Object? highlightPointsVerticalLine = null,
     Object? highlightPointsHorizontalLine = null,
     Object? centerDataPointBetweenVerticalGrid = null,
-    Object? canvasBackgroundColor = freezed,
-    Object? hightlightColumnColor = freezed,
-    Object? gridColor = freezed,
     Object? canvasBackgroundPaintingStyle = null,
     Object? scrollable = null,
     Object? canvasWidth = freezed,
   }) {
     return _then(_$ChartConfigImpl(
+      colorScheme: freezed == colorScheme
+          ? _value.colorScheme
+          : colorScheme // ignore: cast_nullable_to_non_nullable
+              as CooChartColorScheme?,
       curvedLine: null == curvedLine
           ? _value.curvedLine
           : curvedLine // ignore: cast_nullable_to_non_nullable
@@ -302,18 +300,6 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
           ? _value.centerDataPointBetweenVerticalGrid
           : centerDataPointBetweenVerticalGrid // ignore: cast_nullable_to_non_nullable
               as bool,
-      canvasBackgroundColor: freezed == canvasBackgroundColor
-          ? _value.canvasBackgroundColor
-          : canvasBackgroundColor // ignore: cast_nullable_to_non_nullable
-              as Color?,
-      hightlightColumnColor: freezed == hightlightColumnColor
-          ? _value.hightlightColumnColor
-          : hightlightColumnColor // ignore: cast_nullable_to_non_nullable
-              as Color?,
-      gridColor: freezed == gridColor
-          ? _value.gridColor
-          : gridColor // ignore: cast_nullable_to_non_nullable
-              as Color?,
       canvasBackgroundPaintingStyle: null == canvasBackgroundPaintingStyle
           ? _value.canvasBackgroundPaintingStyle
           : canvasBackgroundPaintingStyle // ignore: cast_nullable_to_non_nullable
@@ -334,7 +320,8 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
 
 class _$ChartConfigImpl implements _ChartConfig {
   const _$ChartConfigImpl(
-      {this.curvedLine = false,
+      {this.colorScheme,
+      this.curvedLine = false,
       this.crosshair = false,
       this.showGridHorizontal = true,
       this.showGridVertical = true,
@@ -345,12 +332,13 @@ class _$ChartConfigImpl implements _ChartConfig {
       this.highlightPointsVerticalLine = true,
       this.highlightPointsHorizontalLine = false,
       this.centerDataPointBetweenVerticalGrid = true,
-      this.canvasBackgroundColor,
-      this.hightlightColumnColor,
-      this.gridColor,
       this.canvasBackgroundPaintingStyle = PaintingStyle.fill,
       this.scrollable = false,
       this.canvasWidth});
+
+  /// The color schema for the whole chart. If not set the default color schema will be used
+  @override
+  final CooChartColorScheme? colorScheme;
 
   /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   @override
@@ -399,19 +387,6 @@ class _$ChartConfigImpl implements _ChartConfig {
   @JsonKey()
   final bool centerDataPointBetweenVerticalGrid;
 
-  /// TODO move to theme
-  @override
-  final Color? canvasBackgroundColor;
-
-  /// TODO move to theme
-  @override
-  final Color? hightlightColumnColor;
-
-  /// The color of the grid lines
-  /// TODO move to theme
-  @override
-  final Color? gridColor;
-
   /// Experimental - Background painting style
   @override
   @JsonKey()
@@ -429,7 +404,7 @@ class _$ChartConfigImpl implements _ChartConfig {
 
   @override
   String toString() {
-    return 'ChartConfig(curvedLine: $curvedLine, crosshair: $crosshair, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, canvasBackgroundColor: $canvasBackgroundColor, hightlightColumnColor: $hightlightColumnColor, gridColor: $gridColor, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, scrollable: $scrollable, canvasWidth: $canvasWidth)';
+    return 'ChartConfig(colorScheme: $colorScheme, curvedLine: $curvedLine, crosshair: $crosshair, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, scrollable: $scrollable, canvasWidth: $canvasWidth)';
   }
 
   @override
@@ -437,6 +412,8 @@ class _$ChartConfigImpl implements _ChartConfig {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChartConfigImpl &&
+            (identical(other.colorScheme, colorScheme) ||
+                other.colorScheme == colorScheme) &&
             (identical(other.curvedLine, curvedLine) ||
                 other.curvedLine == curvedLine) &&
             (identical(other.crosshair, crosshair) ||
@@ -453,7 +430,8 @@ class _$ChartConfigImpl implements _ChartConfig {
                 other.highlightPoints == highlightPoints) &&
             (identical(other.addYAxisValueBuffer, addYAxisValueBuffer) ||
                 other.addYAxisValueBuffer == addYAxisValueBuffer) &&
-            (identical(other.highlightPointsVerticalLine, highlightPointsVerticalLine) ||
+            (identical(other.highlightPointsVerticalLine,
+                    highlightPointsVerticalLine) ||
                 other.highlightPointsVerticalLine ==
                     highlightPointsVerticalLine) &&
             (identical(other.highlightPointsHorizontalLine,
@@ -464,12 +442,6 @@ class _$ChartConfigImpl implements _ChartConfig {
                     centerDataPointBetweenVerticalGrid) ||
                 other.centerDataPointBetweenVerticalGrid ==
                     centerDataPointBetweenVerticalGrid) &&
-            (identical(other.canvasBackgroundColor, canvasBackgroundColor) ||
-                other.canvasBackgroundColor == canvasBackgroundColor) &&
-            (identical(other.hightlightColumnColor, hightlightColumnColor) ||
-                other.hightlightColumnColor == hightlightColumnColor) &&
-            (identical(other.gridColor, gridColor) ||
-                other.gridColor == gridColor) &&
             (identical(other.canvasBackgroundPaintingStyle,
                     canvasBackgroundPaintingStyle) ||
                 other.canvasBackgroundPaintingStyle ==
@@ -483,6 +455,7 @@ class _$ChartConfigImpl implements _ChartConfig {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      colorScheme,
       curvedLine,
       crosshair,
       showGridHorizontal,
@@ -494,9 +467,6 @@ class _$ChartConfigImpl implements _ChartConfig {
       highlightPointsVerticalLine,
       highlightPointsHorizontalLine,
       centerDataPointBetweenVerticalGrid,
-      canvasBackgroundColor,
-      hightlightColumnColor,
-      gridColor,
       canvasBackgroundPaintingStyle,
       scrollable,
       canvasWidth);
@@ -510,7 +480,8 @@ class _$ChartConfigImpl implements _ChartConfig {
 
 abstract class _ChartConfig implements ChartConfig {
   const factory _ChartConfig(
-      {final bool curvedLine,
+      {final CooChartColorScheme? colorScheme,
+      final bool curvedLine,
       final bool crosshair,
       final bool showGridHorizontal,
       final bool showGridVertical,
@@ -521,13 +492,14 @@ abstract class _ChartConfig implements ChartConfig {
       final bool highlightPointsVerticalLine,
       final bool highlightPointsHorizontalLine,
       final bool centerDataPointBetweenVerticalGrid,
-      final Color? canvasBackgroundColor,
-      final Color? hightlightColumnColor,
-      final Color? gridColor,
       final PaintingStyle canvasBackgroundPaintingStyle,
       final bool scrollable,
       final double? canvasWidth}) = _$ChartConfigImpl;
 
+  @override
+
+  /// The color schema for the whole chart. If not set the default color schema will be used
+  CooChartColorScheme? get colorScheme;
   @override
 
   /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
@@ -556,19 +528,6 @@ abstract class _ChartConfig implements ChartConfig {
 
   /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
   bool get centerDataPointBetweenVerticalGrid;
-  @override
-
-  /// TODO move to theme
-  Color? get canvasBackgroundColor;
-  @override
-
-  /// TODO move to theme
-  Color? get hightlightColumnColor;
-  @override
-
-  /// The color of the grid lines
-  /// TODO move to theme
-  Color? get gridColor;
   @override
 
   /// Experimental - Background painting style

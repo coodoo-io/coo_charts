@@ -7,6 +7,7 @@ import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
+import 'package:coo_charts/common/coo_chart_color_scheme.dart';
 import 'package:coo_charts/common/data_point_label_pos.enum.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
@@ -32,15 +33,13 @@ class CooChartPainterUtil {
   /// Pos(x0,y1) ---------------------- Pos(x1,y1)
   static void drawCanvasAndAxis({
     required Canvas canvas,
-    required Paint axisPaint,
+    required CooChartColorScheme colorScheme,
     required ChartPadding padding,
     required double canvasWidth,
     required double canvasHeight,
     required bool showYAxis,
     required bool showXAxis,
     required bool showFullRect,
-    Color? backgroundColor,
-    required PaintingStyle backgroundPaintingStyle,
   }) {
     double x0 = padding.left.toDouble(); // Links erste X-Pos
     double x1 = canvasWidth - padding.right; // Rechts zweite X-Pos
@@ -51,14 +50,16 @@ class CooChartPainterUtil {
     Offset posX1Y0 = Offset(x1, y0);
     Offset posX1Y1 = Offset(x1, y1);
 
-    if (backgroundColor != null) {
-      final Paint backgroundPaint = Paint()
-        ..color = backgroundColor
-        ..strokeWidth = 10
-        ..style = backgroundPaintingStyle;
-      var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
-      canvas.drawRect(rect, backgroundPaint);
-    }
+    final Paint axisPaint = Paint()
+      ..color = colorScheme.canvasBorderColor
+      ..strokeWidth = 1;
+
+    final Paint backgroundPaint = Paint()
+      ..color = colorScheme.canvasBackgroundColor
+      ..strokeWidth = 10
+      ..style = PaintingStyle.fill;
+    var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
+    canvas.drawRect(rect, backgroundPaint);
 
     if (showXAxis) {
       // X-Achse unten
@@ -287,28 +288,51 @@ class CooChartPainterUtil {
     double rectPosX0 = 0;
     if (opposite == true) {
       // rechte Seite
-      rectPosX0 = (config.scrollable ? metadata.layoutWidth : metadata.canvasWidth) - padding.right + 10;
+      rectPosX0 = metadata.layoutWidth - maxLabelWidth;
     }
     double rectPosY0 = 0;
-    double rectPosX1 = rectPosX0 + maxLabelWidth + 20;
+    double rectPosX1 = rectPosX0 + maxLabelWidth + 15;
     double rectPosY1 = metadata.chartHeight + padding.top + padding.bottom;
     var rect = Rect.fromPoints(Offset(rectPosX0, rectPosY0), Offset(rectPosX1, rectPosY1));
 
     // paint a gradient from left to right on the rect
+    Paint rectPaint;
 
-    final rectPaint = Paint()
-      ..shader = ui.Gradient.linear(
-          Offset(rectPosX0, rectPosY0 + rectPosY1 / 2),
-          Offset(rectPosX1, rectPosY0 + rectPosY1 / 2),
-          opposite
-              ? [
-                  Colors.white.withOpacity(0.2),
-                  Colors.white,
-                ]
-              : [
-                  Colors.white,
-                  Colors.white.withOpacity(0.2),
-                ]);
+    rectPaint = Paint()..color = Colors.white;
+
+    // if (opposite) {
+    //   rectPaint = Paint()
+    //     ..shader = ui.Gradient.linear(
+    //         // Von rechts nach links
+    //         Offset(rectPosX1, rectPosY0 + rectPosY1 / 2),
+    //         Offset(rectPosX0, rectPosY0 + rectPosY1 / 2),
+    //         [
+    //           Colors.white,
+    //           Colors.white.withOpacity(0.7),
+    //           Colors.white.withOpacity(0),
+    //         ],
+    //         [
+    //           0.4,
+    //           0.7,
+    //           1,
+    //         ]);
+    // } else {
+    //   rectPaint = Paint()
+    //     ..shader = ui.Gradient.linear(
+    //         // Von Links nach rechts
+    //         Offset(rectPosX0, rectPosY0 + rectPosY1),
+    //         Offset(rectPosX1, rectPosY0 + rectPosY1),
+    //         [
+    //           Colors.white,
+    //           Colors.white.withOpacity(0.7),
+    //           Colors.white.withOpacity(0),
+    //         ],
+    //         [
+    //           0.4,
+    //           0.7,
+    //           1,
+    //         ]);
+    // }
 
     canvas.drawRect(rect, rectPaint);
 
@@ -354,12 +378,12 @@ class CooChartPainterUtil {
   ///
   static void drawYAxisHorizontalGridLine({
     required Canvas canvas,
+    required CooChartColorScheme colorScheme,
     required ChartConfig config,
     required ChartPainterMetadata metadata,
     required YAxisConfig yAxisConfig,
     required bool showGridHorizontal,
     required ChartPadding padding,
-    required Paint gridPaint,
     required TextPainter axisLabelPainter,
     ChartColumnBlocks? columnBlocks,
     required bool opposite, // if true the right y-axis labels will be printed
@@ -368,6 +392,10 @@ class CooChartPainterUtil {
       // Wenn kein Grid und keine Labels gezeichnet werden sollen, muss auch nichts berechnet werden
       return;
     }
+
+    final Paint gridPaint = Paint()
+      ..color = colorScheme.gridColor
+      ..strokeWidth = 1;
 
     // Blocks werden für die korrekte Berechnung der Labelposition benötigt
     bool showColumnBottomDatas = false;
