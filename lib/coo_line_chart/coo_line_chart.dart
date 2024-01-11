@@ -136,10 +136,6 @@ class _CooLineChartState extends State<CooLineChart> {
         scrollPositionMousePointer = _mousePointer;
       }
 
-      final padding = widget.chartConfig.scrollable
-          ? ChartPadding(left: 0, right: 0, top: widget.padding.top, bottom: widget.padding.bottom)
-          : widget.padding;
-
       final chartPaint = GestureDetector(
         child: MouseRegion(
           onHover: (event) {
@@ -163,7 +159,7 @@ class _CooLineChartState extends State<CooLineChart> {
               linechartDataSeries: widget.dataSeries,
               barchartDataSeries: [],
               columnBlocks: widget.columnBlocks,
-              padding: padding,
+              padding: widget.padding,
               mousePosition: scrollPositionMousePointer,
               chartTabInfo: chartTabInfo,
               curvedLine: widget.chartConfig.curvedLine,
