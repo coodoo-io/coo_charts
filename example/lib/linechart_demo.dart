@@ -71,7 +71,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     super.initState();
     // _generateKachelmannSonnenscheindauerTrend();
     // _generateBarchart1Bis10();
-    _generateKachelmannWindoenForecast();
+    // _generateKachelmannWindoenForecast();
     // _generateMultipleBarkchart();
     // _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
@@ -83,7 +83,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateLargeVorhersageHourly();
     // _generate10DataPointsLargeNumer();
     // _generateEmptyLists();
-    // _generateRandomDualLinechart();
+    _generateRandomDualLinechart();
   }
 
   @override

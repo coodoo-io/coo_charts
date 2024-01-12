@@ -28,7 +28,7 @@ class CooLineChart extends StatefulWidget {
     this.columnBlocks,
     this.chartConfig = const ChartConfig(),
     this.yAxisConfig = const YAxisConfig(),
-    this.yAxisOppositeConfig,
+    this.yAxisOppositeConfig = const YAxisConfig(),
     this.xAxisConfig = const XAxisConfig(),
     this.padding = const ChartPadding(),
     this.onDataPointTab,
@@ -43,7 +43,7 @@ class CooLineChart extends StatefulWidget {
 
   /// Die Konfiguration der Y-Achse
   final YAxisConfig yAxisConfig; // Left axis
-  final YAxisConfig? yAxisOppositeConfig; // opposite (right) y-axis
+  final YAxisConfig yAxisOppositeConfig; // opposite (right) y-axis
   final XAxisConfig xAxisConfig;
 
   final ChartPadding padding;
@@ -112,6 +112,7 @@ class _CooLineChartState extends State<CooLineChart> {
         xAxisConfig: widget.xAxisConfig,
         yAxisConfig: widget.yAxisConfig,
       );
+
       ChartPainterMetadata metadataOpposite = ChartPainterInit.initializeValues(
         chartConfig: widget.chartConfig,
         linechartDataSeries: widget.dataSeries.where((element) => element.opposite == true).toList(),
@@ -120,7 +121,7 @@ class _CooLineChartState extends State<CooLineChart> {
         layoutWidth: width,
         padding: widget.padding,
         xAxisConfig: widget.xAxisConfig,
-        yAxisConfig: widget.yAxisConfig,
+        yAxisConfig: widget.yAxisOppositeConfig,
       );
 
       ScrollController scrollController = ScrollController();
