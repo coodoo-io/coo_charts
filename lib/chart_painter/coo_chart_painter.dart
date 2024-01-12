@@ -131,11 +131,13 @@ class CooChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    CooChartPainterUtil.drawBackground(
-      canvas: canvas,
-      colorScheme: theme,
-      metadata: metadata,
-    );
+    if (chartConfig.scrollable) {
+      CooChartPainterUtil.drawBackground(
+        canvas: canvas,
+        colorScheme: theme,
+        metadata: metadata,
+      );
+    }
 
     /// Chart canvas size to draw on
     CooChartPainterUtil.drawCanvasAndAxis(
