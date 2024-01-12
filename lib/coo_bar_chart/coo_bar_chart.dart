@@ -152,7 +152,7 @@ class _CooBarChartState extends State<CooBarChart> {
             size: Size(metadata.canvasWidth, metadata.canvasHeight),
             painter: CooChartPainter(
               chartConfig: widget.chartConfig,
-              theme: widget.chartConfig.theme ?? CooChartThemes().defaultThemeLight,
+              theme: widget.chartConfig.theme ?? CooChartThemes().defaultTheme,
               metadata: metadata,
               metadataOpposite: metadataOpposite,
               chartType: CooChartType.bar,

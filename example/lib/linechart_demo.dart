@@ -51,7 +51,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   var xAxisConfig = const XAxisConfig();
   var yAxisConfig = const YAxisConfig();
-  YAxisConfig? yAxisOppositeConfig;
+  var yAxisOppositeConfig = const YAxisConfig();
 
   bool chartBackgroundColorBlack = false;
 
@@ -345,7 +345,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   _resetToDefault() {
     yAxisConfig = const YAxisConfig();
-    yAxisOppositeConfig = null;
+    yAxisOppositeConfig = const YAxisConfig();
     xAxisConfig = const XAxisConfig();
     chartConfig = const ChartConfig();
 
@@ -493,7 +493,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartConfig = chartConfig.copyWith(
       canvasWidth: 3000,
       scrollable: true,
-      theme: CooChartThemes().defaultThemeLight.copyWith(
+      theme: CooChartThemes().defaultTheme.copyWith(
             backgroundColor: Colors.red,
             chartBackgroundColor: Colors.yellow,
           ),
@@ -711,7 +711,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     _resetToDefault();
     chartType = CooChartType.bar;
     chartConfig = chartConfig.copyWith(
-      theme: CooChartThemes().defaultThemeLight.copyWith(
+      theme: CooChartThemes().defaultTheme.copyWith(
             minMaxRangeColor: Colors.green,
             chartBackgroundColor: Colors.green,
           ),
@@ -1213,7 +1213,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // yAxisMaxLabelValue = 30;
     chartConfig = chartConfig.copyWith(
       highlightPointsVerticalLine: false,
-      theme: CooChartThemes().defaultThemeLight.copyWith(
+      theme: CooChartThemes().defaultTheme.copyWith(
             backgroundColor: Colors.red,
             chartBackgroundColor: Colors.yellow,
           ),
@@ -1572,7 +1572,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     linechartDataSeries.clear();
     chartType = CooChartType.line;
     chartConfig =
-        chartConfig.copyWith(theme: CooChartThemes().defaultThemeLight.copyWith(chartBackgroundColor: Colors.yellow));
+        chartConfig.copyWith(theme: CooChartThemes().defaultTheme.copyWith(chartBackgroundColor: Colors.yellow));
     yAxisConfig = yAxisConfig.copyWith(
       showYAxisLables: false,
     );

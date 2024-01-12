@@ -11,7 +11,7 @@ class CooChartThemes {
 
   CooChartThemes._internal();
 
-  final defaultThemeLight = CooChartTheme(
+  final defaultTheme = CooChartTheme(
     backgroundColor: Colors.white,
     chartBorderColor: Colors.grey.withOpacity(0.3),
     gridColor: Colors.grey.withOpacity(0.3),
@@ -28,7 +28,7 @@ class CooChartThemes {
 
   List<CooChartTheme> getAll() {
     return [
-      defaultThemeLight,
+      defaultTheme,
       CooChartTheme(
         backgroundColor: Colors.white,
         chartBorderColor: Colors.grey.withOpacity(0.3),

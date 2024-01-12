@@ -153,7 +153,7 @@ class _CooLineChartState extends State<CooLineChart> {
             size: Size(metadata.canvasWidth, metadata.canvasHeight),
             painter: CooChartPainter(
               chartConfig: widget.chartConfig,
-              theme: widget.chartConfig.theme ?? CooChartThemes().defaultThemeLight,
+              theme: widget.chartConfig.theme ?? CooChartThemes().defaultTheme,
               metadata: metadata,
               metadataOpposite: metadataOpposite,
               chartType: CooChartType.line,

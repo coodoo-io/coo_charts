@@ -35,7 +35,7 @@ class CooChartYAxisPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     CooChartPainterUtil.drawYAxisLabels(
       canvas: canvas,
-      colorScheme: chartConfig.theme ?? CooChartThemes().defaultThemeLight,
+      colorScheme: chartConfig.theme ?? CooChartThemes().defaultTheme,
       config: chartConfig,
       metadata: metadata,
       yAxisConfig: yAxisConfig,
@@ -47,7 +47,7 @@ class CooChartYAxisPainter extends CustomPainter {
     if (yAxisOppositeConfig != null && metadataOpposite != null) {
       CooChartPainterUtil.drawYAxisLabels(
         canvas: canvas,
-        colorScheme: chartConfig.theme ?? CooChartThemes().defaultThemeLight,
+        colorScheme: chartConfig.theme ?? CooChartThemes().defaultTheme,
         config: chartConfig,
         metadata: metadataOpposite!,
         yAxisConfig: yAxisOppositeConfig!,
