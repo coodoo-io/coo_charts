@@ -22,7 +22,8 @@ mixin _$ChartPainterMetadata {
   Map<int, List<CooLineChartDataPoint>> get lineChartDataPointsByColumnIndex =>
       throw _privateConstructorUsedError;
   Map<int, List<CooBarChartDataPoint>> get barChartDataPointsByColumnIndex =>
-      throw _privateConstructorUsedError;
+      throw _privateConstructorUsedError; // If there are datapoints wich are marked as opposite this flag will be true
+  bool get hasOpposite => throw _privateConstructorUsedError;
 
   /// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
   /// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
@@ -83,6 +84,7 @@ abstract class $ChartPainterMetadataCopyWith<$Res> {
   $Res call(
       {Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex,
       Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex,
+      bool hasOpposite,
       List<DateTime> allDateTimeXAxisValues,
       Set<double> allDataPointValues,
       double maxDataPointValue,
@@ -118,6 +120,7 @@ class _$ChartPainterMetadataCopyWithImpl<$Res,
   $Res call({
     Object? lineChartDataPointsByColumnIndex = null,
     Object? barChartDataPointsByColumnIndex = null,
+    Object? hasOpposite = null,
     Object? allDateTimeXAxisValues = null,
     Object? allDataPointValues = null,
     Object? maxDataPointValue = null,
@@ -145,6 +148,10 @@ class _$ChartPainterMetadataCopyWithImpl<$Res,
           ? _value.barChartDataPointsByColumnIndex
           : barChartDataPointsByColumnIndex // ignore: cast_nullable_to_non_nullable
               as Map<int, List<CooBarChartDataPoint>>,
+      hasOpposite: null == hasOpposite
+          ? _value.hasOpposite
+          : hasOpposite // ignore: cast_nullable_to_non_nullable
+              as bool,
       allDateTimeXAxisValues: null == allDateTimeXAxisValues
           ? _value.allDateTimeXAxisValues
           : allDateTimeXAxisValues // ignore: cast_nullable_to_non_nullable
@@ -228,6 +235,7 @@ abstract class _$$ChartPainterMetadataImplCopyWith<$Res>
   $Res call(
       {Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex,
       Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex,
+      bool hasOpposite,
       List<DateTime> allDateTimeXAxisValues,
       Set<double> allDataPointValues,
       double maxDataPointValue,
@@ -260,6 +268,7 @@ class __$$ChartPainterMetadataImplCopyWithImpl<$Res>
   $Res call({
     Object? lineChartDataPointsByColumnIndex = null,
     Object? barChartDataPointsByColumnIndex = null,
+    Object? hasOpposite = null,
     Object? allDateTimeXAxisValues = null,
     Object? allDataPointValues = null,
     Object? maxDataPointValue = null,
@@ -287,6 +296,10 @@ class __$$ChartPainterMetadataImplCopyWithImpl<$Res>
           ? _value._barChartDataPointsByColumnIndex
           : barChartDataPointsByColumnIndex // ignore: cast_nullable_to_non_nullable
               as Map<int, List<CooBarChartDataPoint>>,
+      hasOpposite: null == hasOpposite
+          ? _value.hasOpposite
+          : hasOpposite // ignore: cast_nullable_to_non_nullable
+              as bool,
       allDateTimeXAxisValues: null == allDateTimeXAxisValues
           ? _value._allDateTimeXAxisValues
           : allDateTimeXAxisValues // ignore: cast_nullable_to_non_nullable
@@ -367,6 +380,7 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
           lineChartDataPointsByColumnIndex,
       required final Map<int, List<CooBarChartDataPoint>>
           barChartDataPointsByColumnIndex,
+      required this.hasOpposite,
       required final List<DateTime> allDateTimeXAxisValues,
       required final Set<double> allDataPointValues,
       required this.maxDataPointValue,
@@ -412,6 +426,10 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_barChartDataPointsByColumnIndex);
   }
+
+// If there are datapoints wich are marked as opposite this flag will be true
+  @override
+  final bool hasOpposite;
 
   /// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
   /// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
@@ -495,7 +513,7 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
 
   @override
   String toString() {
-    return 'ChartPainterMetadata(lineChartDataPointsByColumnIndex: $lineChartDataPointsByColumnIndex, barChartDataPointsByColumnIndex: $barChartDataPointsByColumnIndex, allDateTimeXAxisValues: $allDateTimeXAxisValues, allDataPointValues: $allDataPointValues, maxDataPointValue: $maxDataPointValue, minDataPointValue: $minDataPointValue, maxAbsoluteValueCount: $maxAbsoluteValueCount, yAxisMaxValue: $yAxisMaxValue, yAxisMinValue: $yAxisMinValue, yAxisSteps: $yAxisSteps, layoutWidth: $layoutWidth, layoutHeight: $layoutHeight, canvasWidth: $canvasWidth, canvasHeight: $canvasHeight, chartWidth: $chartWidth, chartHeight: $chartHeight, xSegmentWidth: $xSegmentWidth, xSegementWidthHalf: $xSegementWidthHalf, yAxisLabelCount: $yAxisLabelCount)';
+    return 'ChartPainterMetadata(lineChartDataPointsByColumnIndex: $lineChartDataPointsByColumnIndex, barChartDataPointsByColumnIndex: $barChartDataPointsByColumnIndex, hasOpposite: $hasOpposite, allDateTimeXAxisValues: $allDateTimeXAxisValues, allDataPointValues: $allDataPointValues, maxDataPointValue: $maxDataPointValue, minDataPointValue: $minDataPointValue, maxAbsoluteValueCount: $maxAbsoluteValueCount, yAxisMaxValue: $yAxisMaxValue, yAxisMinValue: $yAxisMinValue, yAxisSteps: $yAxisSteps, layoutWidth: $layoutWidth, layoutHeight: $layoutHeight, canvasWidth: $canvasWidth, canvasHeight: $canvasHeight, chartWidth: $chartWidth, chartHeight: $chartHeight, xSegmentWidth: $xSegmentWidth, xSegementWidthHalf: $xSegementWidthHalf, yAxisLabelCount: $yAxisLabelCount)';
   }
 
   @override
@@ -509,6 +527,8 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
             const DeepCollectionEquality().equals(
                 other._barChartDataPointsByColumnIndex,
                 _barChartDataPointsByColumnIndex) &&
+            (identical(other.hasOpposite, hasOpposite) ||
+                other.hasOpposite == hasOpposite) &&
             const DeepCollectionEquality().equals(
                 other._allDateTimeXAxisValues, _allDateTimeXAxisValues) &&
             const DeepCollectionEquality()
@@ -550,6 +570,7 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
         runtimeType,
         const DeepCollectionEquality().hash(_lineChartDataPointsByColumnIndex),
         const DeepCollectionEquality().hash(_barChartDataPointsByColumnIndex),
+        hasOpposite,
         const DeepCollectionEquality().hash(_allDateTimeXAxisValues),
         const DeepCollectionEquality().hash(_allDataPointValues),
         maxDataPointValue,
@@ -584,6 +605,7 @@ abstract class _ChartPainterMetadata implements ChartPainterMetadata {
           lineChartDataPointsByColumnIndex,
       required final Map<int, List<CooBarChartDataPoint>>
           barChartDataPointsByColumnIndex,
+      required final bool hasOpposite,
       required final List<DateTime> allDateTimeXAxisValues,
       required final Set<double> allDataPointValues,
       required final double maxDataPointValue,
@@ -608,6 +630,8 @@ abstract class _ChartPainterMetadata implements ChartPainterMetadata {
   Map<int, List<CooLineChartDataPoint>> get lineChartDataPointsByColumnIndex;
   @override
   Map<int, List<CooBarChartDataPoint>> get barChartDataPointsByColumnIndex;
+  @override // If there are datapoints wich are marked as opposite this flag will be true
+  bool get hasOpposite;
   @override
 
   /// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert

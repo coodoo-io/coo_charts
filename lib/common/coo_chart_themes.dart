@@ -22,8 +22,8 @@ class CooChartThemes {
     dataPointHighlightColor: Colors.lightBlue,
     columnHighlightColor: Colors.grey.withOpacity(0.3),
     barColor: Colors.blue,
-    barColorHighlight: Colors.green,
-    minMaxRangeColor: Colors.yellow,
+    barColorHighlight: Colors.lightBlue,
+    minMaxRangeColor: Colors.grey,
   );
 
   List<CooChartTheme> getAll() {

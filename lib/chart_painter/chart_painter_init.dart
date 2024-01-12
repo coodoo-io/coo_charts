@@ -19,6 +19,7 @@ class ChartPainterInit {
     required YAxisConfig yAxisConfig,
     required List<CooLineChartDataSeries> linechartDataSeries,
     required List<CooBarChartDataSeries> barchartDataSeries,
+    required bool opposite,
     required double layoutWidth,
     required double layoutHeight,
     required ChartPadding padding,
@@ -318,6 +319,7 @@ class ChartPainterInit {
     return ChartPainterMetadata(
       lineChartDataPointsByColumnIndex: lineChartDataPointsByColumnIndex,
       barChartDataPointsByColumnIndex: barChartDataPointsByColumnIndex,
+      hasOpposite: opposite && (linechartDataSeries.isNotEmpty || barchartDataSeries.isNotEmpty),
       allDataPointValues: allDataPointValues,
       allDateTimeXAxisValues: allDateTimeXAxisValues,
       maxDataPointValue: maxDataPointValue,

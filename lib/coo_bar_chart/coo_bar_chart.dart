@@ -104,7 +104,8 @@ class _CooBarChartState extends State<CooBarChart> {
 
       ChartPainterMetadata metadata = ChartPainterInit.initializeValues(
         linechartDataSeries: [],
-        barchartDataSeries: widget.dataSeries,
+        barchartDataSeries: widget.dataSeries.where((element) => element.opposite == false).toList(),
+        opposite: false,
         layoutHeight: height,
         layoutWidth: width,
         chartConfig: widget.chartConfig,
@@ -115,12 +116,13 @@ class _CooBarChartState extends State<CooBarChart> {
       ChartPainterMetadata metadataOpposite = ChartPainterInit.initializeValues(
         chartConfig: widget.chartConfig,
         barchartDataSeries: widget.dataSeries.where((element) => element.opposite == true).toList(),
+        opposite: true,
         linechartDataSeries: [],
         layoutHeight: height,
         layoutWidth: width,
         padding: widget.padding,
         xAxisConfig: widget.xAxisConfig,
-        yAxisConfig: widget.yAxisConfig,
+        yAxisConfig: widget.yAxisOppositeConfig,
       );
 
       ScrollController scrollController = ScrollController();

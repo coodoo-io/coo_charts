@@ -15,6 +15,9 @@ class ChartPainterMetadata with _$ChartPainterMetadata {
     required Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex,
     required Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex,
 
+    // If there are datapoints wich are marked as opposite this flag will be true
+    required bool hasOpposite,
+
     /// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
     /// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
     required List<DateTime> allDateTimeXAxisValues,

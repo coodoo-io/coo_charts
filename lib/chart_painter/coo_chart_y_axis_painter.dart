@@ -44,7 +44,7 @@ class CooChartYAxisPainter extends CustomPainter {
       padding: padding,
       opposite: false,
     );
-    if (yAxisOppositeConfig != null && metadataOpposite != null) {
+    if (yAxisOppositeConfig != null && metadataOpposite != null && metadataOpposite!.hasOpposite) {
       CooChartPainterUtil.drawYAxisLabels(
         canvas: canvas,
         colorScheme: chartConfig.theme ?? CooChartThemes().defaultTheme,
