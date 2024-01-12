@@ -7,7 +7,7 @@ import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
-import 'package:coo_charts/common/coo_chart_color_scheme.dart';
+import 'package:coo_charts/common/coo_chart_color_theme.dart';
 import 'package:coo_charts/common/data_point_label_pos.enum.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
@@ -18,6 +18,24 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image/image.dart' as image;
 
 class CooChartPainterUtil {
+  static void drawBackground({
+    required Canvas canvas,
+    required CooChartTheme colorScheme,
+    required ChartPainterMetadata metadata,
+  }) {
+    double x0 = 0;
+    double x1 = metadata.canvasWidth;
+    double y0 = 0;
+    double y1 = metadata.canvasHeight;
+
+    final Paint backgroundPaint = Paint()
+      ..color = colorScheme.backgroundColor
+      ..strokeWidth = 1
+      ..style = PaintingStyle.fill;
+    var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
+    canvas.drawRect(rect, backgroundPaint);
+  }
+
   /// Draw the chart border.
   ///
   /// If [showFullRect] is set to false only the x-axis bottom and y-axis left will be printed.
@@ -33,7 +51,7 @@ class CooChartPainterUtil {
   /// Pos(x0,y1) ---------------------- Pos(x1,y1)
   static void drawCanvasAndAxis({
     required Canvas canvas,
-    required CooChartColorScheme colorScheme,
+    required CooChartTheme colorScheme,
     required ChartPadding padding,
     required double canvasWidth,
     required double canvasHeight,
@@ -51,11 +69,11 @@ class CooChartPainterUtil {
     Offset posX1Y1 = Offset(x1, y1);
 
     final Paint axisPaint = Paint()
-      ..color = colorScheme.canvasBorderColor
+      ..color = colorScheme.chartBorderColor
       ..strokeWidth = 1;
 
     final Paint backgroundPaint = Paint()
-      ..color = colorScheme.canvasBackgroundColor
+      ..color = colorScheme.chartBackgroundColor
       ..strokeWidth = 1
       ..style = PaintingStyle.fill;
     var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
@@ -210,6 +228,7 @@ class CooChartPainterUtil {
   ///
   static void drawYAxisLabels({
     required Canvas canvas,
+    required CooChartTheme colorScheme,
     required ChartConfig config,
     required ChartPainterMetadata metadata,
     required YAxisConfig yAxisConfig,
@@ -240,14 +259,9 @@ class CooChartPainterUtil {
       }
     }
 
-    const labelTextStyle = TextStyle(
-      fontSize: 12,
-      color: Colors.black,
-      // background: Paint()
-      //   ..strokeWidth = 30.0
-      //   ..color = Colors.grey
-      //   ..style = PaintingStyle.stroke
-      //   ..strokeJoin = StrokeJoin.round,
+    final labelTextStyle = TextStyle(
+      fontSize: colorScheme.labelFontSize,
+      color: colorScheme.labelColor,
     );
 
     /// Draw Background Rect if scrollable, so the lines are not visible
@@ -273,7 +287,10 @@ class CooChartPainterUtil {
         label = '$label ${yAxisConfig.labelPostfix}';
       }
 
-      axisLabelPainterCalc.text = TextSpan(text: label, style: labelTextStyle);
+      axisLabelPainterCalc.text = TextSpan(
+        text: label,
+        style: colorScheme.labelTextStyle ?? labelTextStyle,
+      );
 
       axisLabelPainterCalc.layout();
 
@@ -285,56 +302,59 @@ class CooChartPainterUtil {
       labels.add((label, axisLabelPainterCalc.width));
     }
 
-    double rectPosX0 = 0;
-    if (opposite == true) {
-      // rechte Seite
-      rectPosX0 = metadata.layoutWidth - maxLabelWidth;
+    if (config.scrollable) {
+      double rectPosX0 = 0;
+      if (opposite == true) {
+        // rechte Seite
+        rectPosX0 = metadata.layoutWidth - maxLabelWidth;
+      }
+      double rectPosY0 = 0;
+      double rectPosX1 = rectPosX0 + maxLabelWidth + 15;
+      double rectPosY1 = metadata.chartHeight + padding.top + padding.bottom;
+      var rect = Rect.fromPoints(Offset(rectPosX0, rectPosY0), Offset(rectPosX1, rectPosY1));
+
+      // paint a gradient from left to right on the rect
+      Paint rectPaint;
+
+      if (colorScheme.labelBackgroundTransparentGradient == false) {
+        rectPaint = Paint()..color = Colors.white;
+      } else {
+        if (opposite) {
+          rectPaint = Paint()
+            ..shader = ui.Gradient.linear(
+                // Von rechts nach links
+                Offset(rectPosX1, rectPosY0 + rectPosY1 / 2),
+                Offset(rectPosX0, rectPosY0 + rectPosY1 / 2),
+                [
+                  colorScheme.backgroundColor,
+                  colorScheme.backgroundColor.withOpacity(0.7),
+                  colorScheme.backgroundColor.withOpacity(0),
+                ],
+                [
+                  0.4,
+                  0.7,
+                  1,
+                ]);
+        } else {
+          rectPaint = Paint()
+            ..shader = ui.Gradient.linear(
+                // Von Links nach rechts
+                Offset(rectPosX0, rectPosY0 + rectPosY1),
+                Offset(rectPosX1, rectPosY0 + rectPosY1),
+                [
+                  colorScheme.backgroundColor,
+                  colorScheme.backgroundColor.withOpacity(0.7),
+                  colorScheme.backgroundColor.withOpacity(0),
+                ],
+                [
+                  0.4,
+                  0.7,
+                  1,
+                ]);
+        }
+      }
+      canvas.drawRect(rect, rectPaint);
     }
-    double rectPosY0 = 0;
-    double rectPosX1 = rectPosX0 + maxLabelWidth + 15;
-    double rectPosY1 = metadata.chartHeight + padding.top + padding.bottom;
-    var rect = Rect.fromPoints(Offset(rectPosX0, rectPosY0), Offset(rectPosX1, rectPosY1));
-
-    // paint a gradient from left to right on the rect
-    Paint rectPaint;
-
-    rectPaint = Paint()..color = Colors.white;
-
-    // if (opposite) {
-    //   rectPaint = Paint()
-    //     ..shader = ui.Gradient.linear(
-    //         // Von rechts nach links
-    //         Offset(rectPosX1, rectPosY0 + rectPosY1 / 2),
-    //         Offset(rectPosX0, rectPosY0 + rectPosY1 / 2),
-    //         [
-    //           Colors.white,
-    //           Colors.white.withOpacity(0.7),
-    //           Colors.white.withOpacity(0),
-    //         ],
-    //         [
-    //           0.4,
-    //           0.7,
-    //           1,
-    //         ]);
-    // } else {
-    //   rectPaint = Paint()
-    //     ..shader = ui.Gradient.linear(
-    //         // Von Links nach rechts
-    //         Offset(rectPosX0, rectPosY0 + rectPosY1),
-    //         Offset(rectPosX1, rectPosY0 + rectPosY1),
-    //         [
-    //           Colors.white,
-    //           Colors.white.withOpacity(0.7),
-    //           Colors.white.withOpacity(0),
-    //         ],
-    //         [
-    //           0.4,
-    //           0.7,
-    //           1,
-    //         ]);
-    // }
-
-    canvas.drawRect(rect, rectPaint);
 
     final double yOffsetInterval =
         (metadata.chartHeight - bottomColumnHeight - topColumnHeight) / (metadata.yAxisLabelCount - 1);
@@ -353,7 +373,7 @@ class CooChartPainterUtil {
 
       axisLabelPainter.text = TextSpan(
         text: label,
-        style: labelTextStyle,
+        style: colorScheme.labelTextStyle ?? labelTextStyle,
       );
 
       double xLabelPos;
@@ -378,7 +398,7 @@ class CooChartPainterUtil {
   ///
   static void drawYAxisHorizontalGridLine({
     required Canvas canvas,
-    required CooChartColorScheme colorScheme,
+    required CooChartTheme colorScheme,
     required ChartConfig config,
     required ChartPainterMetadata metadata,
     required YAxisConfig yAxisConfig,

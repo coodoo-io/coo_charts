@@ -12,11 +12,7 @@ class CooBarChartDataSeries {
     this.barColor,
     this.barHighlightColor,
     this.minMaxLineColor,
-    this.dataPointLabelTextStyle = const TextStyle(
-      fontSize: 12,
-      fontWeight: FontWeight.bold,
-      color: Colors.black,
-    ),
+    this.opposite = false,
     this.dataPointLabelPosition = DataPointLabelPos.top,
     this.dataPointLabelPadding = 0,
     this.barWidth,
@@ -54,11 +50,13 @@ class CooBarChartDataSeries {
   // Wenn gesetzt wird der Value als "Mittelpunkt" verwendet und diese höhe / 2 auf jeder Seite draufgerechnet
   final int? barHeight;
 
-  // Configure the text style of all data labels
-  final TextStyle dataPointLabelTextStyle;
-
   final DataPointLabelPos dataPointLabelPosition;
 
   // Define the padding from the data point to the labels
   final int dataPointLabelPadding;
+
+  /// Whether to display the axis of this dataseries on the opposite side of the normal.
+  /// The normal is on the left side for vertical axes and bottom for horizontal,
+  /// so the opposite sides will be right and top respectively.
+  final bool opposite;
 }

@@ -9,7 +9,7 @@ import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/chart_tab_info.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
-import 'package:coo_charts/common/coo_chart_constants.dart';
+import 'package:coo_charts/common/coo_chart_themes.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
@@ -152,7 +152,7 @@ class _CooLineChartState extends State<CooLineChart> {
             size: Size(metadata.canvasWidth, metadata.canvasHeight),
             painter: CooChartPainter(
               chartConfig: widget.chartConfig,
-              colorScheme: widget.chartConfig.colorScheme ?? CooChartConstants().colorSchemeDefault,
+              theme: widget.chartConfig.theme ?? CooChartThemes().defaultThemeLight,
               metadata: metadata,
               metadataOpposite: metadataOpposite,
               chartType: CooChartType.line,

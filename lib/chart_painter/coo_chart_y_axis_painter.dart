@@ -3,6 +3,7 @@ import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
+import 'package:coo_charts/common/coo_chart_themes.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
 import 'package:flutter/material.dart';
 
@@ -34,6 +35,7 @@ class CooChartYAxisPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     CooChartPainterUtil.drawYAxisLabels(
       canvas: canvas,
+      colorScheme: chartConfig.theme ?? CooChartThemes().defaultThemeLight,
       config: chartConfig,
       metadata: metadata,
       yAxisConfig: yAxisConfig,
@@ -45,6 +47,7 @@ class CooChartYAxisPainter extends CustomPainter {
     if (yAxisOppositeConfig != null && metadataOpposite != null) {
       CooChartPainterUtil.drawYAxisLabels(
         canvas: canvas,
+        colorScheme: chartConfig.theme ?? CooChartThemes().defaultThemeLight,
         config: chartConfig,
         metadata: metadataOpposite!,
         yAxisConfig: yAxisOppositeConfig!,

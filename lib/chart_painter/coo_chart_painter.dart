@@ -3,23 +3,22 @@ import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:coo_charts/chart_painter/chart_painter_metadata.dart';
+import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_config.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/chart_tab_info.dart';
-import 'package:coo_charts/common/coo_chart_color_scheme.dart';
-import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_point.dart';
-import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_series.dart';
-import 'package:coo_charts/common/coo_chart_constants.dart';
-import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
+import 'package:coo_charts/common/coo_chart_color_theme.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
-import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
-import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
-import 'package:coo_charts/extensions/iterable.extension.dart';
 import 'package:coo_charts/common/x_axis_config.dart';
 import 'package:coo_charts/common/x_axis_value_type.enum.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
+import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_point.dart';
+import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_series.dart';
+import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
+import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
+import 'package:coo_charts/extensions/iterable.extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
@@ -27,7 +26,7 @@ import 'package:intl/intl.dart';
 class CooChartPainter extends CustomPainter {
   CooChartPainter({
     required this.chartConfig,
-    required this.colorScheme,
+    required this.theme,
     required this.metadata,
     required this.metadataOpposite,
     required this.chartType,
@@ -64,7 +63,7 @@ class CooChartPainter extends CustomPainter {
   final ChartPainterMetadata? metadataOpposite;
   final CooChartType chartType;
 
-  final CooChartColorScheme colorScheme;
+  final CooChartTheme theme;
 
   final List<CooLineChartDataSeries> linechartDataSeries;
   final List<CooBarChartDataSeries> barchartDataSeries;
@@ -132,11 +131,16 @@ class CooChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    /// Chart canvas size to draw on
+    CooChartPainterUtil.drawBackground(
+      canvas: canvas,
+      colorScheme: theme,
+      metadata: metadata,
+    );
 
+    /// Chart canvas size to draw on
     CooChartPainterUtil.drawCanvasAndAxis(
       canvas: canvas,
-      colorScheme: colorScheme,
+      colorScheme: theme,
       padding: padding,
       canvasWidth: metadata.canvasWidth,
       canvasHeight: metadata.canvasHeight,
@@ -149,7 +153,7 @@ class CooChartPainter extends CustomPainter {
     // darüberliegende Maus gerade aktiv ist.
     _drawBackgroundRect(
       canvas: canvas,
-      colorScheme: colorScheme,
+      colorScheme: theme,
       chartWidth: metadata.chartWidth,
       chartHeigt: metadata.chartHeight,
       mousePosition: mousePosition,
@@ -158,14 +162,14 @@ class CooChartPainter extends CustomPainter {
 
     _drawXAxisLabelAndVerticalGridLine(
       canvas: canvas,
-      colorScheme: colorScheme,
+      colorScheme: theme,
       chartWidth: metadata.chartWidth,
       chartHeight: metadata.chartHeight,
     );
 
     CooChartPainterUtil.drawYAxisHorizontalGridLine(
       canvas: canvas,
-      colorScheme: colorScheme,
+      colorScheme: theme,
       config: chartConfig,
       metadata: metadata,
       yAxisConfig: yAxisConfig,
@@ -178,7 +182,7 @@ class CooChartPainter extends CustomPainter {
     if (yAxisOppositeConfig != null && metadataOpposite != null) {
       CooChartPainterUtil.drawYAxisHorizontalGridLine(
         canvas: canvas,
-        colorScheme: colorScheme,
+        colorScheme: theme,
         config: chartConfig,
         metadata: metadataOpposite!,
         yAxisConfig: yAxisOppositeConfig!,
@@ -230,6 +234,7 @@ class CooChartPainter extends CustomPainter {
     }
     if (chartType == CooChartType.bar) {
       _drawDataBarchartBars(
+        theme: theme,
         barchartDataSeries: barchartDataSeries,
         columnBlocks: columnBlocks,
         canvas: canvas,
@@ -263,6 +268,7 @@ class CooChartPainter extends CustomPainter {
 
   void _drawDataBarchartBars({
     required Canvas canvas,
+    required CooChartTheme theme,
     required double chartWidth,
     required double chartHeigt,
     required ChartPadding padding,
@@ -322,21 +328,18 @@ class CooChartPainter extends CustomPainter {
         yAxisMinValue: yAxisMinValue,
         yAxisMaxValue: yAxisMaxValue,
       );
-
-      final Color barColor =
-          localLinechartDataSeries.barColor ?? CooChartConstants().getColorShemas()[i].dataPointColor;
+      // TODO verschiedene Farben müssen über des Theme vorbestimmt werden können
+      final Color barColor = localLinechartDataSeries.barColor ?? theme.barColor;
       final Paint barPaint = Paint()
         ..color = barColor
         ..strokeWidth = 1;
 
-      final Color barColorHighlight =
-          localLinechartDataSeries.barColor ?? CooChartConstants().getColorShemas()[i].dataPointHighlightColor;
+      final Color barColorHighlight = localLinechartDataSeries.barColor ?? theme.barColorHighlight;
       final Paint barHightlightPaint = Paint()
         ..color = barColorHighlight
         ..strokeWidth = 1;
 
-      final Color minMaxRangeLineColor =
-          localLinechartDataSeries.minMaxLineColor ?? CooChartConstants().getColorShemas()[i].minMaxRangeColor;
+      final Color minMaxRangeLineColor = localLinechartDataSeries.minMaxLineColor ?? theme.minMaxRangeColor;
       final Paint minMaxRangePaint = Paint()
         ..color = minMaxRangeLineColor
         ..strokeWidth = 1;
@@ -469,7 +472,7 @@ class CooChartPainter extends CustomPainter {
   ///
   void _drawBackgroundRect({
     required Canvas canvas,
-    required CooChartColorScheme colorScheme,
+    required CooChartTheme colorScheme,
     required double chartWidth,
     required double chartHeigt,
     required Offset? mousePosition,
@@ -595,7 +598,7 @@ class CooChartPainter extends CustomPainter {
   /// Definiert wird das durch [xAxisConfig.showTopLabels] und [xAxisConfig.showBottomLabels].
   void _drawXAxisLabelAndVerticalGridLine({
     required Canvas canvas,
-    required CooChartColorScheme colorScheme,
+    required CooChartTheme colorScheme,
     required double chartWidth,
     required double chartHeight,
   }) {

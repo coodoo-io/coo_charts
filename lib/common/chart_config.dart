@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:ui';
 
-import 'package:coo_charts/common/coo_chart_color_scheme.dart';
+import 'package:coo_charts/common/coo_chart_color_theme.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'chart_config.freezed.dart';
@@ -11,7 +11,7 @@ part 'chart_config.freezed.dart';
 class ChartConfig with _$ChartConfig {
   const factory ChartConfig({
     /// The color schema for the whole chart. If not set the default color schema will be used
-    CooChartColorScheme? colorScheme,
+    CooChartTheme? theme,
 
     /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
     @Default(false) bool curvedLine,

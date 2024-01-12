@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ChartConfig {
   /// The color schema for the whole chart. If not set the default color schema will be used
-  CooChartColorScheme? get colorScheme => throw _privateConstructorUsedError;
+  CooChartTheme? get theme => throw _privateConstructorUsedError;
 
   /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   bool get curvedLine => throw _privateConstructorUsedError;
@@ -68,7 +68,7 @@ abstract class $ChartConfigCopyWith<$Res> {
       _$ChartConfigCopyWithImpl<$Res, ChartConfig>;
   @useResult
   $Res call(
-      {CooChartColorScheme? colorScheme,
+      {CooChartTheme? theme,
       bool curvedLine,
       bool crosshair,
       bool showGridHorizontal,
@@ -84,7 +84,7 @@ abstract class $ChartConfigCopyWith<$Res> {
       bool scrollable,
       double? canvasWidth});
 
-  $CooChartColorSchemeCopyWith<$Res>? get colorScheme;
+  $CooChartThemeCopyWith<$Res>? get theme;
 }
 
 /// @nodoc
@@ -100,7 +100,7 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? colorScheme = freezed,
+    Object? theme = freezed,
     Object? curvedLine = null,
     Object? crosshair = null,
     Object? showGridHorizontal = null,
@@ -117,10 +117,10 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
     Object? canvasWidth = freezed,
   }) {
     return _then(_value.copyWith(
-      colorScheme: freezed == colorScheme
-          ? _value.colorScheme
-          : colorScheme // ignore: cast_nullable_to_non_nullable
-              as CooChartColorScheme?,
+      theme: freezed == theme
+          ? _value.theme
+          : theme // ignore: cast_nullable_to_non_nullable
+              as CooChartTheme?,
       curvedLine: null == curvedLine
           ? _value.curvedLine
           : curvedLine // ignore: cast_nullable_to_non_nullable
@@ -183,13 +183,13 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
 
   @override
   @pragma('vm:prefer-inline')
-  $CooChartColorSchemeCopyWith<$Res>? get colorScheme {
-    if (_value.colorScheme == null) {
+  $CooChartThemeCopyWith<$Res>? get theme {
+    if (_value.theme == null) {
       return null;
     }
 
-    return $CooChartColorSchemeCopyWith<$Res>(_value.colorScheme!, (value) {
-      return _then(_value.copyWith(colorScheme: value) as $Val);
+    return $CooChartThemeCopyWith<$Res>(_value.theme!, (value) {
+      return _then(_value.copyWith(theme: value) as $Val);
     });
   }
 }
@@ -203,7 +203,7 @@ abstract class _$$ChartConfigImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {CooChartColorScheme? colorScheme,
+      {CooChartTheme? theme,
       bool curvedLine,
       bool crosshair,
       bool showGridHorizontal,
@@ -220,7 +220,7 @@ abstract class _$$ChartConfigImplCopyWith<$Res>
       double? canvasWidth});
 
   @override
-  $CooChartColorSchemeCopyWith<$Res>? get colorScheme;
+  $CooChartThemeCopyWith<$Res>? get theme;
 }
 
 /// @nodoc
@@ -234,7 +234,7 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? colorScheme = freezed,
+    Object? theme = freezed,
     Object? curvedLine = null,
     Object? crosshair = null,
     Object? showGridHorizontal = null,
@@ -251,10 +251,10 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
     Object? canvasWidth = freezed,
   }) {
     return _then(_$ChartConfigImpl(
-      colorScheme: freezed == colorScheme
-          ? _value.colorScheme
-          : colorScheme // ignore: cast_nullable_to_non_nullable
-              as CooChartColorScheme?,
+      theme: freezed == theme
+          ? _value.theme
+          : theme // ignore: cast_nullable_to_non_nullable
+              as CooChartTheme?,
       curvedLine: null == curvedLine
           ? _value.curvedLine
           : curvedLine // ignore: cast_nullable_to_non_nullable
@@ -320,7 +320,7 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
 
 class _$ChartConfigImpl implements _ChartConfig {
   const _$ChartConfigImpl(
-      {this.colorScheme,
+      {this.theme,
       this.curvedLine = false,
       this.crosshair = false,
       this.showGridHorizontal = true,
@@ -338,7 +338,7 @@ class _$ChartConfigImpl implements _ChartConfig {
 
   /// The color schema for the whole chart. If not set the default color schema will be used
   @override
-  final CooChartColorScheme? colorScheme;
+  final CooChartTheme? theme;
 
   /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   @override
@@ -404,7 +404,7 @@ class _$ChartConfigImpl implements _ChartConfig {
 
   @override
   String toString() {
-    return 'ChartConfig(colorScheme: $colorScheme, curvedLine: $curvedLine, crosshair: $crosshair, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, scrollable: $scrollable, canvasWidth: $canvasWidth)';
+    return 'ChartConfig(theme: $theme, curvedLine: $curvedLine, crosshair: $crosshair, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, scrollable: $scrollable, canvasWidth: $canvasWidth)';
   }
 
   @override
@@ -412,8 +412,7 @@ class _$ChartConfigImpl implements _ChartConfig {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChartConfigImpl &&
-            (identical(other.colorScheme, colorScheme) ||
-                other.colorScheme == colorScheme) &&
+            (identical(other.theme, theme) || other.theme == theme) &&
             (identical(other.curvedLine, curvedLine) ||
                 other.curvedLine == curvedLine) &&
             (identical(other.crosshair, crosshair) ||
@@ -455,7 +454,7 @@ class _$ChartConfigImpl implements _ChartConfig {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      colorScheme,
+      theme,
       curvedLine,
       crosshair,
       showGridHorizontal,
@@ -480,7 +479,7 @@ class _$ChartConfigImpl implements _ChartConfig {
 
 abstract class _ChartConfig implements ChartConfig {
   const factory _ChartConfig(
-      {final CooChartColorScheme? colorScheme,
+      {final CooChartTheme? theme,
       final bool curvedLine,
       final bool crosshair,
       final bool showGridHorizontal,
@@ -499,7 +498,7 @@ abstract class _ChartConfig implements ChartConfig {
   @override
 
   /// The color schema for the whole chart. If not set the default color schema will be used
-  CooChartColorScheme? get colorScheme;
+  CooChartTheme? get theme;
   @override
 
   /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?

@@ -3,7 +3,7 @@ import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_data.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
-import 'package:coo_charts/common/coo_chart_constants.dart';
+import 'package:coo_charts/common/coo_chart_themes.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
 import 'package:coo_charts/common/x_axis_config.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
@@ -70,9 +70,9 @@ class _LineChartDemoState extends State<LineChartDemo> {
   initState() {
     super.initState();
     // _generateKachelmannSonnenscheindauerTrend();
-    // _generateKachelmannWindoenForecast();
     // _generateBarchart1Bis10();
-    // _generateMultipleBarchart();
+    _generateKachelmannWindoenForecast();
+    // _generateMultipleBarkchart();
     // _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
@@ -83,7 +83,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateLargeVorhersageHourly();
     // _generate10DataPointsLargeNumer();
     // _generateEmptyLists();
-    _generateRandomDualLinechart();
+    // _generateRandomDualLinechart();
   }
 
   @override
@@ -493,8 +493,9 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartConfig = chartConfig.copyWith(
       canvasWidth: 3000,
       scrollable: true,
-      colorScheme: CooChartConstants().colorSchemeDefault.copyWith(
-            canvasBackgroundColor: Colors.yellow,
+      theme: CooChartThemes().defaultThemeLight.copyWith(
+            backgroundColor: Colors.red,
+            chartBackgroundColor: Colors.yellow,
           ),
     );
 
@@ -655,8 +656,6 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     CooBarChartDataSeries serie = CooBarChartDataSeries(
       dataPoints: sonnenscheindauer,
-      barColor: const Color(0xFFfde81a),
-      minMaxLineColor: Colors.black,
     );
     barchartDataSeries.add(serie);
 
@@ -712,6 +711,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
     _resetToDefault();
     chartType = CooChartType.bar;
     chartConfig = chartConfig.copyWith(
+      theme: CooChartThemes().defaultThemeLight.copyWith(
+            minMaxRangeColor: Colors.green,
+            chartBackgroundColor: Colors.green,
+          ),
       showGridHorizontal: true,
       showGridVertical: true,
     );
@@ -819,8 +822,6 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     CooBarChartDataSeries serie = CooBarChartDataSeries(
       dataPoints: sonnenscheindauer,
-      barColor: const Color(0xFFfc2a86),
-      minMaxLineColor: Colors.black,
       barWidth: 20,
       barHeight: 30,
     );
@@ -881,9 +882,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartType = CooChartType.bar;
 
     yAxisConfig = yAxisConfig.copyWith(
-      labelCount: 11,
+      labelCount: 12,
       minLabelValue: 0,
-      maxLabelValue: 0,
       showYAxisLables: true,
     );
 
@@ -982,18 +982,15 @@ class _LineChartDemoState extends State<LineChartDemo> {
     _resetToDefault();
     chartType = CooChartType.bar;
 
-    yAxisConfig = yAxisConfig.copyWith(maxLabelValue: 10);
+    yAxisConfig = yAxisConfig.copyWith(maxLabelValue: 50);
 
     chartConfig = chartConfig.copyWith(
-      showGridHorizontal: true,
-      showGridVertical: true,
+      showGridHorizontal: false,
     );
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.date,
       bottomDateFormat: 'dd.MM.',
     );
-
-    barchartDataSeries.clear();
 
     {
       List<CooBarChartDataPoint> barChartDataPoints1 = [];
@@ -1214,7 +1211,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     // yAxisMinLabelValue = -5;
     // yAxisMaxLabelValue = 30;
-    chartConfig = chartConfig.copyWith(highlightPointsVerticalLine: false);
+    chartConfig = chartConfig.copyWith(
+      highlightPointsVerticalLine: false,
+      theme: CooChartThemes().defaultThemeLight.copyWith(
+            backgroundColor: Colors.red,
+            chartBackgroundColor: Colors.yellow,
+          ),
+    );
+
     yAxisConfig = yAxisConfig.copyWith(labelCount: 8, labelPostfix: '°C');
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.date,
@@ -1567,8 +1571,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     _resetToDefault();
     linechartDataSeries.clear();
     chartType = CooChartType.line;
-    chartConfig = chartConfig.copyWith(
-        colorScheme: CooChartConstants().colorSchemeDefault.copyWith(canvasBackgroundColor: Colors.yellow));
+    chartConfig =
+        chartConfig.copyWith(theme: CooChartThemes().defaultThemeLight.copyWith(chartBackgroundColor: Colors.yellow));
     yAxisConfig = yAxisConfig.copyWith(
       showYAxisLables: false,
     );
