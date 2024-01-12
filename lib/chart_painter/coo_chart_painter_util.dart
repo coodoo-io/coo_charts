@@ -317,7 +317,7 @@ class CooChartPainterUtil {
       Paint rectPaint;
 
       if (colorScheme.labelBackgroundTransparentGradient == false) {
-        rectPaint = Paint()..color = Colors.white;
+        rectPaint = Paint()..color = colorScheme.backgroundColor;
       } else {
         if (opposite) {
           rectPaint = Paint()
