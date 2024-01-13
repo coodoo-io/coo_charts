@@ -23,7 +23,10 @@ mixin _$ChartConfig {
   bool get curvedLine => throw _privateConstructorUsedError;
 
   /// Soll ein Fadenkreuz angezeigt werden?
-  bool get crosshair =>
+  bool get crosshair => throw _privateConstructorUsedError;
+
+  /// Paint the outer chart border?
+  bool get showChartBorder =>
       throw _privateConstructorUsedError; // if true, grid horizontal lines are painted
   bool get showGridHorizontal =>
       throw _privateConstructorUsedError; // if true, grid vertical lines are painted
@@ -71,6 +74,7 @@ abstract class $ChartConfigCopyWith<$Res> {
       {CooChartTheme? theme,
       bool curvedLine,
       bool crosshair,
+      bool showChartBorder,
       bool showGridHorizontal,
       bool showGridVertical,
       bool showDataPath,
@@ -103,6 +107,7 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
     Object? theme = freezed,
     Object? curvedLine = null,
     Object? crosshair = null,
+    Object? showChartBorder = null,
     Object? showGridHorizontal = null,
     Object? showGridVertical = null,
     Object? showDataPath = null,
@@ -128,6 +133,10 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
       crosshair: null == crosshair
           ? _value.crosshair
           : crosshair // ignore: cast_nullable_to_non_nullable
+              as bool,
+      showChartBorder: null == showChartBorder
+          ? _value.showChartBorder
+          : showChartBorder // ignore: cast_nullable_to_non_nullable
               as bool,
       showGridHorizontal: null == showGridHorizontal
           ? _value.showGridHorizontal
@@ -206,6 +215,7 @@ abstract class _$$ChartConfigImplCopyWith<$Res>
       {CooChartTheme? theme,
       bool curvedLine,
       bool crosshair,
+      bool showChartBorder,
       bool showGridHorizontal,
       bool showGridVertical,
       bool showDataPath,
@@ -237,6 +247,7 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
     Object? theme = freezed,
     Object? curvedLine = null,
     Object? crosshair = null,
+    Object? showChartBorder = null,
     Object? showGridHorizontal = null,
     Object? showGridVertical = null,
     Object? showDataPath = null,
@@ -262,6 +273,10 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
       crosshair: null == crosshair
           ? _value.crosshair
           : crosshair // ignore: cast_nullable_to_non_nullable
+              as bool,
+      showChartBorder: null == showChartBorder
+          ? _value.showChartBorder
+          : showChartBorder // ignore: cast_nullable_to_non_nullable
               as bool,
       showGridHorizontal: null == showGridHorizontal
           ? _value.showGridHorizontal
@@ -322,7 +337,8 @@ class _$ChartConfigImpl implements _ChartConfig {
   const _$ChartConfigImpl(
       {this.theme,
       this.curvedLine = false,
-      this.crosshair = false,
+      this.crosshair = true,
+      this.showChartBorder = true,
       this.showGridHorizontal = true,
       this.showGridVertical = true,
       this.showDataPath = true,
@@ -349,6 +365,11 @@ class _$ChartConfigImpl implements _ChartConfig {
   @override
   @JsonKey()
   final bool crosshair;
+
+  /// Paint the outer chart border?
+  @override
+  @JsonKey()
+  final bool showChartBorder;
 // if true, grid horizontal lines are painted
   @override
   @JsonKey()
@@ -404,7 +425,7 @@ class _$ChartConfigImpl implements _ChartConfig {
 
   @override
   String toString() {
-    return 'ChartConfig(theme: $theme, curvedLine: $curvedLine, crosshair: $crosshair, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, scrollable: $scrollable, canvasWidth: $canvasWidth)';
+    return 'ChartConfig(theme: $theme, curvedLine: $curvedLine, crosshair: $crosshair, showChartBorder: $showChartBorder, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, scrollable: $scrollable, canvasWidth: $canvasWidth)';
   }
 
   @override
@@ -417,6 +438,8 @@ class _$ChartConfigImpl implements _ChartConfig {
                 other.curvedLine == curvedLine) &&
             (identical(other.crosshair, crosshair) ||
                 other.crosshair == crosshair) &&
+            (identical(other.showChartBorder, showChartBorder) ||
+                other.showChartBorder == showChartBorder) &&
             (identical(other.showGridHorizontal, showGridHorizontal) ||
                 other.showGridHorizontal == showGridHorizontal) &&
             (identical(other.showGridVertical, showGridVertical) ||
@@ -457,6 +480,7 @@ class _$ChartConfigImpl implements _ChartConfig {
       theme,
       curvedLine,
       crosshair,
+      showChartBorder,
       showGridHorizontal,
       showGridVertical,
       showDataPath,
@@ -482,6 +506,7 @@ abstract class _ChartConfig implements ChartConfig {
       {final CooChartTheme? theme,
       final bool curvedLine,
       final bool crosshair,
+      final bool showChartBorder,
       final bool showGridHorizontal,
       final bool showGridVertical,
       final bool showDataPath,
@@ -507,6 +532,10 @@ abstract class _ChartConfig implements ChartConfig {
 
   /// Soll ein Fadenkreuz angezeigt werden?
   bool get crosshair;
+  @override
+
+  /// Paint the outer chart border?
+  bool get showChartBorder;
   @override // if true, grid horizontal lines are painted
   bool get showGridHorizontal;
   @override // if true, grid vertical lines are painted

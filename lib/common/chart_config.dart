@@ -17,7 +17,10 @@ class ChartConfig with _$ChartConfig {
     @Default(false) bool curvedLine,
 
     /// Soll ein Fadenkreuz angezeigt werden?
-    @Default(false) bool crosshair,
+    @Default(true) bool crosshair,
+
+    /// Paint the outer chart border?
+    @Default(true) bool showChartBorder,
 
     // if true, grid horizontal lines are painted
     @Default(true) bool showGridHorizontal,

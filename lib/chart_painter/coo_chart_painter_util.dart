@@ -20,9 +20,13 @@ import 'package:image/image.dart' as image;
 class CooChartPainterUtil {
   static void drawBackground({
     required Canvas canvas,
+    required ChartConfig config,
     required CooChartTheme colorScheme,
     required ChartPainterMetadata metadata,
   }) {
+    if (config.scrollable) {
+      return;
+    }
     double x0 = 0;
     double x1 = metadata.canvasWidth;
     double y0 = 0;
@@ -51,6 +55,7 @@ class CooChartPainterUtil {
   /// Pos(x0,y1) ---------------------- Pos(x1,y1)
   static void drawCanvasAndAxis({
     required Canvas canvas,
+    required ChartConfig config,
     required CooChartTheme colorScheme,
     required ChartPadding padding,
     required double canvasWidth,
@@ -59,6 +64,9 @@ class CooChartPainterUtil {
     required bool showXAxis,
     required bool showFullRect,
   }) {
+    if (!config.showChartBorder) {
+      return;
+    }
     double x0 = padding.left.toDouble(); // Links erste X-Pos
     double x1 = canvasWidth - padding.right; // Rechts zweite X-Pos
     double y0 = padding.top.toDouble(); // Oben erste Y-Pos
@@ -398,8 +406,8 @@ class CooChartPainterUtil {
   ///
   static void drawYAxisHorizontalGridLine({
     required Canvas canvas,
-    required CooChartTheme colorScheme,
     required ChartConfig config,
+    required CooChartTheme colorScheme,
     required ChartPainterMetadata metadata,
     required YAxisConfig yAxisConfig,
     required bool showGridHorizontal,
@@ -437,12 +445,16 @@ class CooChartPainterUtil {
     final double yOffsetInterval =
         (metadata.chartHeight - bottomColumnHeight - topColumnHeight) / (metadata.yAxisLabelCount - 1);
 
-    for (int i = 0; i < metadata.yAxisLabelCount; i++) {
+    final numberOfLines = metadata.yAxisLabelCount - 1;
+    for (int i = 0; i <= numberOfLines; i++) {
       double y = metadata.chartHeight - (i * yOffsetInterval) + padding.top - bottomColumnHeight;
 
       // Don't draw the first horizontal grid line because there is already the x-Axis line
-      // Falls die Column Legende angezeigt werden soll dann die erste Line auch zeichnen
-      if ((i != 0 && showGridHorizontal) || showColumnBottomDatas) {
+      // Falls die Column Legende angezeigt werden soll dann muss die erste erste Line auch zeichnen
+      // Wenn der Rahmen des Charts nicht gemalt werden soll müssen alle Linien erstellt werden
+      // Falls der Rahmen vorhanden ist soll die untere und obere Linie nicht gezeichnet werden
+      if (((i != 0 && i != numberOfLines) || (i == 0 && (showColumnBottomDatas || !config.showChartBorder))) ||
+          (i == numberOfLines && (showColumnTopDatas || !config.showChartBorder))) {
         canvas.drawLine(Offset(padding.left.toDouble(), y), Offset(metadata.chartWidth + padding.left, y), gridPaint);
       }
     }

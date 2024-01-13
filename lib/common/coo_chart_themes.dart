@@ -13,14 +13,14 @@ class CooChartThemes {
 
   final defaultTheme = CooChartTheme(
     backgroundColor: Colors.white,
-    chartBorderColor: Colors.grey.withOpacity(0.3),
-    gridColor: Colors.grey.withOpacity(0.3),
+    chartBorderColor: Colors.grey.withOpacity(0.2),
+    gridColor: Colors.grey.withOpacity(0.2),
     chartBackgroundColor: Colors.white,
     labelColor: Colors.grey,
     labelFontSize: 11,
     dataPointColor: Colors.blue,
     dataPointHighlightColor: Colors.lightBlue,
-    columnHighlightColor: Colors.grey.withOpacity(0.3),
+    columnHighlightColor: Colors.grey.withOpacity(0.2),
     barColor: Colors.blue,
     barColorHighlight: Colors.lightBlue,
     minMaxRangeColor: Colors.grey,

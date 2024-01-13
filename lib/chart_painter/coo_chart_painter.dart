@@ -131,17 +131,17 @@ class CooChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (chartConfig.scrollable) {
-      CooChartPainterUtil.drawBackground(
-        canvas: canvas,
-        colorScheme: theme,
-        metadata: metadata,
-      );
-    }
+    CooChartPainterUtil.drawBackground(
+      canvas: canvas,
+      config: chartConfig,
+      colorScheme: theme,
+      metadata: metadata,
+    );
 
     /// Chart canvas size to draw on
     CooChartPainterUtil.drawCanvasAndAxis(
       canvas: canvas,
+      config: chartConfig,
       colorScheme: theme,
       padding: padding,
       canvasWidth: metadata.canvasWidth,
@@ -155,6 +155,7 @@ class CooChartPainter extends CustomPainter {
     // darüberliegende Maus gerade aktiv ist.
     _drawBackgroundRect(
       canvas: canvas,
+      config: chartConfig,
       colorScheme: theme,
       chartWidth: metadata.chartWidth,
       chartHeigt: metadata.chartHeight,
@@ -164,6 +165,7 @@ class CooChartPainter extends CustomPainter {
 
     _drawXAxisLabelAndVerticalGridLine(
       canvas: canvas,
+      config: chartConfig,
       colorScheme: theme,
       chartWidth: metadata.chartWidth,
       chartHeight: metadata.chartHeight,
@@ -171,8 +173,8 @@ class CooChartPainter extends CustomPainter {
 
     CooChartPainterUtil.drawYAxisHorizontalGridLine(
       canvas: canvas,
-      colorScheme: theme,
       config: chartConfig,
+      colorScheme: theme,
       metadata: metadata,
       yAxisConfig: yAxisConfig,
       columnBlocks: columnBlocks,
@@ -181,20 +183,20 @@ class CooChartPainter extends CustomPainter {
       axisLabelPainter: _axisLabelPainter,
       opposite: false,
     );
-    if (yAxisOppositeConfig != null && metadataOpposite != null) {
-      CooChartPainterUtil.drawYAxisHorizontalGridLine(
-        canvas: canvas,
-        colorScheme: theme,
-        config: chartConfig,
-        metadata: metadataOpposite!,
-        yAxisConfig: yAxisOppositeConfig!,
-        columnBlocks: columnBlocks,
-        showGridHorizontal: showGridHorizontal,
-        padding: padding,
-        axisLabelPainter: _axisLabelPainter,
-        opposite: true,
-      );
-    }
+    // if (yAxisOppositeConfig != null && metadataOpposite != null && metadataOpposite!.hasOpposite) {
+    //   CooChartPainterUtil.drawYAxisHorizontalGridLine(
+    //     canvas: canvas,
+    //     colorScheme: theme,
+    //     config: chartConfig,
+    //     metadata: metadataOpposite!,
+    //     yAxisConfig: yAxisOppositeConfig!,
+    //     columnBlocks: columnBlocks,
+    //     showGridHorizontal: showGridHorizontal,
+    //     padding: padding,
+    //     axisLabelPainter: _axisLabelPainter,
+    //     opposite: true,
+    //   );
+    // }
 
     _drawColumnBlocks(
       canvas: canvas,
@@ -474,6 +476,7 @@ class CooChartPainter extends CustomPainter {
   ///
   void _drawBackgroundRect({
     required Canvas canvas,
+    required ChartConfig config,
     required CooChartTheme colorScheme,
     required double chartWidth,
     required double chartHeigt,
@@ -600,6 +603,7 @@ class CooChartPainter extends CustomPainter {
   /// Definiert wird das durch [xAxisConfig.showTopLabels] und [xAxisConfig.showBottomLabels].
   void _drawXAxisLabelAndVerticalGridLine({
     required Canvas canvas,
+    required ChartConfig config,
     required CooChartTheme colorScheme,
     required double chartWidth,
     required double chartHeight,
@@ -656,7 +660,7 @@ class CooChartPainter extends CustomPainter {
       // Don't draw the first vertical grid line because there is already the y-Axis line
       // Draw only vertical lines if general config enabled it and no individual config is given
       bool isStepAxisLine = false;
-      if (i != 0 && showGridVertical) {
+      if (showGridVertical && (i != 0 && i != xGridLineCount || !config.showChartBorder)) {
         if (xAxisConfig.stepAxisLine == null) {
           canvas.drawLine(
               Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), gridPaint);

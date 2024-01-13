@@ -75,7 +75,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateMultipleBarkchart();
     // _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
-    // _create0To10ValuesChartDataPoints();
+    _create0To10ValuesChartDataPoints();
     // _genrateRandomCooLinechartDataPoints();
     // _generateRandomDualLinechart();
     // _generateKachelmannVorhersageXL();
@@ -83,7 +83,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateLargeVorhersageHourly();
     // _generate10DataPointsLargeNumer();
     // _generateEmptyLists();
-    _generateRandomDualLinechart();
+    // _generateRandomDualLinechart();
   }
 
   @override
@@ -1213,10 +1213,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // yAxisMaxLabelValue = 30;
     chartConfig = chartConfig.copyWith(
       highlightPointsVerticalLine: false,
-      theme: CooChartThemes().defaultTheme.copyWith(
-            backgroundColor: Colors.red,
-            chartBackgroundColor: Colors.yellow,
-          ),
+      // theme: CooChartThemes().defaultTheme.copyWith(
+      //       backgroundColor: Colors.red,
+      //       chartBackgroundColor: Colors.yellow,
+      //     ),
     );
 
     yAxisConfig = yAxisConfig.copyWith(labelCount: 8, labelPostfix: '°C');
