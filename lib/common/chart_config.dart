@@ -17,7 +17,7 @@ class ChartConfig with _$ChartConfig {
     @Default(false) bool curvedLine,
 
     /// Soll ein Fadenkreuz angezeigt werden?
-    @Default(true) bool crosshair,
+    @Default(false) bool crosshair,
 
     /// Paint the outer chart border?
     @Default(true) bool showChartBorder,
@@ -35,13 +35,13 @@ class ChartConfig with _$ChartConfig {
     @Default(true) bool highlightMouseColumn,
 
     // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
-    @Default(true) bool highlightPoints,
+    @Default(false) bool highlightPoints,
 
     // Fügt einen Puffer auf der Y-Achse vor dem Min-Wert und nach dem Max-Wert hinzu
     @Default(true) bool addYAxisValueBuffer,
 
     // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
-    @Default(true) bool highlightPointsVerticalLine,
+    @Default(false) bool highlightPointsVerticalLine,
 
     // Zeichnet eine horizontale Line über den Datenpunkt wenn die Maus in der Nähe ist.
     @Default(false) bool highlightPointsHorizontalLine,
