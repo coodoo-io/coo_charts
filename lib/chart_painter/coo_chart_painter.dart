@@ -237,22 +237,81 @@ class CooChartPainter extends CustomPainter {
       }
     }
     if (chartType == CooChartType.bar) {
-      _drawDataBarchartBars(
-        theme: theme,
-        barchartDataSeries: barchartDataSeries,
-        columnBlocks: columnBlocks,
-        canvas: canvas,
-        chartWidth: metadata.chartWidth,
-        chartHeigt: metadata.chartHeight,
-        mousePosition: mousePosition,
-        minDataPointValue: metadata.minDataPointValue,
-        yAxisConfig: yAxisConfig,
-        yAxisMaxValue: metadata.yAxisMaxValue,
-        yAxisMinValue: metadata.yAxisMinValue,
-        padding: padding,
-        xSegmentWidth: metadata.xSegmentWidth,
-        xSegementWidthHalf: metadata.xSegementWidthHalf,
-      );
+      // Draw non-opposite bar charts (left axis)
+      final nonOppositeBarSeries = barchartDataSeries.where((element) => element.opposite == false).toList();
+      if (nonOppositeBarSeries.isNotEmpty) {
+        _drawDataBarchartBars(
+          theme: theme,
+          barchartDataSeries: nonOppositeBarSeries,
+          columnBlocks: columnBlocks,
+          canvas: canvas,
+          chartWidth: metadata.chartWidth,
+          chartHeigt: metadata.chartHeight,
+          mousePosition: mousePosition,
+          minDataPointValue: metadata.minDataPointValue,
+          yAxisConfig: yAxisConfig,
+          yAxisMaxValue: metadata.yAxisMaxValue,
+          yAxisMinValue: metadata.yAxisMinValue,
+          padding: padding,
+          xSegmentWidth: metadata.xSegmentWidth,
+          xSegementWidthHalf: metadata.xSegementWidthHalf,
+        );
+      }
+      
+      // Draw opposite bar charts (right axis) with opposite metadata
+      if (metadataOpposite != null && yAxisOppositeConfig != null) {
+        final oppositeBarSeries = barchartDataSeries.where((element) => element.opposite == true).toList();
+        if (oppositeBarSeries.isNotEmpty) {
+          _drawDataBarchartBars(
+            theme: theme,
+            barchartDataSeries: oppositeBarSeries,
+            columnBlocks: columnBlocks,
+            canvas: canvas,
+            chartWidth: metadataOpposite!.chartWidth,
+            chartHeigt: metadataOpposite!.chartHeight,
+            mousePosition: mousePosition,
+            minDataPointValue: metadataOpposite!.minDataPointValue,
+            yAxisConfig: yAxisOppositeConfig!,
+            yAxisMaxValue: metadataOpposite!.yAxisMaxValue,
+            yAxisMinValue: metadataOpposite!.yAxisMinValue,
+            padding: padding,
+            xSegmentWidth: metadataOpposite!.xSegmentWidth,
+            xSegementWidthHalf: metadataOpposite!.xSegementWidthHalf,
+          );
+        }
+      }
+      
+      // Also draw line charts as overlay on bar charts (for combo charts)
+      if (linechartDataSeries.isNotEmpty) {
+        CooChartPainterUtil.drawDataLinechartDataPointsAndPath(
+          metadata: metadata,
+          padding: padding,
+          centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+          curvedLine: curvedLine,
+          highlightPoints: highlightPoints,
+          mouseInRectYIndex: mouseInRectYIndex,
+          linechartDataSeries: linechartDataSeries.where((element) => element.opposite == false).toList(),
+          columnBlocks: columnBlocks,
+          canvas: canvas,
+          mousePosition: mousePosition,
+        );
+      }
+      
+      // Also draw line charts on opposite axis if available
+      if (metadataOpposite != null && linechartDataSeries.isNotEmpty) {
+        CooChartPainterUtil.drawDataLinechartDataPointsAndPath(
+          metadata: metadataOpposite!,
+          padding: padding,
+          centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+          curvedLine: curvedLine,
+          highlightPoints: highlightPoints,
+          mouseInRectYIndex: mouseInRectYIndex,
+          linechartDataSeries: linechartDataSeries.where((element) => element.opposite == true).toList(),
+          columnBlocks: columnBlocks,
+          canvas: canvas,
+          mousePosition: mousePosition,
+        );
+      }
     }
 
     if (crosshair) {

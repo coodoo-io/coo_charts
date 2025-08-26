@@ -1,5 +1,6 @@
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_point.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'chart_painter_metadata.freezed.dart';

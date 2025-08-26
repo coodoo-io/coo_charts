@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/opt/homebrew/Caskroom/flutter/3.0.4/flutter"
-export "FLUTTER_APPLICATION_PATH=/Users/mkuehle/Projekte/coo_charts"
+export "FLUTTER_ROOT=/usr/local/Caskroom/flutter/2.10.5/flutter"
+export "FLUTTER_APPLICATION_PATH=/Users/nicodoetsch/development/projects/coo_charts"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib/main.dart"
 export "FLUTTER_BUILD_DIR=build"

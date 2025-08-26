@@ -12,7 +12,7 @@ part of 'coo_chart_color_theme.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$CooChartTheme {
@@ -52,7 +52,9 @@ mixin _$CooChartTheme {
   /// Min- Max range is available in barchart and linechart. Define the color of this line.
   Color get minMaxRangeColor => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of CooChartTheme
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $CooChartThemeCopyWith<CooChartTheme> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -90,6 +92,8 @@ class _$CooChartThemeCopyWithImpl<$Res, $Val extends CooChartTheme>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of CooChartTheme
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -203,6 +207,8 @@ class __$$CooChartThemeImplCopyWithImpl<$Res>
       _$CooChartThemeImpl _value, $Res Function(_$CooChartThemeImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of CooChartTheme
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -358,7 +364,7 @@ class _$CooChartThemeImpl implements _CooChartTheme {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CooChartThemeImpl &&
@@ -413,7 +419,9 @@ class _$CooChartThemeImpl implements _CooChartTheme {
       barColorHighlight,
       minMaxRangeColor);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of CooChartTheme
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$CooChartThemeImplCopyWith<_$CooChartThemeImpl> get copyWith =>
@@ -437,38 +445,37 @@ abstract class _CooChartTheme implements CooChartTheme {
       required final Color barColorHighlight,
       required final Color minMaxRangeColor}) = _$CooChartThemeImpl;
 
-  @override
-
   /// The color of the complete chart painter
-  Color get backgroundColor;
   @override
+  Color get backgroundColor;
 
   /// If the chart is scrollable the background of the labels can be configured as transparent gradient
   /// Default is not transperant.
-  bool get labelBackgroundTransparentGradient;
   @override
+  bool get labelBackgroundTransparentGradient;
 
   /// The color of the outer chart canvas background
-  Color get chartBackgroundColor;
   @override
+  Color get chartBackgroundColor;
 
   /// The color of the outer border lines
-  Color get chartBorderColor;
   @override
+  Color get chartBorderColor;
 
   /// y- and x-axis label color
-  Color get labelColor;
   @override
+  Color get labelColor;
 
   /// y- and x-axis label font size
-  double get labelFontSize;
   @override
+  double get labelFontSize;
 
   /// y- and x-axis label textStyle. If given the label color and font size is not used
-  TextStyle? get labelTextStyle;
   @override
+  TextStyle? get labelTextStyle;
 
   /// The color of the inner grid lines
+  @override
   Color get gridColor;
   @override
   Color get dataPointColor;
@@ -476,18 +483,21 @@ abstract class _CooChartTheme implements CooChartTheme {
   Color get dataPointHighlightColor;
   @override
   Color get columnHighlightColor;
-  @override
 
   /// bar chart colors
+  @override
   Color get barColor;
   @override
   Color get barColorHighlight;
-  @override
 
   /// Min- Max range is available in barchart and linechart. Define the color of this line.
-  Color get minMaxRangeColor;
   @override
-  @JsonKey(ignore: true)
+  Color get minMaxRangeColor;
+
+  /// Create a copy of CooChartTheme
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CooChartThemeImplCopyWith<_$CooChartThemeImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

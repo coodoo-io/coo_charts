@@ -10,6 +10,8 @@ import 'package:coo_charts/common/chart_tab_info.dart';
 import 'package:coo_charts/common/coo_chart_themes.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_point.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_series.dart';
+import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
+import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
@@ -25,6 +27,7 @@ class CooBarChart extends StatefulWidget {
   const CooBarChart({
     super.key,
     required this.dataSeries,
+    this.lineDataSeries = const [], // Add line chart overlay support
     this.columnBlocks,
     this.chartConfig = const ChartConfig(),
     this.yAxisConfig = const YAxisConfig(),
@@ -37,6 +40,7 @@ class CooBarChart extends StatefulWidget {
   });
 
   final List<CooBarChartDataSeries> dataSeries;
+  final List<CooLineChartDataSeries> lineDataSeries; // NEW: Line chart overlay
   final ChartColumnBlocks? columnBlocks;
 
   final ChartConfig chartConfig;
@@ -103,7 +107,7 @@ class _CooBarChartState extends State<CooBarChart> {
       }
 
       ChartPainterMetadata metadata = ChartPainterInit.initializeValues(
-        linechartDataSeries: [],
+        linechartDataSeries: widget.lineDataSeries.where((element) => element.opposite == false).toList(),
         barchartDataSeries: widget.dataSeries.where((element) => element.opposite == false).toList(),
         opposite: false,
         layoutHeight: height,
@@ -117,7 +121,7 @@ class _CooBarChartState extends State<CooBarChart> {
         chartConfig: widget.chartConfig,
         barchartDataSeries: widget.dataSeries.where((element) => element.opposite == true).toList(),
         opposite: true,
-        linechartDataSeries: [],
+        linechartDataSeries: widget.lineDataSeries.where((element) => element.opposite == true).toList(),
         layoutHeight: height,
         layoutWidth: width,
         padding: widget.padding,
@@ -158,7 +162,7 @@ class _CooBarChartState extends State<CooBarChart> {
               metadata: metadata,
               metadataOpposite: metadataOpposite,
               chartType: CooChartType.bar,
-              linechartDataSeries: [],
+              linechartDataSeries: widget.lineDataSeries, // Pass line data for overlay
               barchartDataSeries: widget.dataSeries,
               columnBlocks: widget.columnBlocks,
               padding: widget.padding,

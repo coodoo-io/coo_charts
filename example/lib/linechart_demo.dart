@@ -118,10 +118,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
               ),
             CooChartType.bar => CooBarChart(
                 dataSeries: barchartDataSeries,
+                lineDataSeries: linechartDataSeries, // Add line overlay to bar chart
                 columnBlocks: chartColumnBlocks,
                 chartConfig: chartConfig,
                 xAxisConfig: xAxisConfig,
                 yAxisConfig: yAxisConfig,
+                yAxisOppositeConfig: yAxisOppositeConfig,
                 xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelBarChartCallback,
                 xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelBarChartCallback,
               ),
@@ -132,6 +134,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
           child: Column(children: [
             Row(
               children: [
+                ElevatedButton(
+                  onPressed: () => setState(() => _generateWeatherDualAxisChart()),
+                  child: const Text('🌦️ Wetter Dual Axis'),
+                ),
                 ElevatedButton(
                   onPressed: () => setState(() => _generateEmptyLists()),
                   child: const Text('Leere Liste'),
@@ -356,6 +362,100 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisStepLineBottomLabelBarChartCallback = null;
     yAxisLabelCount = null;
     linechartDataSeries.clear();
+    barchartDataSeries.clear();
+  }
+
+  /// Weather dual axis chart demo - temperature with SVG icons and precipitation as bars
+  _generateWeatherDualAxisChart() {
+    _resetToDefault();
+    chartType = CooChartType.bar; // Switch to bar chart for combo display
+    
+    // Configure left axis for temperature (will be used by line series marked as opposite=false)
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+      minLabelValue: 15,
+      maxLabelValue: 35,
+    );
+    
+    // Configure right axis for precipitation (will be used by bar series)
+    yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+      maxLabelValue: 4,
+      showRightAxis: true,
+      showRightLabels: true,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+      showTopLabels: true,
+      topDateFormat: 'E dd.MM',
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+    );
+
+    // Generate precipitation BAR data for the bar chart
+    barchartDataSeries.clear();
+    var precipitationBars = <CooBarChartDataPoint>[];
+    var currentTime = DateTime.now().copyWith(hour: 15, minute: 0, second: 0, millisecond: 0);
+    final precipValues = [0, 0, 1, 2, 3, 2, 1, 0, 0, 1, 2, 1, 0, 0, 1, 3, 2, 1];
+    
+    for (int i = 0; i < precipValues.length; i++) {
+      precipitationBars.add(CooBarChartDataPoint(
+        value: precipValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 3)),
+      ));
+    }
+
+    barchartDataSeries.add(CooBarChartDataSeries(
+      dataPoints: precipitationBars,
+      barColor: const Color(0xFF54B9E9).withOpacity(0.7),
+      maxBarWidth: 20,
+      opposite: true, // Use the right axis for precipitation bars
+    ));
+
+    // Generate temperature LINE data as overlay (we'll need to add this to the bar chart painter)
+    linechartDataSeries.clear();
+    var temperaturePoints = <CooLineChartDataPoint>[];
+    final tempValues = [32, 30, 28, 24, 21, 19, 18, 19, 22, 26, 29, 32, 30, 28, 25, 22, 20, 18];
+    
+    for (int i = 0; i < tempValues.length; i++) {
+      temperaturePoints.add(CooLineChartDataPoint(
+        value: tempValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 3)),
+        label: '${tempValues[i]}°',
+        // Add SVG icon for weather symbols every 6th point
+        svgIcon: i % 6 == 0 ? const DataPointSvgIcon(
+          assetPath: kIconWeatherCloudySvg,
+          width: 20,
+          height: 20,
+          offsetY: -30,
+        ) : null,
+      ));
+    }
+
+    linechartDataSeries.add(CooLineChartDataSeries(
+      dataPoints: temperaturePoints,
+      label: 'Temperature',
+      showDataLine: true,
+      showDataPoints: true,
+      showDataLabels: true,
+      opposite: false, // Use the left axis (temperature scale)
+      dataLineColor: const Color(0xFFd85930),
+      dataPointColor: const Color(0xFFd85930),
+      dataPointLabelTextStyle: const TextStyle(
+        color: Color(0xFFd85930),
+        fontWeight: FontWeight.bold,
+        fontSize: 12,
+      ),
+      dataPointLabelPosition: DataPointLabelPos.top,
+    ));
   }
 
   _create0To10To0ValuesChartDataPoints() {
