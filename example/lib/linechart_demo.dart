@@ -370,20 +370,17 @@ class _LineChartDemoState extends State<LineChartDemo> {
     _resetToDefault();
     chartType = CooChartType.bar; // Switch to bar chart for combo display
     
-    // Configure left axis for temperature (will be used by line series marked as opposite=false)
+    // Configure left axis for temperature (will be dynamically calculated)
     yAxisConfig = yAxisConfig.copyWith(
       labelPostfix: '°C',
       labelCount: 6,
-      minLabelValue: 15,
-      maxLabelValue: 35,
     );
     
-    // Configure right axis for precipitation (will be used by bar series)
+    // Configure right axis for precipitation (will be dynamically calculated)
     yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
       labelPostfix: 'mm',
       labelCount: 5,
       minLabelValue: 0,
-      maxLabelValue: 4,
       showRightAxis: true,
       showRightLabels: true,
     );
@@ -404,7 +401,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     barchartDataSeries.clear();
     var precipitationBars = <CooBarChartDataPoint>[];
     var currentTime = DateTime.now().copyWith(hour: 15, minute: 0, second: 0, millisecond: 0);
-    final precipValues = [0, 0, 1, 2, 3, 2, 1, 0, 0, 1, 2, 1, 0, 0, 1, 3, 2, 1];
+    final precipValues = [0, 0, 1, 2, 6, 2, 1, 0, 0, 1, 8, 1, 0, 0, 1, 12, 2, 1]; // Added extreme values: 6mm, 8mm, 12mm
     
     for (int i = 0; i < precipValues.length; i++) {
       precipitationBars.add(CooBarChartDataPoint(
