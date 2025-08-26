@@ -18,6 +18,26 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image/image.dart' as image;
 
 class CooChartPainterUtil {
+  // Static cache for loaded SVG pictures
+  static final Map<String, PictureInfo> _svgCache = {};
+
+  /// Preload SVG assets for data point icons
+  static Future<void> preloadSvgAssets(List<String> assetPaths) async {
+    for (String assetPath in assetPaths) {
+      if (!_svgCache.containsKey(assetPath)) {
+        try {
+          final PictureInfo pictureInfo = await vg.loadPicture(
+            SvgAssetLoader(assetPath),
+            null,
+          );
+          _svgCache[assetPath] = pictureInfo;
+        } catch (e) {
+          // Skip invalid SVG assets
+        }
+      }
+    }
+  }
+
   static void drawBackground({
     required Canvas canvas,
     required ChartConfig config,
@@ -630,6 +650,16 @@ class CooChartPainterUtil {
           canvas.drawCircle(dataPointOffset, 4, pointPaint);
         }
 
+        // Check if we have SVG icon for this data point
+        CooLineChartDataPoint currentDataPoint = localLinechartDataSeries.dataPoints[i];
+        if (currentDataPoint.svgIcon != null) {
+          _drawSvgIcon(
+            canvas: canvas,
+            svgIcon: currentDataPoint.svgIcon!,
+            dataPointOffset: dataPointOffset,
+          );
+        }
+
         // Data Point Label malen
         if (localLinechartDataSeries.showDataLabels) {
           String? label = dataSeriesLabels[i];
@@ -814,6 +844,62 @@ class CooChartPainterUtil {
     canvas.drawPath(
       lineChartDataPointsPath,
       lineAreaPaint,
+    );
+  }
+
+  /// Renders an SVG icon at the specified data point location
+  static void _drawSvgIcon({
+    required Canvas canvas,
+    required DataPointSvgIcon svgIcon,
+    required Offset dataPointOffset,
+  }) {
+    try {
+      // Try to get the SVG from cache
+      final PictureInfo? pictureInfo = _svgCache[svgIcon.assetPath];
+      
+      if (pictureInfo != null) {
+        // Calculate the position with offset
+        final x = dataPointOffset.dx + svgIcon.offsetX - (svgIcon.width / 2);
+        final y = dataPointOffset.dy + svgIcon.offsetY - (svgIcon.height / 2);
+
+        // Save canvas state
+        canvas.save();
+        
+        // Translate to the final position
+        canvas.translate(x, y);
+        
+        // Scale the SVG to the desired size
+        final scaleX = svgIcon.width / pictureInfo.size.width;
+        final scaleY = svgIcon.height / pictureInfo.size.height;
+        canvas.scale(scaleX, scaleY);
+        
+        // Draw the SVG picture
+        canvas.drawPicture(pictureInfo.picture);
+        
+        // Restore canvas state
+        canvas.restore();
+      } else {
+        // Fallback: draw a colored circle if SVG is not in cache
+        _drawSvgFallback(canvas, svgIcon, dataPointOffset);
+      }
+    } catch (e) {
+      // Fallback: draw a colored circle if SVG loading fails
+      _drawSvgFallback(canvas, svgIcon, dataPointOffset);
+    }
+  }
+  
+  /// Draws a fallback icon when SVG loading fails
+  static void _drawSvgFallback(Canvas canvas, DataPointSvgIcon svgIcon, Offset dataPointOffset) {
+    final fallbackPaint = Paint()
+      ..color = Colors.orange
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(
+      Offset(
+        dataPointOffset.dx + svgIcon.offsetX, 
+        dataPointOffset.dy + svgIcon.offsetY
+      ), 
+      8.0, 
+      fallbackPaint
     );
   }
 }

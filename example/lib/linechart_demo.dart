@@ -15,6 +15,7 @@ import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
 import 'package:coo_charts/common/data_point_label_pos.enum.dart';
 import 'package:coo_charts/common/x_axis_value_type.enum.dart';
+import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts_example/linechart_demo_util.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -135,7 +136,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
             Row(
               children: [
                 ElevatedButton(
-                  onPressed: () => setState(() => _generateWeatherDualAxisChart()),
+                  onPressed: () async {
+                    await _generateWeatherDualAxisChart();
+                    setState(() {});
+                  },
                   child: const Text('🌦️ Wetter Dual Axis'),
                 ),
                 ElevatedButton(
@@ -366,9 +370,15 @@ class _LineChartDemoState extends State<LineChartDemo> {
   }
 
   /// Weather dual axis chart demo - temperature with SVG icons and precipitation as bars
-  _generateWeatherDualAxisChart() {
+  _generateWeatherDualAxisChart() async {
     _resetToDefault();
     chartType = CooChartType.bar; // Switch to bar chart for combo display
+    
+    // Preload SVG assets for weather icons
+    await CooChartPainterUtil.preloadSvgAssets([
+      kIconWeatherCloudySvg,
+      kIconWeatherRainSvg,
+    ]);
     
     // Configure left axis for temperature (will be dynamically calculated)
     yAxisConfig = yAxisConfig.copyWith(
@@ -423,17 +433,22 @@ class _LineChartDemoState extends State<LineChartDemo> {
     final tempValues = [32, 30, 28, 24, 21, 19, 18, 19, 22, 26, 29, 32, 30, 28, 25, 22, 20, 18];
     
     for (int i = 0; i < tempValues.length; i++) {
+      // Choose different weather icons based on temperature and precipitation
+      final hasRain = precipValues[i] > 0;
+      
+      // Show SVG icon at every point
+      final DataPointSvgIcon weatherIcon = DataPointSvgIcon(
+        assetPath: hasRain ? kIconWeatherRainSvg : kIconWeatherCloudySvg,
+        width: 20,
+        height: 20,
+        offsetY: -30, // Position above the data point
+      );
+      
       temperaturePoints.add(CooLineChartDataPoint(
         value: tempValues[i].toDouble(),
         time: currentTime.add(Duration(hours: i * 3)),
-        label: '${tempValues[i]}°',
-        // Add SVG icon for weather symbols every 6th point
-        svgIcon: i % 6 == 0 ? const DataPointSvgIcon(
-          assetPath: kIconWeatherCloudySvg,
-          width: 20,
-          height: 20,
-          offsetY: -30,
-        ) : null,
+        // Remove text label since showDataLabels is false
+        svgIcon: weatherIcon,
       ));
     }
 
@@ -442,7 +457,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       label: 'Temperature',
       showDataLine: true,
       showDataPoints: true,
-      showDataLabels: true,
+      showDataLabels: false, // Turn off text labels, show only SVGs
       opposite: false, // Use the left axis (temperature scale)
       dataLineColor: const Color(0xFFd85930),
       dataPointColor: const Color(0xFFd85930),
