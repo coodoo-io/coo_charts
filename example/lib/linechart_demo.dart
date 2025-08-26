@@ -15,6 +15,7 @@ import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
 import 'package:coo_charts/common/data_point_label_pos.enum.dart';
 import 'package:coo_charts/common/x_axis_value_type.enum.dart';
+import 'package:coo_charts/common/x_axis_label_svg.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts_example/linechart_demo_util.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,8 @@ import 'package:intl/intl.dart';
 
 const kIconWeatherCloudySvg = 'assets/sym_cloudy.svg';
 const kIconWeatherRainSvg = 'assets/sym_rain.svg';
+const kIconWindArrowSvg = 'assets/wind_over50.svg';
+const kIconWindStrongSvg = 'assets/wind_over90.svg';
 const kIconWindOver50Svg = 'assets/wind_over50.svg';
 const kIconWindOver90Svg = 'assets/wind_over90.svg';
 const kIconWeatherCloudyPng = 'assets/cloudcoverage-0.png';
@@ -44,6 +47,9 @@ class _LineChartDemoState extends State<LineChartDemo> {
   String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelLineChartCallback;
   String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelBarChartCallback;
   String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelBarChartCallback;
+  
+  // SVG callback for X-axis labels
+  XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgBarChartCallback;
 
   ChartColumnBlocks? chartColumnBlocks;
   ChartConfig chartConfig = const ChartConfig();
@@ -127,6 +133,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
                 yAxisOppositeConfig: yAxisOppositeConfig,
                 xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelBarChartCallback,
                 xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelBarChartCallback,
+                xAxisStepLineBottomSvgCallback: xAxisStepLineBottomSvgBarChartCallback,
               ),
           },
         ),
@@ -364,6 +371,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisStepLineBottomLabelLineChartCallback = null;
     xAxisStepLineTopLabelBarChartCallback = null;
     xAxisStepLineBottomLabelBarChartCallback = null;
+    xAxisStepLineBottomSvgBarChartCallback = null;
     yAxisLabelCount = null;
     linechartDataSeries.clear();
     barchartDataSeries.clear();
@@ -378,6 +386,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     await CooChartPainterUtil.preloadSvgAssets([
       kIconWeatherCloudySvg,
       kIconWeatherRainSvg,
+      kIconWindArrowSvg,
+      kIconWindStrongSvg,
     ]);
     
     // Configure left axis for temperature (will be dynamically calculated)
@@ -400,6 +410,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       bottomDateFormat: 'HH',
       showTopLabels: true,
       topDateFormat: 'E dd.MM',
+      useSvgLabels: true, // Enable SVG labels for bottom X-axis
     );
 
     chartConfig = chartConfig.copyWith(
@@ -468,6 +479,24 @@ class _LineChartDemoState extends State<LineChartDemo> {
       ),
       dataPointLabelPosition: DataPointLabelPos.top,
     ));
+    
+    // Configure wind direction arrows as SVG labels for X-axis
+    xAxisStepLineBottomLabelBarChartCallback = (index, dataPoints) {
+      // This won't be used when useSvgLabels is true, but kept for fallback
+      return ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][index % 8];
+    };
+    
+    // Set SVG callback for wind direction arrows  
+    xAxisStepLineBottomSvgBarChartCallback = (index, dataPoints) {
+      // Simulate different wind directions with different icons
+      final bool isStrongWind = precipValues[index] > 4; // Strong wind when high precipitation
+      return XAxisLabelSvg(
+        assetPath: isStrongWind ? kIconWindStrongSvg : kIconWindArrowSvg,
+        width: 16,
+        height: 16,
+        offsetY: 0, // Center vertically
+      );
+    };
   }
 
   _create0To10To0ValuesChartDataPoints() {

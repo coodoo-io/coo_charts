@@ -21,6 +21,11 @@ class CooChartPainterUtil {
   // Static cache for loaded SVG pictures
   static final Map<String, PictureInfo> _svgCache = {};
 
+  /// Get SVG from cache
+  static PictureInfo? getSvgFromCache(String assetPath) {
+    return _svgCache[assetPath];
+  }
+
   /// Preload SVG assets for data point icons
   static Future<void> preloadSvgAssets(List<String> assetPaths) async {
     for (String assetPath in assetPaths) {
@@ -855,7 +860,7 @@ class CooChartPainterUtil {
   }) {
     try {
       // Try to get the SVG from cache
-      final PictureInfo? pictureInfo = _svgCache[svgIcon.assetPath];
+      final PictureInfo? pictureInfo = getSvgFromCache(svgIcon.assetPath);
       
       if (pictureInfo != null) {
         // Calculate the position with offset

@@ -16,6 +16,7 @@ import 'package:coo_charts/chart_painter/coo_chart_painter.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
 import 'package:coo_charts/common/x_axis_config.dart';
+import 'package:coo_charts/common/x_axis_label_svg.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -37,6 +38,7 @@ class CooBarChart extends StatefulWidget {
     this.onDataPointTab,
     this.xAxisStepLineTopLabelCallback,
     this.xAxisStepLineBottomLabelCallback,
+    this.xAxisStepLineBottomSvgCallback,
   });
 
   final List<CooBarChartDataSeries> dataSeries;
@@ -61,6 +63,9 @@ class CooBarChart extends StatefulWidget {
   /// If given every step this callback will be invoekd
   final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelCallback;
   final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelCallback;
+  
+  /// SVG label callbacks for X-axis
+  final XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgCallback;
 
   @override
   State<CooBarChart> createState() => _CooBarChartState();
@@ -185,6 +190,7 @@ class _CooBarChartState extends State<CooBarChart> {
               onBarChartDataPointTabCallback: widget.onDataPointTab,
               xAxisStepLineTopLabelBarChartCallback: widget.xAxisStepLineTopLabelCallback,
               xAxisStepLineBottomLabelBarChartCallback: widget.xAxisStepLineBottomLabelCallback,
+              xAxisStepLineBottomSvgBarChartCallback: widget.xAxisStepLineBottomSvgCallback,
             ),
           ),
         ),
