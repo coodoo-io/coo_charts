@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:coo_charts/common/x_axis_value_type.enum.dart';
-import 'package:coo_charts/common/x_axis_label_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
