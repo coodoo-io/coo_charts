@@ -96,8 +96,6 @@ class _LineChartDemoState extends State<LineChartDemo> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
           color: Colors.blue,
@@ -106,12 +104,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
             child: Row(),
           ),
         ),
-        Container(
-          width: double.infinity,
-          height: 600,
-          color: chartBackgroundColorBlack ? Colors.black : Colors.white,
-          child: switch (chartType) {
-            CooChartType.line => CooLineChart(
+        Expanded(
+          child: Container(
+            width: double.infinity,
+            color: chartBackgroundColorBlack ? Colors.black : Colors.white,
+            child: switch (chartType) {
+              CooChartType.line => CooLineChart(
                 dataSeries: linechartDataSeries,
                 columnBlocks: chartColumnBlocks,
                 chartConfig: chartConfig,
@@ -135,12 +133,16 @@ class _LineChartDemoState extends State<LineChartDemo> {
                 xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelBarChartCallback,
                 xAxisStepLineBottomSvgCallback: xAxisStepLineBottomSvgBarChartCallback,
               ),
-          },
+            },
+          ),
         ),
         Container(
           color: Colors.amber,
-          child: Column(children: [
-            SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
@@ -186,8 +188,9 @@ class _LineChartDemoState extends State<LineChartDemo> {
               ),
             ),
             // === NEW DEMO BUTTONS FOR CHART VARIANTS ===
-            const SizedBox(height: 8),
-            const Text('📊 Chart Varianten Demos:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 4),
+            const Text('📊 Chart Varianten Demos:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+            const SizedBox(height: 2),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -249,10 +252,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
               ),
             ),
             // === END NEW DEMO BUTTONS ===
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Row(
+              child: Wrap(
+                spacing: 4,
+                runSpacing: 2,
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
@@ -261,85 +266,86 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   ),
                   const SizedBox(width: 4),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
                     onPressed: () => setState(() => _create0To10ValuesChartDataPoints()),
-                    child: const Text('0 -> 10', style: TextStyle(fontSize: 12)),
+                    child: const Text('0->10', style: TextStyle(fontSize: 10)),
                   ),
-                  const SizedBox(width: 4),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
                     onPressed: () => setState(() => _createMinus5To5ValuesChartDataPoints()),
-                    child: const Text('5 -> -5', style: TextStyle(fontSize: 12)),
+                    child: const Text('5->-5', style: TextStyle(fontSize: 10)),
                   ),
-                  const SizedBox(width: 4),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
                     onPressed: () => setState(() => _create0To10To0WithNullValuesChartDataPoints()),
-                    child: const Text('NULL Test', style: TextStyle(fontSize: 12)),
+                    child: const Text('NULL Test', style: TextStyle(fontSize: 10)),
                   ),
-                  const SizedBox(width: 4),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
                     onPressed: () => setState(() => _generate10DataPointsLargeNumer()),
-                    child: const Text('Große Zahlen', style: TextStyle(fontSize: 12)),
+                    child: const Text('Große Zahlen', style: TextStyle(fontSize: 10)),
                   ),
-                  const SizedBox(width: 4),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
                     onPressed: () => setState(() => _generateKachelmann14TageWetterTrend()),
-                    child: const Text('Kachelmann', style: TextStyle(fontSize: 12)),
+                    child: const Text('Kachelmann', style: TextStyle(fontSize: 10)),
                   ),
                 ],
               ),
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Row(
+              child: Wrap(
+                spacing: 4,
+                runSpacing: 2,
                 children: [
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
                     onPressed: () => setState(() => _generateKachelmannVorhersageXL()),
-                    child: const Text('Temperatur', style: TextStyle(fontSize: 12)),
+                    child: const Text('Temperatur', style: TextStyle(fontSize: 10)),
                   ),
-                  const SizedBox(width: 4),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
                     onPressed: () => setState(() => _generateLargeVorhersageHourly()),
-                    child: const Text('Große Daten', style: TextStyle(fontSize: 12)),
+                    child: const Text('Große Daten', style: TextStyle(fontSize: 10)),
                   ),
-                  const SizedBox(width: 4),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
                     onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
-                    child: const Text('Random', style: TextStyle(fontSize: 12)),
+                    child: const Text('Random', style: TextStyle(fontSize: 10)),
                   ),
-                  const SizedBox(width: 4),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
                     onPressed: () => setState(() => _generateRandomDualLinechart()),
-                    child: const Text('Random Dual', style: TextStyle(fontSize: 12)),
+                    child: const Text('Random Dual', style: TextStyle(fontSize: 10)),
                   ),
                 ],
               ),
             ),
-            Row(
+            Wrap(
+              spacing: 2,
+              runSpacing: 2,
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(
                       () => chartConfig = chartConfig.copyWith(showGridHorizontal: !chartConfig.showGridHorizontal)),
-                  child: Text('Grid-Horizontal ${chartConfig.showGridHorizontal ? '✅' : '❌'}'),
+                  child: Text('Grid-H ${chartConfig.showGridHorizontal ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(
                       () => chartConfig = chartConfig.copyWith(showGridVertical: !chartConfig.showGridVertical)),
-                  child: Text('Grid-Vertical ${chartConfig.showGridVertical ? '✅' : '❌'}'),
+                  child: Text('Grid-V ${chartConfig.showGridVertical ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () =>
                       setState(() => chartConfig = chartConfig.copyWith(curvedLine: !chartConfig.curvedLine)),
-                  child: Text('Curved ${chartConfig.curvedLine ? '✅' : '❌'}'),
+                  child: Text('Curved ${chartConfig.curvedLine ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() {
                     showDataPoints = !showDataPoints;
                     for (var i = 0; i < linechartDataSeries.length; i++) {
@@ -347,9 +353,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
                       linechartDataSeries[i] = lineChart;
                     }
                   }),
-                  child: Text('Show Data Points ${showDataPoints ? '✅' : '❌'}'),
+                  child: Text('Points ${showDataPoints ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() {
                     showDataLabels = !showDataLabels;
                     for (var i = 0; i < linechartDataSeries.length; i++) {
@@ -357,9 +364,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
                       linechartDataSeries[i] = lineChart;
                     }
                   }),
-                  child: Text('Show Data Lables ${showDataLabels ? '✅' : '❌'}'),
+                  child: Text('Labels ${showDataLabels ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() {
                     showDataLine = !showDataLine;
                     for (var i = 0; i < linechartDataSeries.length; i++) {
@@ -367,50 +375,52 @@ class _LineChartDemoState extends State<LineChartDemo> {
                       linechartDataSeries[i] = lineChart;
                     }
                   }),
-                  child: Text('Show Data Path ${showDataLine ? '✅' : '❌'}'),
+                  child: Text('Line ${showDataLine ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () =>
                       setState(() => chartConfig = chartConfig.copyWith(crosshair: !chartConfig.crosshair)),
-                  child: Text('Crosshair ${chartConfig.crosshair ? '✅' : '❌'}'),
+                  child: Text('Cross ${chartConfig.crosshair ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () =>
                       setState(() => xAxisConfig = xAxisConfig.copyWith(showTopLabels: !xAxisConfig.showTopLabels)),
-                  child: Text('Top Labels ${xAxisConfig.showTopLabels ? '✅' : '❌'}'),
+                  child: Text('Top ${xAxisConfig.showTopLabels ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(
                       () => xAxisConfig = xAxisConfig.copyWith(showBottomLabels: !xAxisConfig.showBottomLabels)),
-                  child: Text('Bottom Labels ${xAxisConfig.showBottomLabels ? '✅' : '❌'}'),
+                  child: Text('Bottom ${xAxisConfig.showBottomLabels ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
-              ],
-            ),
-            Row(
-              children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() =>
                       chartConfig = chartConfig.copyWith(highlightMouseColumn: !chartConfig.highlightMouseColumn)),
-                  child: Text('Highlight Column ${chartConfig.highlightMouseColumn ? '✅' : '❌'}'),
+                  child: Text('Highlight ${chartConfig.highlightMouseColumn ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () =>
                       setState(() => chartConfig = chartConfig.copyWith(highlightPoints: !chartConfig.highlightPoints)),
-                  child: Text('Highlight points ${chartConfig.highlightPoints ? '✅' : '❌'}'),
+                  child: Text('H.Points ${chartConfig.highlightPoints ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() => chartConfig =
                       chartConfig.copyWith(highlightPointsVerticalLine: !chartConfig.highlightPointsVerticalLine)),
-                  child: Text('Highlight points vertical line ${chartConfig.highlightPointsVerticalLine ? '✅' : '❌'}'),
+                  child: Text('V.Line ${chartConfig.highlightPointsVerticalLine ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () {
                     chartConfig =
                         chartConfig.copyWith(highlightPointsHorizontalLine: !chartConfig.highlightPointsHorizontalLine);
                     setState(() {});
                   },
-                  child:
-                      Text('Highlight points horizontal line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}'),
+                  child: Text('H.Line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 // ElevatedButton(
                 //   onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
@@ -419,25 +429,24 @@ class _LineChartDemoState extends State<LineChartDemo> {
                 //       'Highlight points horizontal line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}'),
                 // ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
                       centerDataPointBetweenVerticalGrid: !chartConfig.centerDataPointBetweenVerticalGrid)),
-                  child: Text(
-                      'Center DataPoints between vertical Grid ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
+                  child: Text('Center ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() => calcYAxisValuePadding = !calcYAxisValuePadding),
-                  child: Text('Y-Axes Value Padding ${calcYAxisValuePadding ? '✅' : '❌'}'),
+                  child: Text('Padding ${calcYAxisValuePadding ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
-              ],
-            ),
-            Row(
-              children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() => chartBackgroundColorBlack = !chartBackgroundColorBlack),
-                  child: Text('Schwarzer Hintergrund ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
+                  child: Text('Black ${chartBackgroundColorBlack ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
-                Text('Anzahl Labels Y-Achse: ${yAxisLabelCount ?? '-'} '),
+                Text('Y-Achse Labels: ${yAxisLabelCount ?? '-'}', style: const TextStyle(fontSize: 10)),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() {
                     if (yAxisLabelCount == null) {
                       yAxisLabelCount = 5;
@@ -446,9 +455,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
                     }
                     yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisLabelCount);
                   }),
-                  child: const Text('-'),
+                  child: const Text('-', style: TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() {
                     if (yAxisLabelCount == null) {
                       yAxisLabelCount = 5;
@@ -457,7 +467,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
                     }
                     yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisLabelCount);
                   }),
-                  child: const Text('+'),
+                  child: const Text('+', style: TextStyle(fontSize: 10)),
                 ),
               ],
             )
