@@ -516,7 +516,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
       showTopLabels: true,
-      topDateFormat: 'E dd.MM',
+      topDateFormat: 'HH',
       useSvgLabels: true, // Enable SVG labels for bottom X-axis
     );
 
@@ -562,7 +562,6 @@ class _LineChartDemoState extends State<LineChartDemo> {
         assetPath: hasRain ? kIconWeatherRainSvg : kIconWeatherCloudySvg,
         width: 20,
         height: 20,
-        offsetY: -30, // Position above the data point
       );
       
       temperaturePoints.add(CooLineChartDataPoint(
@@ -1863,7 +1862,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     for (int i = 0; i < tempValues.length; i++) {
       temperaturePoints.add(CooLineChartDataPoint(
         value: tempValues[i].toDouble(),
-        time: currentTime.add(Duration(hours: i * 2)),
+        time: currentTime.add(Duration(hours: i * 3)),
       ));
     }
 
@@ -1914,7 +1913,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     for (int i = 0; i < precipValues.length; i++) {
       precipitationBars.add(CooBarChartDataPoint(
         value: precipValues[i].toDouble(),
-        time: currentTime.add(Duration(hours: i * 2)),
+        time: currentTime.add(Duration(hours: i * 3)),
       ));
     }
 
@@ -1949,7 +1948,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
       showTopLabels: true,
-      topDateFormat: 'E dd.MM',
+      topDateFormat: 'HH',
     );
 
     chartConfig = chartConfig.copyWith(
@@ -1995,7 +1994,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
       showTopLabels: true,
-      topDateFormat: 'E dd.MM',
+      topDateFormat: 'HH',
       useSvgLabels: true, // Enable SVG labels for bottom X-axis
     );
 
@@ -2045,7 +2044,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
       showTopLabels: true,
-      topDateFormat: 'E dd.MM',
+      topDateFormat: 'HH',
     );
 
     chartConfig = chartConfig.copyWith(
@@ -2091,7 +2090,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
       showTopLabels: true,
-      topDateFormat: 'E dd.MM',
+      topDateFormat: 'HH',
     );
 
     chartConfig = chartConfig.copyWith(
@@ -2118,7 +2117,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     for (int i = 0; i < precipValues.length; i++) {
       precipitationBars.add(CooBarChartDataPoint(
         value: precipValues[i].toDouble(),
-        time: currentTime.add(Duration(hours: i * 2)),
+        time: currentTime.add(Duration(hours: i * 3)),
       ));
     }
 
@@ -2143,7 +2142,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     for (int i = 0; i < tempValues.length; i++) {
       var dataPoint = CooLineChartDataPoint(
         value: tempValues[i].toDouble(),
-        time: currentTime.add(Duration(hours: i * 2)),
+        time: currentTime.add(Duration(hours: i * 3)),
         svgIcon: useSvgDataPoints ? DataPointSvgIcon(
           assetPath: weatherIcons[i % weatherIcons.length],
           width: 20,
