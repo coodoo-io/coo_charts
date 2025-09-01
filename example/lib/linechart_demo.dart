@@ -140,80 +140,187 @@ class _LineChartDemoState extends State<LineChartDemo> {
         Container(
           color: Colors.amber,
           child: Column(children: [
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    await _generateWeatherDualAxisChart();
-                    setState(() {});
-                  },
-                  child: const Text('🌦️ Wetter Dual Axis'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateEmptyLists()),
-                  child: const Text('Leere Liste'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateBarchart1Bis10()),
-                  child: const Text('Bar Chart 1-10'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateKachelmannSonnenscheindauerTrend()),
-                  child: const Text('Bar Chart mit Range'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateKachelmannWindoenForecast()),
-                  child: const Text('Candle-StickChart'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateMultipleBarchart()),
-                  child: const Text('Multiple Bar Charts'),
-                ),
-              ],
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () async {
+                      await _generateWeatherDualAxisChart();
+                      setState(() {});
+                    },
+                    child: const Text('🌦️ Wetter', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateEmptyLists()),
+                    child: const Text('Leere Liste', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateBarchart1Bis10()),
+                    child: const Text('Bar 1-10', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateKachelmannSonnenscheindauerTrend()),
+                    child: const Text('Bar Range', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateKachelmannWindoenForecast()),
+                    child: const Text('Candle', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateMultipleBarchart()),
+                    child: const Text('Multiple', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
             ),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () => setState(() => _create0To10To0ValuesChartDataPoints()),
-                  child: const Text('0 -> 10 ->0'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _create0To10ValuesChartDataPoints()),
-                  child: const Text('0 -> 10'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _createMinus5To5ValuesChartDataPoints()),
-                  child: const Text('5 -> -5'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _create0To10To0WithNullValuesChartDataPoints()),
-                  child: const Text('NULL Value Test'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generate10DataPointsLargeNumer()),
-                  child: const Text('10 große Zahlen'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateKachelmann14TageWetterTrend()),
-                  child: const Text('Kachelmann 14-Tage'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateKachelmannVorhersageXL()),
-                  child: const Text('Temperaturkurve'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateLargeVorhersageHourly()),
-                  child: const Text('Große Datenmennge'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
-                  child: const Text('Random Daten generieren'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateRandomDualLinechart()),
-                  child: const Text('Random Daten Dual Axis generieren'),
-                ),
-              ],
+            // === NEW DEMO BUTTONS FOR CHART VARIANTS ===
+            const SizedBox(height: 8),
+            const Text('📊 Chart Varianten Demos:', style: TextStyle(fontWeight: FontWeight.bold)),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateSimpleLineChart()),
+                    child: const Text('📈 Line', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateSimpleBarChart()),
+                    child: const Text('📊 Bar', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () async {
+                      await _generateLineBarComboNormalLabels();
+                      setState(() {});
+                    },
+                    child: const Text('📈📊 Normal', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () async {
+                      await _generateLineBarComboSvgXLabels();
+                      setState(() {});
+                    },
+                    child: const Text('📈📊 SVG X', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () async {
+                      await _generateLineBarComboNormalDataPoints();
+                      setState(() {});
+                    },
+                    child: const Text('📈📊 Normal Points', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () async {
+                      await _generateLineBarComboSvgDataPoints();
+                      setState(() {});
+                    },
+                    child: const Text('📈📊 SVG Points', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
+            ),
+            // === END NEW DEMO BUTTONS ===
+            const SizedBox(height: 8),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _create0To10To0ValuesChartDataPoints()),
+                    child: const Text('0 -> 10 ->0', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _create0To10ValuesChartDataPoints()),
+                    child: const Text('0 -> 10', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _createMinus5To5ValuesChartDataPoints()),
+                    child: const Text('5 -> -5', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _create0To10To0WithNullValuesChartDataPoints()),
+                    child: const Text('NULL Test', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generate10DataPointsLargeNumer()),
+                    child: const Text('Große Zahlen', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateKachelmann14TageWetterTrend()),
+                    child: const Text('Kachelmann', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateKachelmannVorhersageXL()),
+                    child: const Text('Temperatur', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateLargeVorhersageHourly()),
+                    child: const Text('Große Daten', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
+                    child: const Text('Random', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateRandomDualLinechart()),
+                    child: const Text('Random Dual', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
             ),
             Row(
               children: [
@@ -416,6 +523,9 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartConfig = chartConfig.copyWith(
       showGridHorizontal: true,
       showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
     );
 
     // Generate precipitation BAR data for the bar chart
@@ -1718,4 +1828,346 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showYAxisLables: false,
     );
   }
+
+  // === NEW DEMO FUNCTIONS FOR CHART VARIANTS ===
+
+  /// Simple LineChart only - basic temperature data
+  _generateSimpleLineChart() {
+    _resetToDefault();
+    chartType = CooChartType.line;
+    
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Generate simple temperature line data
+    linechartDataSeries.clear();
+    var temperaturePoints = <CooLineChartDataPoint>[];
+    var currentTime = DateTime.now().copyWith(hour: 6, minute: 0, second: 0, millisecond: 0);
+    final tempValues = [12, 14, 16, 18, 22, 24, 26, 25, 23, 20, 18, 15]; // Simple temperature curve
+    
+    for (int i = 0; i < tempValues.length; i++) {
+      temperaturePoints.add(CooLineChartDataPoint(
+        value: tempValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 2)),
+      ));
+    }
+
+    linechartDataSeries.add(CooLineChartDataSeries(
+      dataPoints: temperaturePoints,
+      dataLineColor: Colors.orange,
+      dataPointColor: Colors.red,
+      showDataPoints: true,
+      showDataLabels: true,
+      dataPointLabelTextStyle: const TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        fontSize: 12,
+      ),
+    ));
+  }
+
+  /// Simple BarChart only - basic precipitation data
+  _generateSimpleBarChart() {
+    _resetToDefault();
+    chartType = CooChartType.bar;
+    
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Generate simple precipitation bar data
+    barchartDataSeries.clear();
+    var precipitationBars = <CooBarChartDataPoint>[];
+    var currentTime = DateTime.now().copyWith(hour: 6, minute: 0, second: 0, millisecond: 0);
+    final precipValues = [0, 1, 3, 5, 2, 0, 0, 1, 4, 2, 1, 0]; // Simple precipitation values
+    
+    for (int i = 0; i < precipValues.length; i++) {
+      precipitationBars.add(CooBarChartDataPoint(
+        value: precipValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 2)),
+      ));
+    }
+
+    barchartDataSeries.add(CooBarChartDataSeries(
+      dataPoints: precipitationBars,
+      barColor: Colors.blue,
+      showDataLabels: true,
+    ));
+  }
+
+  /// LineChart + BarChart combo with normal X-axis labels
+  _generateLineBarComboNormalLabels() async {
+    _resetToDefault();
+    chartType = CooChartType.bar; // Use bar chart with line overlay
+    
+    // Configure left axis for temperature
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+    );
+    
+    // Configure right axis for precipitation
+    yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+      showRightAxis: true,
+      showRightLabels: true,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+      showTopLabels: true,
+      topDateFormat: 'E dd.MM',
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Generate data for both charts
+    _generateComboChartData(false, false); // no SVG X-labels, no SVG datapoints
+  }
+
+  /// LineChart + BarChart combo with SVG X-axis labels
+  _generateLineBarComboSvgXLabels() async {
+    _resetToDefault();
+    chartType = CooChartType.bar; // Use bar chart with line overlay
+    
+    // Preload SVG assets for X-axis labels
+    await CooChartPainterUtil.preloadSvgAssets([
+      kIconWeatherCloudySvg,
+      kIconWeatherRainSvg,
+      kIconWindArrowSvg,
+    ]);
+    
+    // Configure left axis for temperature
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+    );
+    
+    // Configure right axis for precipitation
+    yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+      showRightAxis: true,
+      showRightLabels: true,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+      showTopLabels: true,
+      topDateFormat: 'E dd.MM',
+      useSvgLabels: true, // Enable SVG labels for bottom X-axis
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Set up SVG callback for X-axis
+    xAxisStepLineBottomSvgBarChartCallback = (index, cooBarChartDataPoints) {
+      // Rotate between different weather SVGs
+      final svgPaths = [kIconWeatherCloudySvg, kIconWeatherRainSvg, kIconWindArrowSvg];
+      return XAxisLabelSvg(
+        assetPath: svgPaths[index % svgPaths.length],
+        width: 24,
+        height: 24,
+      );
+    };
+
+    // Generate data for both charts
+    _generateComboChartData(true, false); // SVG X-labels, no SVG datapoints
+  }
+
+  /// LineChart + BarChart combo with normal data point labels
+  _generateLineBarComboNormalDataPoints() async {
+    _resetToDefault();
+    chartType = CooChartType.bar; // Use bar chart with line overlay
+    
+    // Configure axes
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+    );
+    
+    yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+      showRightAxis: true,
+      showRightLabels: true,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+      showTopLabels: true,
+      topDateFormat: 'E dd.MM',
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Generate data for both charts
+    _generateComboChartData(false, false); // no SVG X-labels, normal datapoints
+  }
+
+  /// LineChart + BarChart combo with SVG data point icons
+  _generateLineBarComboSvgDataPoints() async {
+    _resetToDefault();
+    chartType = CooChartType.bar; // Use bar chart with line overlay
+    
+    // Preload SVG assets for data point icons
+    await CooChartPainterUtil.preloadSvgAssets([
+      kIconWeatherCloudySvg,
+      kIconWeatherRainSvg,
+      kIconWindArrowSvg,
+      kIconWindStrongSvg,
+    ]);
+    
+    // Configure axes
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+    );
+    
+    yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+      showRightAxis: true,
+      showRightLabels: true,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+      showTopLabels: true,
+      topDateFormat: 'E dd.MM',
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Generate data for both charts
+    _generateComboChartData(false, true); // no SVG X-labels, SVG datapoints
+  }
+
+  /// Helper function to generate data for combo charts
+  _generateComboChartData(bool useSvgXLabels, bool useSvgDataPoints) {
+    var currentTime = DateTime.now().copyWith(hour: 15, minute: 0, second: 0, millisecond: 0);
+    
+    // Generate precipitation BAR data
+    barchartDataSeries.clear();
+    var precipitationBars = <CooBarChartDataPoint>[];
+    final precipValues = [0, 1, 2, 5, 3, 1, 0, 2, 4, 1, 0, 1];
+    
+    for (int i = 0; i < precipValues.length; i++) {
+      precipitationBars.add(CooBarChartDataPoint(
+        value: precipValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 2)),
+      ));
+    }
+
+    barchartDataSeries.add(CooBarChartDataSeries(
+      dataPoints: precipitationBars,
+      barColor: Colors.blue.withOpacity(0.7),
+      showDataLabels: true,
+      opposite: true, // Right axis
+    ));
+
+    // Generate temperature LINE data
+    linechartDataSeries.clear();
+    var temperaturePoints = <CooLineChartDataPoint>[];
+    final tempValues = [15, 17, 19, 22, 24, 26, 25, 23, 21, 19, 17, 16];
+    final weatherIcons = [
+      kIconWeatherCloudySvg,
+      kIconWeatherRainSvg,
+      kIconWindArrowSvg,
+      kIconWindStrongSvg,
+    ];
+    
+    for (int i = 0; i < tempValues.length; i++) {
+      var dataPoint = CooLineChartDataPoint(
+        value: tempValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 2)),
+        svgIcon: useSvgDataPoints ? DataPointSvgIcon(
+          assetPath: weatherIcons[i % weatherIcons.length],
+          width: 20,
+          height: 20,
+        ) : null,
+      );
+      
+      temperaturePoints.add(dataPoint);
+    }
+
+    linechartDataSeries.add(CooLineChartDataSeries(
+      dataPoints: temperaturePoints,
+      dataLineColor: Colors.orange,
+      dataPointColor: Colors.red,
+      showDataPoints: true,
+      showDataLabels: !useSvgDataPoints, // Show text labels only when NOT using SVG icons
+      opposite: false, // Left axis
+      dataPointLabelTextStyle: const TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        fontSize: 12,
+      ),
+    ));
+  }
+
+  // === END NEW DEMO FUNCTIONS ===
 }

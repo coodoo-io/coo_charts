@@ -864,8 +864,11 @@ class CooChartPainterUtil {
       
       if (pictureInfo != null) {
         // Calculate the position with offset
+        // Automatically position above the data point if no custom offsetY is provided
+        final autoOffsetY = svgIcon.offsetY == 0.0 ? -svgIcon.height - 8 : svgIcon.offsetY;
+        
         final x = dataPointOffset.dx + svgIcon.offsetX - (svgIcon.width / 2);
-        final y = dataPointOffset.dy + svgIcon.offsetY - (svgIcon.height / 2);
+        final y = dataPointOffset.dy + autoOffsetY - (svgIcon.height / 2);
 
         // Save canvas state
         canvas.save();
@@ -895,13 +898,16 @@ class CooChartPainterUtil {
   
   /// Draws a fallback icon when SVG loading fails
   static void _drawSvgFallback(Canvas canvas, DataPointSvgIcon svgIcon, Offset dataPointOffset) {
+    // Apply the same automatic positioning logic as in _drawSvgIcon
+    final autoOffsetY = svgIcon.offsetY == 0.0 ? -svgIcon.height - 8 : svgIcon.offsetY;
+    
     final fallbackPaint = Paint()
       ..color = Colors.orange
       ..style = PaintingStyle.fill;
     canvas.drawCircle(
       Offset(
         dataPointOffset.dx + svgIcon.offsetX, 
-        dataPointOffset.dy + svgIcon.offsetY
+        dataPointOffset.dy + autoOffsetY
       ), 
       8.0, 
       fallbackPaint
