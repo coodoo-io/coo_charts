@@ -48,6 +48,10 @@ mixin _$ChartConfig {
   bool get centerDataPointBetweenVerticalGrid =>
       throw _privateConstructorUsedError;
 
+  /// Liste von Hintergrund-Zeiträumen, die im Chart hervorgehoben werden sollen
+  List<ChartBackgroundTimeRange> get backgroundTimeRanges =>
+      throw _privateConstructorUsedError;
+
   /// Experimental - Background painting style
   PaintingStyle get canvasBackgroundPaintingStyle =>
       throw _privateConstructorUsedError;
@@ -86,6 +90,7 @@ abstract class $ChartConfigCopyWith<$Res> {
       bool highlightPointsVerticalLine,
       bool highlightPointsHorizontalLine,
       bool centerDataPointBetweenVerticalGrid,
+      List<ChartBackgroundTimeRange> backgroundTimeRanges,
       PaintingStyle canvasBackgroundPaintingStyle,
       bool scrollable,
       double? canvasWidth});
@@ -121,6 +126,7 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
     Object? highlightPointsVerticalLine = null,
     Object? highlightPointsHorizontalLine = null,
     Object? centerDataPointBetweenVerticalGrid = null,
+    Object? backgroundTimeRanges = null,
     Object? canvasBackgroundPaintingStyle = null,
     Object? scrollable = null,
     Object? canvasWidth = freezed,
@@ -179,6 +185,10 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
           ? _value.centerDataPointBetweenVerticalGrid
           : centerDataPointBetweenVerticalGrid // ignore: cast_nullable_to_non_nullable
               as bool,
+      backgroundTimeRanges: null == backgroundTimeRanges
+          ? _value.backgroundTimeRanges
+          : backgroundTimeRanges // ignore: cast_nullable_to_non_nullable
+              as List<ChartBackgroundTimeRange>,
       canvasBackgroundPaintingStyle: null == canvasBackgroundPaintingStyle
           ? _value.canvasBackgroundPaintingStyle
           : canvasBackgroundPaintingStyle // ignore: cast_nullable_to_non_nullable
@@ -231,6 +241,7 @@ abstract class _$$ChartConfigImplCopyWith<$Res>
       bool highlightPointsVerticalLine,
       bool highlightPointsHorizontalLine,
       bool centerDataPointBetweenVerticalGrid,
+      List<ChartBackgroundTimeRange> backgroundTimeRanges,
       PaintingStyle canvasBackgroundPaintingStyle,
       bool scrollable,
       double? canvasWidth});
@@ -265,6 +276,7 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
     Object? highlightPointsVerticalLine = null,
     Object? highlightPointsHorizontalLine = null,
     Object? centerDataPointBetweenVerticalGrid = null,
+    Object? backgroundTimeRanges = null,
     Object? canvasBackgroundPaintingStyle = null,
     Object? scrollable = null,
     Object? canvasWidth = freezed,
@@ -323,6 +335,10 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
           ? _value.centerDataPointBetweenVerticalGrid
           : centerDataPointBetweenVerticalGrid // ignore: cast_nullable_to_non_nullable
               as bool,
+      backgroundTimeRanges: null == backgroundTimeRanges
+          ? _value._backgroundTimeRanges
+          : backgroundTimeRanges // ignore: cast_nullable_to_non_nullable
+              as List<ChartBackgroundTimeRange>,
       canvasBackgroundPaintingStyle: null == canvasBackgroundPaintingStyle
           ? _value.canvasBackgroundPaintingStyle
           : canvasBackgroundPaintingStyle // ignore: cast_nullable_to_non_nullable
@@ -356,9 +372,11 @@ class _$ChartConfigImpl implements _ChartConfig {
       this.highlightPointsVerticalLine = false,
       this.highlightPointsHorizontalLine = false,
       this.centerDataPointBetweenVerticalGrid = true,
+      final List<ChartBackgroundTimeRange> backgroundTimeRanges = const [],
       this.canvasBackgroundPaintingStyle = PaintingStyle.fill,
       this.scrollable = false,
-      this.canvasWidth});
+      this.canvasWidth})
+      : _backgroundTimeRanges = backgroundTimeRanges;
 
   /// The color schema for the whole chart. If not set the default color schema will be used
   @override
@@ -416,6 +434,19 @@ class _$ChartConfigImpl implements _ChartConfig {
   @JsonKey()
   final bool centerDataPointBetweenVerticalGrid;
 
+  /// Liste von Hintergrund-Zeiträumen, die im Chart hervorgehoben werden sollen
+  final List<ChartBackgroundTimeRange> _backgroundTimeRanges;
+
+  /// Liste von Hintergrund-Zeiträumen, die im Chart hervorgehoben werden sollen
+  @override
+  @JsonKey()
+  List<ChartBackgroundTimeRange> get backgroundTimeRanges {
+    if (_backgroundTimeRanges is EqualUnmodifiableListView)
+      return _backgroundTimeRanges;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_backgroundTimeRanges);
+  }
+
   /// Experimental - Background painting style
   @override
   @JsonKey()
@@ -433,7 +464,7 @@ class _$ChartConfigImpl implements _ChartConfig {
 
   @override
   String toString() {
-    return 'ChartConfig(theme: $theme, curvedLine: $curvedLine, crosshair: $crosshair, showChartBorder: $showChartBorder, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, scrollable: $scrollable, canvasWidth: $canvasWidth)';
+    return 'ChartConfig(theme: $theme, curvedLine: $curvedLine, crosshair: $crosshair, showChartBorder: $showChartBorder, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, backgroundTimeRanges: $backgroundTimeRanges, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, scrollable: $scrollable, canvasWidth: $canvasWidth)';
   }
 
   @override
@@ -472,6 +503,8 @@ class _$ChartConfigImpl implements _ChartConfig {
                     centerDataPointBetweenVerticalGrid) ||
                 other.centerDataPointBetweenVerticalGrid ==
                     centerDataPointBetweenVerticalGrid) &&
+            const DeepCollectionEquality()
+                .equals(other._backgroundTimeRanges, _backgroundTimeRanges) &&
             (identical(other.canvasBackgroundPaintingStyle,
                     canvasBackgroundPaintingStyle) ||
                 other.canvasBackgroundPaintingStyle ==
@@ -498,6 +531,7 @@ class _$ChartConfigImpl implements _ChartConfig {
       highlightPointsVerticalLine,
       highlightPointsHorizontalLine,
       centerDataPointBetweenVerticalGrid,
+      const DeepCollectionEquality().hash(_backgroundTimeRanges),
       canvasBackgroundPaintingStyle,
       scrollable,
       canvasWidth);
@@ -526,6 +560,7 @@ abstract class _ChartConfig implements ChartConfig {
       final bool highlightPointsVerticalLine,
       final bool highlightPointsHorizontalLine,
       final bool centerDataPointBetweenVerticalGrid,
+      final List<ChartBackgroundTimeRange> backgroundTimeRanges,
       final PaintingStyle canvasBackgroundPaintingStyle,
       final bool scrollable,
       final double? canvasWidth}) = _$ChartConfigImpl;
@@ -570,6 +605,10 @@ abstract class _ChartConfig implements ChartConfig {
   /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
   @override
   bool get centerDataPointBetweenVerticalGrid;
+
+  /// Liste von Hintergrund-Zeiträumen, die im Chart hervorgehoben werden sollen
+  @override
+  List<ChartBackgroundTimeRange> get backgroundTimeRanges;
 
   /// Experimental - Background painting style
   @override

@@ -6,6 +6,7 @@ import 'package:coo_charts/chart_painter/chart_painter_metadata.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_config.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
+import 'package:coo_charts/common/chart_background_time_range.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/chart_tab_info.dart';
@@ -110,7 +111,7 @@ class CooChartPainter extends CustomPainter {
   final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelLineChartCallback;
   final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelBarChartCallback;
   final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelBarChartCallback;
-  
+
   // SVG callbacks for X-axis labels
   final XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgBarChartCallback;
 
@@ -166,6 +167,14 @@ class CooChartPainter extends CustomPainter {
       chartHeigt: metadata.chartHeight,
       mousePosition: mousePosition,
       linechartDataSeries: linechartDataSeries,
+    );
+
+    // Zeichne Hintergrund-Zeiträume falls konfiguriert
+    _drawBackgroundTimeRanges(
+      canvas: canvas,
+      config: chartConfig,
+      chartWidth: metadata.chartWidth,
+      chartHeight: metadata.chartHeight,
     );
 
     _drawXAxisLabelAndVerticalGridLine(
@@ -262,7 +271,7 @@ class CooChartPainter extends CustomPainter {
           xSegementWidthHalf: metadata.xSegementWidthHalf,
         );
       }
-      
+
       // Draw opposite bar charts (right axis) with opposite metadata
       if (metadataOpposite != null && yAxisOppositeConfig != null) {
         final oppositeBarSeries = barchartDataSeries.where((element) => element.opposite == true).toList();
@@ -285,7 +294,7 @@ class CooChartPainter extends CustomPainter {
           );
         }
       }
-      
+
       // Also draw line charts as overlay on bar charts (for combo charts)
       if (linechartDataSeries.isNotEmpty) {
         CooChartPainterUtil.drawDataLinechartDataPointsAndPath(
@@ -301,7 +310,7 @@ class CooChartPainter extends CustomPainter {
           mousePosition: mousePosition,
         );
       }
-      
+
       // Also draw line charts on opposite axis if available
       if (metadataOpposite != null && linechartDataSeries.isNotEmpty) {
         CooChartPainterUtil.drawDataLinechartDataPointsAndPath(
@@ -816,7 +825,7 @@ class CooChartPainter extends CustomPainter {
         }
 
         startNumber++;
-        
+
         // Calculate bottom label Y position
         final double bottomLabelsYPos = chartHeight + padding.top + 10;
 
@@ -867,7 +876,7 @@ class CooChartPainter extends CustomPainter {
 
         String? bottomLabel;
         XAxisLabelSvg? bottomSvgLabel;
-        
+
         // Check if we should use SVG labels
         bool shouldUseSvgLabels = false;
         try {
@@ -875,7 +884,7 @@ class CooChartPainter extends CustomPainter {
         } catch (e) {
           shouldUseSvgLabels = false;
         }
-        
+
         if (shouldUseSvgLabels && chartType == CooChartType.bar && xAxisStepLineBottomSvgBarChartCallback != null) {
           // For SVG labels, we don't need the dataPoints parameter since wind direction is based on index
           bottomSvgLabel = xAxisStepLineBottomSvgBarChartCallback!(i, []);
@@ -916,15 +925,15 @@ class CooChartPainter extends CustomPainter {
             }
           }
         }
-        
+
         // Render bottom labels (either SVG or text)
         if (xAxisConfig.showBottomLabels) {
           if (bottomSvgLabel != null) {
             // Render SVG label
             _drawXAxisSvgLabel(
-              canvas: canvas, 
-              svgLabel: bottomSvgLabel, 
-              x: x, 
+              canvas: canvas,
+              svgLabel: bottomSvgLabel,
+              x: x,
               y: bottomLabelsYPos,
             );
           } else if (bottomLabel != null) {
@@ -1142,7 +1151,7 @@ class CooChartPainter extends CustomPainter {
     try {
       // Try to get the SVG from cache
       final PictureInfo? pictureInfo = CooChartPainterUtil.getSvgFromCache(svgLabel.assetPath);
-      
+
       if (pictureInfo != null) {
         // Calculate center position
         final centerX = x + svgLabel.offsetX - (svgLabel.width / 2);
@@ -1150,18 +1159,18 @@ class CooChartPainter extends CustomPainter {
 
         // Save canvas state
         canvas.save();
-        
+
         // Translate to the final position
         canvas.translate(centerX, centerY);
-        
+
         // Scale the SVG to the desired size
         final scaleX = svgLabel.width / pictureInfo.size.width;
         final scaleY = svgLabel.height / pictureInfo.size.height;
         canvas.scale(scaleX, scaleY);
-        
+
         // Draw the SVG picture
         canvas.drawPicture(pictureInfo.picture);
-        
+
         // Restore canvas state
         canvas.restore();
       } else {
@@ -1169,22 +1178,121 @@ class CooChartPainter extends CustomPainter {
         final fallbackPaint = Paint()
           ..color = Colors.orange
           ..style = PaintingStyle.fill;
-        canvas.drawCircle(
-          Offset(x + svgLabel.offsetX, y + svgLabel.offsetY), 
-          8.0, 
-          fallbackPaint
-        );
+        canvas.drawCircle(Offset(x + svgLabel.offsetX, y + svgLabel.offsetY), 8.0, fallbackPaint);
       }
     } catch (e) {
       // Fallback for any errors
       final fallbackPaint = Paint()
         ..color = Colors.red
         ..style = PaintingStyle.fill;
-      canvas.drawCircle(
-        Offset(x + svgLabel.offsetX, y + svgLabel.offsetY), 
-        8.0, 
-        fallbackPaint
-      );
+      canvas.drawCircle(Offset(x + svgLabel.offsetX, y + svgLabel.offsetY), 8.0, fallbackPaint);
+    }
+  }
+
+  /// Zeichnet Hintergrund-Zeiträume basierend auf der Chart-Konfiguration
+  void _drawBackgroundTimeRanges({
+    required Canvas canvas,
+    required ChartConfig config,
+    required double chartWidth,
+    required double chartHeight,
+  }) {
+    if (config.backgroundTimeRanges.isEmpty) {
+      return;
+    }
+
+    // Nur für Datum/Zeit-basierte X-Achsen implementieren
+    if (xAxisConfig.valueType != XAxisValueType.datetime && xAxisConfig.valueType != XAxisValueType.date) {
+      return;
+    }
+
+    final chartStartY = padding.top.toDouble();
+    final chartEndY = chartStartY + chartHeight;
+
+    for (final ChartBackgroundTimeRange timeRange in config.backgroundTimeRanges) {
+      try {
+        _drawTimeRangeForAllDays(
+          canvas: canvas,
+          timeRange: timeRange,
+          chartStartY: chartStartY,
+          chartEndY: chartEndY,
+        );
+      } catch (e) {
+        // Fehler beim Zeichnen eines Zeitraums - ignorieren und weiter
+        continue;
+      }
+    }
+  }
+
+  /// Zeichnet einen Zeitraum für alle Tage im Chart
+  void _drawTimeRangeForAllDays({
+    required Canvas canvas,
+    required ChartBackgroundTimeRange timeRange,
+    required double chartStartY,
+    required double chartEndY,
+  }) {
+    final backgroundPaint = Paint()
+      ..color = timeRange.backgroundColor.withOpacity(timeRange.opacity)
+      ..style = PaintingStyle.fill;
+
+    List<int> validIndices = [];
+
+    // Durchgehe alle DateTime-Werte und sammle alle Indizes, die in den Zeitraum fallen
+    for (int i = 0; i < metadata.allDateTimeXAxisValues.length; i++) {
+      final dateTime = metadata.allDateTimeXAxisValues[i];
+
+      if (_isTimeInRange(dateTime, timeRange.startTime, timeRange.endTime)) {
+        validIndices.add(i);
+      }
+    } // Gruppiere aufeinanderfolgende Indizes zu Bereichen
+    if (validIndices.isNotEmpty) {
+      List<List<int>> ranges = [];
+      List<int> currentRange = [validIndices[0]];
+
+      for (int i = 1; i < validIndices.length; i++) {
+        if (validIndices[i] == validIndices[i - 1] + 1) {
+          // Aufeinanderfolgender Index - zur aktuellen Range hinzufügen
+          currentRange.add(validIndices[i]);
+        } else {
+          // Lücke gefunden - aktuelle Range abschließen und neue starten
+          ranges.add(currentRange);
+          currentRange = [validIndices[i]];
+        }
+      }
+      ranges.add(currentRange); // Letzte Range hinzufügen
+
+      // Zeichne jeden Bereich
+      for (final range in ranges) {
+        final rangeStart = range.first;
+        final rangeEnd = range.last;
+
+        // Berechne X-Positionen
+        double startX = (rangeStart * metadata.xSegmentWidth) + padding.left;
+        double endX = ((rangeEnd + 1) * metadata.xSegmentWidth) + padding.left; // +1 to include end point
+
+        if (centerDataPointBetweenVerticalGrid) {
+          startX += metadata.xSegementWidthHalf;
+          endX += metadata.xSegementWidthHalf;
+        }
+
+        // Zeichne den Hintergrund-Zeitraum
+        final rect = Rect.fromLTRB(startX, chartStartY, endX, chartEndY);
+        canvas.drawRect(rect, backgroundPaint);
+      }
+    }
+  }
+
+  /// Prüft, ob eine DateTime in einem bestimmten Zeitraum liegt
+  bool _isTimeInRange(DateTime dateTime, TimeOfDay startTime, TimeOfDay endTime) {
+    final currentMinutes = dateTime.hour * 60 + dateTime.minute;
+    final startMinutes = startTime.hour * 60 + startTime.minute;
+    final endMinutes = endTime.hour * 60 + endTime.minute;
+
+    if (startMinutes <= endMinutes) {
+      // Normal range (e.g., 09:00 - 17:00)
+      return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+    } else {
+      // Overnight range (e.g., 20:00 - 06:00)
+      return currentMinutes >= startMinutes || currentMinutes <= endMinutes;
     }
   }
 }

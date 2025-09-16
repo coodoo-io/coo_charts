@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:ui';
 
+import 'package:coo_charts/common/chart_background_time_range.dart';
 import 'package:coo_charts/common/coo_chart_color_theme.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -48,6 +49,9 @@ class ChartConfig with _$ChartConfig {
 
     /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
     @Default(true) bool centerDataPointBetweenVerticalGrid,
+
+    /// Liste von Hintergrund-Zeiträumen, die im Chart hervorgehoben werden sollen
+    @Default([]) List<ChartBackgroundTimeRange> backgroundTimeRanges,
 
     /// Experimental - Background painting style
     @Default(PaintingStyle.fill) PaintingStyle canvasBackgroundPaintingStyle,
