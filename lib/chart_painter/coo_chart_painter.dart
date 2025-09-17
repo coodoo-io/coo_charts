@@ -6,12 +6,14 @@ import 'package:coo_charts/chart_painter/chart_painter_metadata.dart';
 import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_config.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
+import 'package:coo_charts/common/chart_background_time_range.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/chart_tab_info.dart';
 import 'package:coo_charts/common/coo_chart_color_theme.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
 import 'package:coo_charts/common/x_axis_config.dart';
+import 'package:coo_charts/common/x_axis_label_svg.dart';
 import 'package:coo_charts/common/x_axis_value_type.enum.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_point.dart';
@@ -56,6 +58,7 @@ class CooChartPainter extends CustomPainter {
     this.xAxisStepLineBottomLabelLineChartCallback,
     this.xAxisStepLineTopLabelBarChartCallback,
     this.xAxisStepLineBottomLabelBarChartCallback,
+    this.xAxisStepLineBottomSvgBarChartCallback,
   });
 
   final ChartConfig chartConfig;
@@ -109,6 +112,9 @@ class CooChartPainter extends CustomPainter {
   final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelBarChartCallback;
   final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelBarChartCallback;
 
+  // SVG callbacks for X-axis labels
+  final XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgBarChartCallback;
+
   final Map<Rect, int> chartRectYPos = {}; // Merken welches Rect bei welcher Y-Pos liegt
 
   final Paint _highlightLinePaint = Paint()
@@ -161,6 +167,14 @@ class CooChartPainter extends CustomPainter {
       chartHeigt: metadata.chartHeight,
       mousePosition: mousePosition,
       linechartDataSeries: linechartDataSeries,
+    );
+
+    // Zeichne Hintergrund-Zeiträume falls konfiguriert
+    _drawBackgroundTimeRanges(
+      canvas: canvas,
+      config: chartConfig,
+      chartWidth: metadata.chartWidth,
+      chartHeight: metadata.chartHeight,
     );
 
     _drawXAxisLabelAndVerticalGridLine(
@@ -237,22 +251,81 @@ class CooChartPainter extends CustomPainter {
       }
     }
     if (chartType == CooChartType.bar) {
-      _drawDataBarchartBars(
-        theme: theme,
-        barchartDataSeries: barchartDataSeries,
-        columnBlocks: columnBlocks,
-        canvas: canvas,
-        chartWidth: metadata.chartWidth,
-        chartHeigt: metadata.chartHeight,
-        mousePosition: mousePosition,
-        minDataPointValue: metadata.minDataPointValue,
-        yAxisConfig: yAxisConfig,
-        yAxisMaxValue: metadata.yAxisMaxValue,
-        yAxisMinValue: metadata.yAxisMinValue,
-        padding: padding,
-        xSegmentWidth: metadata.xSegmentWidth,
-        xSegementWidthHalf: metadata.xSegementWidthHalf,
-      );
+      // Draw non-opposite bar charts (left axis)
+      final nonOppositeBarSeries = barchartDataSeries.where((element) => element.opposite == false).toList();
+      if (nonOppositeBarSeries.isNotEmpty) {
+        _drawDataBarchartBars(
+          theme: theme,
+          barchartDataSeries: nonOppositeBarSeries,
+          columnBlocks: columnBlocks,
+          canvas: canvas,
+          chartWidth: metadata.chartWidth,
+          chartHeigt: metadata.chartHeight,
+          mousePosition: mousePosition,
+          minDataPointValue: metadata.minDataPointValue,
+          yAxisConfig: yAxisConfig,
+          yAxisMaxValue: metadata.yAxisMaxValue,
+          yAxisMinValue: metadata.yAxisMinValue,
+          padding: padding,
+          xSegmentWidth: metadata.xSegmentWidth,
+          xSegementWidthHalf: metadata.xSegementWidthHalf,
+        );
+      }
+
+      // Draw opposite bar charts (right axis) with opposite metadata
+      if (metadataOpposite != null && yAxisOppositeConfig != null) {
+        final oppositeBarSeries = barchartDataSeries.where((element) => element.opposite == true).toList();
+        if (oppositeBarSeries.isNotEmpty) {
+          _drawDataBarchartBars(
+            theme: theme,
+            barchartDataSeries: oppositeBarSeries,
+            columnBlocks: columnBlocks,
+            canvas: canvas,
+            chartWidth: metadataOpposite!.chartWidth,
+            chartHeigt: metadataOpposite!.chartHeight,
+            mousePosition: mousePosition,
+            minDataPointValue: metadataOpposite!.minDataPointValue,
+            yAxisConfig: yAxisOppositeConfig!,
+            yAxisMaxValue: metadataOpposite!.yAxisMaxValue,
+            yAxisMinValue: metadataOpposite!.yAxisMinValue,
+            padding: padding,
+            xSegmentWidth: metadataOpposite!.xSegmentWidth,
+            xSegementWidthHalf: metadataOpposite!.xSegementWidthHalf,
+          );
+        }
+      }
+
+      // Also draw line charts as overlay on bar charts (for combo charts)
+      if (linechartDataSeries.isNotEmpty) {
+        CooChartPainterUtil.drawDataLinechartDataPointsAndPath(
+          metadata: metadata,
+          padding: padding,
+          centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+          curvedLine: curvedLine,
+          highlightPoints: highlightPoints,
+          mouseInRectYIndex: mouseInRectYIndex,
+          linechartDataSeries: linechartDataSeries.where((element) => element.opposite == false).toList(),
+          columnBlocks: columnBlocks,
+          canvas: canvas,
+          mousePosition: mousePosition,
+        );
+      }
+
+      // Also draw line charts on opposite axis if available
+      if (metadataOpposite != null && linechartDataSeries.isNotEmpty) {
+        CooChartPainterUtil.drawDataLinechartDataPointsAndPath(
+          metadata: metadataOpposite!,
+          padding: padding,
+          centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+          curvedLine: curvedLine,
+          highlightPoints: highlightPoints,
+          mouseInRectYIndex: mouseInRectYIndex,
+          linechartDataSeries: linechartDataSeries.where((element) => element.opposite == true).toList(),
+          columnBlocks: columnBlocks,
+          canvas: canvas,
+          mousePosition: mousePosition,
+        );
+      }
     }
 
     if (crosshair) {
@@ -511,8 +584,9 @@ class CooChartPainter extends CustomPainter {
       var rect = Rect.fromPoints(Offset(x1, y1), Offset(x2, y2));
 
       // Falls es sich um ein Barchart handelt kann auch nur dieser "bar" gehighlightet werden.
-      if (metadata.barChartDataPointsByColumnIndex[i] != null) {
-        List<CooBarChartDataPoint> barchartDataPoints = metadata.barChartDataPointsByColumnIndex[i]!;
+      final barchartDataPointsNullable = metadata.barChartDataPointsByColumnIndex[i];
+      if (barchartDataPointsNullable != null) {
+        List<CooBarChartDataPoint> barchartDataPoints = barchartDataPointsNullable;
         // get first background color, if available
         final dataPoint = barchartDataPoints.firstWhereOrNull((element) => element.columnBackgroundColor != null);
         if (dataPoint != null) {
@@ -660,17 +734,21 @@ class CooChartPainter extends CustomPainter {
       // Don't draw the first vertical grid line because there is already the y-Axis line
       // Draw only vertical lines if general config enabled it and no individual config is given
       bool isStepAxisLine = false;
+
+      // Calculate isStepAxisLine independent of grid line drawing conditions
+      if (xAxisConfig.stepAxisLine != null) {
+        bool drawLine = i == xAxisConfig.stepAxisLineStart; // Wenn i exakt der Startangabe ist
+        // Wenn i auf einem vielfachen der angegebenen step liegt. Ist ein Start angegben wird dieser von i abgezogen
+        drawLine = drawLine || (i - xAxisConfig.stepAxisLineStart) % xAxisConfig.stepAxisLine! == 0;
+        isStepAxisLine = drawLine;
+      }
+
       if (showGridVertical && (i != 0 && i != xGridLineCount || !config.showChartBorder)) {
         if (xAxisConfig.stepAxisLine == null) {
           canvas.drawLine(
               Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), gridPaint);
         } else {
-          bool drawLine = i == xAxisConfig.stepAxisLineStart; // Wenn i exakt der Startangabe ist
-          // Wenn i auf einem vielfachen der angegebenen step liegt. Ist ein Start angegben wird dieser von i abgezogen
-          drawLine = drawLine || (i - xAxisConfig.stepAxisLineStart) % xAxisConfig.stepAxisLine! == 0;
-
-          if (drawLine) {
-            isStepAxisLine = true;
+          if (isStepAxisLine) {
             // Nur zeichen wenn der Start Step oder der konfigierte Step ab dem start übereinstimmt
             canvas.drawLine(
                 Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), gridPaint);
@@ -718,12 +796,18 @@ class CooChartPainter extends CustomPainter {
         switch (chartType) {
           case CooChartType.line:
             if (xAxisStepLineTopLabelLineChartCallback != null) {
-              topLabel = xAxisStepLineTopLabelLineChartCallback!(i, metadata.lineChartDataPointsByColumnIndex[i]!);
+              final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
+              if (dataPoints != null) {
+                topLabel = xAxisStepLineTopLabelLineChartCallback!(i, dataPoints);
+              }
             }
             break;
           case CooChartType.bar:
             if (xAxisStepLineTopLabelBarChartCallback != null) {
-              topLabel = xAxisStepLineTopLabelBarChartCallback!(i, metadata.barChartDataPointsByColumnIndex[i]!);
+              final dataPoints = metadata.barChartDataPointsByColumnIndex[i];
+              if (dataPoints != null) {
+                topLabel = xAxisStepLineTopLabelBarChartCallback!(i, dataPoints);
+              }
               break;
             }
         }
@@ -746,6 +830,9 @@ class CooChartPainter extends CustomPainter {
 
         startNumber++;
 
+        // Calculate bottom label Y position
+        final double bottomLabelsYPos = chartHeight + padding.top + 10;
+
         if (xAxisConfig.showTopLabels) {
           _axisLabelPainter.text = TextSpan(text: topLabel, style: topLabelTextStyle);
           _axisLabelPainter.layout();
@@ -765,7 +852,10 @@ class CooChartPainter extends CustomPainter {
           if (xAxisConfig.stepAxisLine != null) {
             if (!isStepAxisLine) {
               drawLabel = false;
-            } else if (xAxisConfig.stepAxisLineStart > 0 && i <= xAxisConfig.stepAxisLineStart) {}
+            } else if (xAxisConfig.stepAxisLineStart > 0 && i < xAxisConfig.stepAxisLineStart) {
+              // Skip labels before the start position (but only if stepAxisLineStart > 0)
+              drawLabel = false;
+            }
 
             // TODO Prüfen ob es auch in den abgeschnittenen Space passt
           }
@@ -792,78 +882,114 @@ class CooChartPainter extends CustomPainter {
         }
 
         String? bottomLabel;
-        // Bottom Labels Callbacks
-        switch (chartType) {
-          case CooChartType.line:
-            if (xAxisStepLineBottomLabelLineChartCallback != null) {
-              bottomLabel =
-                  xAxisStepLineBottomLabelLineChartCallback!(i, metadata.lineChartDataPointsByColumnIndex[i]!);
-            }
-            break;
-          case CooChartType.bar:
-            if (xAxisStepLineBottomLabelBarChartCallback != null) {
-              bottomLabel = xAxisStepLineBottomLabelBarChartCallback!(i, metadata.barChartDataPointsByColumnIndex[i]!);
-              break;
-            }
+        XAxisLabelSvg? bottomSvgLabel;
+
+        // Check if we should use SVG labels
+        bool shouldUseSvgLabels = false;
+        try {
+          shouldUseSvgLabels = xAxisConfig.useSvgLabels;
+        } catch (e) {
+          shouldUseSvgLabels = false;
         }
 
-        // Bottom Labels Defaults, wenn kein Callback gegeben ist
-        if (bottomLabel == null) {
-          switch (xAxisConfig.valueType) {
-            case XAxisValueType.date:
-            case XAxisValueType.datetime:
-              bottomLabel = bottomDateFormat!.format(metadata.allDateTimeXAxisValues[i]);
+        if (shouldUseSvgLabels && chartType == CooChartType.bar && xAxisStepLineBottomSvgBarChartCallback != null) {
+          // For SVG labels, we don't need the dataPoints parameter since wind direction is based on index
+          bottomSvgLabel = xAxisStepLineBottomSvgBarChartCallback!(i, []);
+        } else {
+          // Bottom Labels Callbacks
+          switch (chartType) {
+            case CooChartType.line:
+              if (xAxisStepLineBottomLabelLineChartCallback != null) {
+                final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
+                if (dataPoints != null) {
+                  bottomLabel = xAxisStepLineBottomLabelLineChartCallback!(i, dataPoints);
+                }
+              }
               break;
-            case XAxisValueType.number:
-              bottomLabel = startNumber.toString();
-              break;
+            case CooChartType.bar:
+              if (xAxisStepLineBottomLabelBarChartCallback != null) {
+                final dataPoints = metadata.barChartDataPointsByColumnIndex[i];
+                if (dataPoints != null) {
+                  bottomLabel = xAxisStepLineBottomLabelBarChartCallback!(i, dataPoints);
+                }
+                break;
+              }
           }
-          if (xAxisConfig.labelBottomPostfix != null) {
-            bottomLabel = '$bottomLabel ${xAxisConfig.labelBottomPostfix}';
+
+          // Bottom Labels Defaults, wenn kein Callback gegeben ist
+          if (bottomLabel == null) {
+            switch (xAxisConfig.valueType) {
+              case XAxisValueType.date:
+              case XAxisValueType.datetime:
+                bottomLabel = bottomDateFormat!.format(metadata.allDateTimeXAxisValues[i]);
+                break;
+              case XAxisValueType.number:
+                bottomLabel = startNumber.toString();
+                break;
+            }
+            if (xAxisConfig.labelBottomPostfix != null) {
+              bottomLabel = '$bottomLabel ${xAxisConfig.labelBottomPostfix}';
+            }
           }
         }
+
+        // Render bottom labels (either SVG or text)
         if (xAxisConfig.showBottomLabels) {
-          _axisLabelPainter.text = TextSpan(text: bottomLabel, style: bottomLabelTextStyle);
-          _axisLabelPainter.layout();
-          final double labelTextWidth = _axisLabelPainter.width;
-          // Prüfen ob die Größe noch in den Bereich passt
-          bool textFitsInSpace = true;
-          if (labelTextWidth < (metadata.xSegmentWidth - 1)) {
-            // Der Platz reicht für das Label aus
-            textFitsInSpace = true;
-          } else {
-            textFitsInSpace = false;
-          }
-          // Wenn ein Axis Step konfiguriert ist soll auch nur dann das Label geschrieben werden,
-          // Wenn Platz dafür ist.
-          bool drawLabel = true;
-          if (drawLabel && xAxisConfig.stepAxisLine != null) {
-            if (!isStepAxisLine) {
-              drawLabel = false;
-            } else
-
+          if (bottomSvgLabel != null) {
+            // Render SVG label
+            _drawXAxisSvgLabel(
+              canvas: canvas,
+              svgLabel: bottomSvgLabel,
+              x: x,
+              y: bottomLabelsYPos,
+            );
+          } else if (bottomLabel != null) {
+            // Render text label
+            _axisLabelPainter.text = TextSpan(text: bottomLabel, style: bottomLabelTextStyle);
+            _axisLabelPainter.layout();
+            final double labelTextWidth = _axisLabelPainter.width;
             // Prüfen ob die Größe noch in den Bereich passt
-            if (xAxisConfig.stepAxisLineStart > 0 && i <= xAxisConfig.stepAxisLineStart) {}
-            // TODO Prüfen ob es auch in den abgeschnittenen Space passt
-          }
-
-          if (drawLabel && textFitsInSpace) {
-            // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-            final xPosCenter = (xOffsetInterval / 2) - (labelTextWidth / 2);
-            // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
-            double xPos;
-            if (isStepAxisLine) {
-              // Es müssen Anzahl steps * breite Column für den Offset nehmen
-              xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
+            bool textFitsInSpace = true;
+            if (labelTextWidth < (metadata.xSegmentWidth - 1)) {
+              // Der Platz reicht für das Label aus
+              textFitsInSpace = true;
             } else {
-              xPos = x - (xOffsetInterval / 2) + xPosCenter;
+              textFitsInSpace = false;
             }
-            double yPos = chartHeight + padding.top + 10;
-            if (xAxisConfig.bottomLabelOffset != null) {
-              xPos += xAxisConfig.bottomLabelOffset!.dx;
-              yPos += xAxisConfig.bottomLabelOffset!.dy;
+            // Wenn ein Axis Step konfiguriert ist soll auch nur dann das Label geschrieben werden,
+            // Wenn Platz dafür ist.
+            bool drawLabel = true;
+            if (drawLabel && xAxisConfig.stepAxisLine != null) {
+              if (!isStepAxisLine) {
+                drawLabel = false;
+              } else {
+                // Prüfen ob die Größe noch in den Bereich passt
+                if (xAxisConfig.stepAxisLineStart > 0 && i < xAxisConfig.stepAxisLineStart) {
+                  // Skip labels before the start position (but only if stepAxisLineStart > 0)
+                  drawLabel = false;
+                }
+                // TODO Prüfen ob es auch in den abgeschnittenen Space passt
+              }
             }
-            _axisLabelPainter.paint(canvas, Offset(xPos, yPos));
+
+            if (drawLabel && textFitsInSpace) {
+              // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
+              final xPosCenter = (xOffsetInterval / 2) - (labelTextWidth / 2);
+              // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
+              double xPos;
+              if (isStepAxisLine) {
+                // Es müssen Anzahl steps * breite Column für den Offset nehmen
+                xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
+              } else {
+                xPos = x - (xOffsetInterval / 2) + xPosCenter;
+              }
+              double yPos = bottomLabelsYPos;
+              if (xAxisConfig.bottomLabelOffset != null) {
+                xPos += xAxisConfig.bottomLabelOffset!.dx;
+                yPos += xAxisConfig.bottomLabelOffset!.dy;
+              }
+              _axisLabelPainter.paint(canvas, Offset(xPos, yPos));
+            }
           }
         }
       }
@@ -1022,6 +1148,171 @@ class CooChartPainter extends CustomPainter {
           }
         }
       }
+    }
+  }
+
+  /// Renders an SVG icon for X-axis label
+  void _drawXAxisSvgLabel({
+    required Canvas canvas,
+    required XAxisLabelSvg svgLabel,
+    required double x,
+    required double y,
+  }) {
+    try {
+      // Try to get the SVG from cache
+      final PictureInfo? pictureInfo = CooChartPainterUtil.getSvgFromCache(svgLabel.assetPath);
+
+      if (pictureInfo != null) {
+        // Calculate center position
+        final centerX = x + svgLabel.offsetX - (svgLabel.width / 2);
+        final centerY = y + svgLabel.offsetY - (svgLabel.height / 2);
+
+        // Save canvas state
+        canvas.save();
+
+        // Translate to the final position
+        canvas.translate(centerX, centerY);
+
+        // Apply rotation if specified
+        if (svgLabel.rotationDegrees != 0.0) {
+          // Translate to center of SVG for rotation
+          canvas.translate(svgLabel.width / 2, svgLabel.height / 2);
+          // Convert degrees to radians and rotate
+          canvas.rotate(svgLabel.rotationDegrees * (pi / 180.0));
+          // Translate back
+          canvas.translate(-svgLabel.width / 2, -svgLabel.height / 2);
+        }
+
+        // Scale the SVG to the desired size
+        final scaleX = svgLabel.width / pictureInfo.size.width;
+        final scaleY = svgLabel.height / pictureInfo.size.height;
+        canvas.scale(scaleX, scaleY);
+
+        // Draw the SVG picture
+        canvas.drawPicture(pictureInfo.picture);
+
+        // Restore canvas state
+        canvas.restore();
+      } else {
+        // Fallback: draw a colored circle if SVG is not in cache
+        final fallbackPaint = Paint()
+          ..color = Colors.transparent
+          ..style = PaintingStyle.fill;
+        canvas.drawCircle(Offset(x + svgLabel.offsetX, y + svgLabel.offsetY), 8.0, fallbackPaint);
+      }
+    } catch (e) {
+      // Fallback for any errors
+      final fallbackPaint = Paint()
+        ..color = Colors.red
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(x + svgLabel.offsetX, y + svgLabel.offsetY), 8.0, fallbackPaint);
+    }
+  }
+
+  /// Zeichnet Hintergrund-Zeiträume basierend auf der Chart-Konfiguration
+  void _drawBackgroundTimeRanges({
+    required Canvas canvas,
+    required ChartConfig config,
+    required double chartWidth,
+    required double chartHeight,
+  }) {
+    if (config.backgroundTimeRanges.isEmpty) {
+      return;
+    }
+
+    // Nur für Datum/Zeit-basierte X-Achsen implementieren
+    if (xAxisConfig.valueType != XAxisValueType.datetime && xAxisConfig.valueType != XAxisValueType.date) {
+      return;
+    }
+
+    final chartStartY = padding.top.toDouble();
+    final chartEndY = chartStartY + chartHeight;
+
+    for (final ChartBackgroundTimeRange timeRange in config.backgroundTimeRanges) {
+      try {
+        _drawTimeRangeForAllDays(
+          canvas: canvas,
+          timeRange: timeRange,
+          chartStartY: chartStartY,
+          chartEndY: chartEndY,
+        );
+      } catch (e) {
+        // Fehler beim Zeichnen eines Zeitraums - ignorieren und weiter
+        continue;
+      }
+    }
+  }
+
+  /// Zeichnet einen Zeitraum für alle Tage im Chart
+  void _drawTimeRangeForAllDays({
+    required Canvas canvas,
+    required ChartBackgroundTimeRange timeRange,
+    required double chartStartY,
+    required double chartEndY,
+  }) {
+    final backgroundPaint = Paint()
+      ..color = timeRange.backgroundColor.withOpacity(timeRange.opacity)
+      ..style = PaintingStyle.fill;
+
+    List<int> validIndices = [];
+
+    // Durchgehe alle DateTime-Werte und sammle alle Indizes, die in den Zeitraum fallen
+    for (int i = 0; i < metadata.allDateTimeXAxisValues.length; i++) {
+      final dateTime = metadata.allDateTimeXAxisValues[i];
+
+      if (_isTimeInRange(dateTime, timeRange.startTime, timeRange.endTime)) {
+        validIndices.add(i);
+      }
+    } // Gruppiere aufeinanderfolgende Indizes zu Bereichen
+    if (validIndices.isNotEmpty) {
+      List<List<int>> ranges = [];
+      List<int> currentRange = [validIndices[0]];
+
+      for (int i = 1; i < validIndices.length; i++) {
+        if (validIndices[i] == validIndices[i - 1] + 1) {
+          // Aufeinanderfolgender Index - zur aktuellen Range hinzufügen
+          currentRange.add(validIndices[i]);
+        } else {
+          // Lücke gefunden - aktuelle Range abschließen und neue starten
+          ranges.add(currentRange);
+          currentRange = [validIndices[i]];
+        }
+      }
+      ranges.add(currentRange); // Letzte Range hinzufügen
+
+      // Zeichne jeden Bereich
+      for (final range in ranges) {
+        final rangeStart = range.first;
+        final rangeEnd = range.last;
+
+        // Berechne X-Positionen
+        double startX = (rangeStart * metadata.xSegmentWidth) + padding.left;
+        double endX = ((rangeEnd + 1) * metadata.xSegmentWidth) + padding.left; // +1 to include end point
+
+        if (centerDataPointBetweenVerticalGrid) {
+          startX += metadata.xSegementWidthHalf;
+          endX += metadata.xSegementWidthHalf;
+        }
+
+        // Zeichne den Hintergrund-Zeitraum
+        final rect = Rect.fromLTRB(startX, chartStartY, endX, chartEndY);
+        canvas.drawRect(rect, backgroundPaint);
+      }
+    }
+  }
+
+  /// Prüft, ob eine DateTime in einem bestimmten Zeitraum liegt
+  bool _isTimeInRange(DateTime dateTime, TimeOfDay startTime, TimeOfDay endTime) {
+    final currentMinutes = dateTime.hour * 60 + dateTime.minute;
+    final startMinutes = startTime.hour * 60 + startTime.minute;
+    final endMinutes = endTime.hour * 60 + endTime.minute;
+
+    if (startMinutes <= endMinutes) {
+      // Normal range (e.g., 09:00 - 17:00)
+      return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+    } else {
+      // Overnight range (e.g., 20:00 - 06:00)
+      return currentMinutes >= startMinutes || currentMinutes <= endMinutes;
     }
   }
 }

@@ -15,12 +15,16 @@ import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
 import 'package:coo_charts/common/data_point_label_pos.enum.dart';
 import 'package:coo_charts/common/x_axis_value_type.enum.dart';
+import 'package:coo_charts/common/x_axis_label_svg.dart';
+import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts_example/linechart_demo_util.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 const kIconWeatherCloudySvg = 'assets/sym_cloudy.svg';
 const kIconWeatherRainSvg = 'assets/sym_rain.svg';
+const kIconWindArrowSvg = 'assets/wind_over50.svg';
+const kIconWindStrongSvg = 'assets/wind_over90.svg';
 const kIconWindOver50Svg = 'assets/wind_over50.svg';
 const kIconWindOver90Svg = 'assets/wind_over90.svg';
 const kIconWeatherCloudyPng = 'assets/cloudcoverage-0.png';
@@ -43,6 +47,9 @@ class _LineChartDemoState extends State<LineChartDemo> {
   String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelLineChartCallback;
   String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelBarChartCallback;
   String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelBarChartCallback;
+  
+  // SVG callback for X-axis labels
+  XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgBarChartCallback;
 
   ChartColumnBlocks? chartColumnBlocks;
   ChartConfig chartConfig = const ChartConfig();
@@ -89,8 +96,6 @@ class _LineChartDemoState extends State<LineChartDemo> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
           color: Colors.blue,
@@ -99,12 +104,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
             child: Row(),
           ),
         ),
-        Container(
-          width: double.infinity,
-          height: 600,
-          color: chartBackgroundColorBlack ? Colors.black : Colors.white,
-          child: switch (chartType) {
-            CooChartType.line => CooLineChart(
+        Expanded(
+          child: Container(
+            width: double.infinity,
+            color: chartBackgroundColorBlack ? Colors.black : Colors.white,
+            child: switch (chartType) {
+              CooChartType.line => CooLineChart(
                 dataSeries: linechartDataSeries,
                 columnBlocks: chartColumnBlocks,
                 chartConfig: chartConfig,
@@ -118,104 +123,229 @@ class _LineChartDemoState extends State<LineChartDemo> {
               ),
             CooChartType.bar => CooBarChart(
                 dataSeries: barchartDataSeries,
+                lineDataSeries: linechartDataSeries, // Add line overlay to bar chart
                 columnBlocks: chartColumnBlocks,
                 chartConfig: chartConfig,
                 xAxisConfig: xAxisConfig,
                 yAxisConfig: yAxisConfig,
+                yAxisOppositeConfig: yAxisOppositeConfig,
                 xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelBarChartCallback,
                 xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelBarChartCallback,
+                xAxisStepLineBottomSvgCallback: xAxisStepLineBottomSvgBarChartCallback,
               ),
-          },
+            },
+          ),
         ),
         Container(
           color: Colors.amber,
-          child: Column(children: [
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateEmptyLists()),
-                  child: const Text('Leere Liste'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateBarchart1Bis10()),
-                  child: const Text('Bar Chart 1-10'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateKachelmannSonnenscheindauerTrend()),
-                  child: const Text('Bar Chart mit Range'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateKachelmannWindoenForecast()),
-                  child: const Text('Candle-StickChart'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateMultipleBarchart()),
-                  child: const Text('Multiple Bar Charts'),
-                ),
-              ],
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () async {
+                      await _generateWeatherDualAxisChart();
+                      setState(() {});
+                    },
+                    child: const Text('🌦️ Wetter', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateEmptyLists()),
+                    child: const Text('Leere Liste', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateBarchart1Bis10()),
+                    child: const Text('Bar 1-10', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateKachelmannSonnenscheindauerTrend()),
+                    child: const Text('Bar Range', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateKachelmannWindoenForecast()),
+                    child: const Text('Candle', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateMultipleBarchart()),
+                    child: const Text('Multiple', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
             ),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () => setState(() => _create0To10To0ValuesChartDataPoints()),
-                  child: const Text('0 -> 10 ->0'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _create0To10ValuesChartDataPoints()),
-                  child: const Text('0 -> 10'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _createMinus5To5ValuesChartDataPoints()),
-                  child: const Text('5 -> -5'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _create0To10To0WithNullValuesChartDataPoints()),
-                  child: const Text('NULL Value Test'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generate10DataPointsLargeNumer()),
-                  child: const Text('10 große Zahlen'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateKachelmann14TageWetterTrend()),
-                  child: const Text('Kachelmann 14-Tage'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateKachelmannVorhersageXL()),
-                  child: const Text('Temperaturkurve'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateLargeVorhersageHourly()),
-                  child: const Text('Große Datenmennge'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
-                  child: const Text('Random Daten generieren'),
-                ),
-                ElevatedButton(
-                  onPressed: () => setState(() => _generateRandomDualLinechart()),
-                  child: const Text('Random Daten Dual Axis generieren'),
-                ),
-              ],
+            // === NEW DEMO BUTTONS FOR CHART VARIANTS ===
+            const SizedBox(height: 4),
+            const Text('📊 Chart Varianten Demos:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+            const SizedBox(height: 2),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateSimpleLineChart()),
+                    child: const Text('📈 Line', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _generateSimpleBarChart()),
+                    child: const Text('📊 Bar', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () async {
+                      await _generateLineBarComboNormalLabels();
+                      setState(() {});
+                    },
+                    child: const Text('📈📊 Normal', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () async {
+                      await _generateLineBarComboSvgXLabels();
+                      setState(() {});
+                    },
+                    child: const Text('📈📊 SVG X', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
             ),
-            Row(
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () async {
+                      await _generateLineBarComboNormalDataPoints();
+                      setState(() {});
+                    },
+                    child: const Text('📈📊 Normal Points', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () async {
+                      await _generateLineBarComboSvgDataPoints();
+                      setState(() {});
+                    },
+                    child: const Text('📈📊 SVG Points', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
+            ),
+            // === END NEW DEMO BUTTONS ===
+            const SizedBox(height: 4),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Wrap(
+                spacing: 4,
+                runSpacing: 2,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () => setState(() => _create0To10To0ValuesChartDataPoints()),
+                    child: const Text('0 -> 10 ->0', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
+                    onPressed: () => setState(() => _create0To10ValuesChartDataPoints()),
+                    child: const Text('0->10', style: TextStyle(fontSize: 10)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
+                    onPressed: () => setState(() => _createMinus5To5ValuesChartDataPoints()),
+                    child: const Text('5->-5', style: TextStyle(fontSize: 10)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
+                    onPressed: () => setState(() => _create0To10To0WithNullValuesChartDataPoints()),
+                    child: const Text('NULL Test', style: TextStyle(fontSize: 10)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
+                    onPressed: () => setState(() => _generate10DataPointsLargeNumer()),
+                    child: const Text('Große Zahlen', style: TextStyle(fontSize: 10)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
+                    onPressed: () => setState(() => _generateKachelmann14TageWetterTrend()),
+                    child: const Text('Kachelmann', style: TextStyle(fontSize: 10)),
+                  ),
+                ],
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Wrap(
+                spacing: 4,
+                runSpacing: 2,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
+                    onPressed: () => setState(() => _generateKachelmannVorhersageXL()),
+                    child: const Text('Temperatur', style: TextStyle(fontSize: 10)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
+                    onPressed: () => setState(() => _generateLargeVorhersageHourly()),
+                    child: const Text('Große Daten', style: TextStyle(fontSize: 10)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
+                    onPressed: () => setState(() => _genrateRandomCooLinechartDataPoints()),
+                    child: const Text('Random', style: TextStyle(fontSize: 10)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
+                    onPressed: () => setState(() => _generateRandomDualLinechart()),
+                    child: const Text('Random Dual', style: TextStyle(fontSize: 10)),
+                  ),
+                ],
+              ),
+            ),
+            Wrap(
+              spacing: 2,
+              runSpacing: 2,
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(
                       () => chartConfig = chartConfig.copyWith(showGridHorizontal: !chartConfig.showGridHorizontal)),
-                  child: Text('Grid-Horizontal ${chartConfig.showGridHorizontal ? '✅' : '❌'}'),
+                  child: Text('Grid-H ${chartConfig.showGridHorizontal ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(
                       () => chartConfig = chartConfig.copyWith(showGridVertical: !chartConfig.showGridVertical)),
-                  child: Text('Grid-Vertical ${chartConfig.showGridVertical ? '✅' : '❌'}'),
+                  child: Text('Grid-V ${chartConfig.showGridVertical ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () =>
                       setState(() => chartConfig = chartConfig.copyWith(curvedLine: !chartConfig.curvedLine)),
-                  child: Text('Curved ${chartConfig.curvedLine ? '✅' : '❌'}'),
+                  child: Text('Curved ${chartConfig.curvedLine ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() {
                     showDataPoints = !showDataPoints;
                     for (var i = 0; i < linechartDataSeries.length; i++) {
@@ -223,9 +353,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
                       linechartDataSeries[i] = lineChart;
                     }
                   }),
-                  child: Text('Show Data Points ${showDataPoints ? '✅' : '❌'}'),
+                  child: Text('Points ${showDataPoints ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() {
                     showDataLabels = !showDataLabels;
                     for (var i = 0; i < linechartDataSeries.length; i++) {
@@ -233,9 +364,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
                       linechartDataSeries[i] = lineChart;
                     }
                   }),
-                  child: Text('Show Data Lables ${showDataLabels ? '✅' : '❌'}'),
+                  child: Text('Labels ${showDataLabels ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() {
                     showDataLine = !showDataLine;
                     for (var i = 0; i < linechartDataSeries.length; i++) {
@@ -243,50 +375,52 @@ class _LineChartDemoState extends State<LineChartDemo> {
                       linechartDataSeries[i] = lineChart;
                     }
                   }),
-                  child: Text('Show Data Path ${showDataLine ? '✅' : '❌'}'),
+                  child: Text('Line ${showDataLine ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () =>
                       setState(() => chartConfig = chartConfig.copyWith(crosshair: !chartConfig.crosshair)),
-                  child: Text('Crosshair ${chartConfig.crosshair ? '✅' : '❌'}'),
+                  child: Text('Cross ${chartConfig.crosshair ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () =>
                       setState(() => xAxisConfig = xAxisConfig.copyWith(showTopLabels: !xAxisConfig.showTopLabels)),
-                  child: Text('Top Labels ${xAxisConfig.showTopLabels ? '✅' : '❌'}'),
+                  child: Text('Top ${xAxisConfig.showTopLabels ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(
                       () => xAxisConfig = xAxisConfig.copyWith(showBottomLabels: !xAxisConfig.showBottomLabels)),
-                  child: Text('Bottom Labels ${xAxisConfig.showBottomLabels ? '✅' : '❌'}'),
+                  child: Text('Bottom ${xAxisConfig.showBottomLabels ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
-              ],
-            ),
-            Row(
-              children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() =>
                       chartConfig = chartConfig.copyWith(highlightMouseColumn: !chartConfig.highlightMouseColumn)),
-                  child: Text('Highlight Column ${chartConfig.highlightMouseColumn ? '✅' : '❌'}'),
+                  child: Text('Highlight ${chartConfig.highlightMouseColumn ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () =>
                       setState(() => chartConfig = chartConfig.copyWith(highlightPoints: !chartConfig.highlightPoints)),
-                  child: Text('Highlight points ${chartConfig.highlightPoints ? '✅' : '❌'}'),
+                  child: Text('H.Points ${chartConfig.highlightPoints ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() => chartConfig =
                       chartConfig.copyWith(highlightPointsVerticalLine: !chartConfig.highlightPointsVerticalLine)),
-                  child: Text('Highlight points vertical line ${chartConfig.highlightPointsVerticalLine ? '✅' : '❌'}'),
+                  child: Text('V.Line ${chartConfig.highlightPointsVerticalLine ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () {
                     chartConfig =
                         chartConfig.copyWith(highlightPointsHorizontalLine: !chartConfig.highlightPointsHorizontalLine);
                     setState(() {});
                   },
-                  child:
-                      Text('Highlight points horizontal line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}'),
+                  child: Text('H.Line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 // ElevatedButton(
                 //   onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
@@ -295,25 +429,24 @@ class _LineChartDemoState extends State<LineChartDemo> {
                 //       'Highlight points horizontal line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}'),
                 // ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
                       centerDataPointBetweenVerticalGrid: !chartConfig.centerDataPointBetweenVerticalGrid)),
-                  child: Text(
-                      'Center DataPoints between vertical Grid ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
+                  child: Text('Center ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() => calcYAxisValuePadding = !calcYAxisValuePadding),
-                  child: Text('Y-Axes Value Padding ${calcYAxisValuePadding ? '✅' : '❌'}'),
+                  child: Text('Padding ${calcYAxisValuePadding ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
-              ],
-            ),
-            Row(
-              children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() => chartBackgroundColorBlack = !chartBackgroundColorBlack),
-                  child: Text('Schwarzer Hintergrund ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}'),
+                  child: Text('Black ${chartBackgroundColorBlack ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
-                Text('Anzahl Labels Y-Achse: ${yAxisLabelCount ?? '-'} '),
+                Text('Y-Achse Labels: ${yAxisLabelCount ?? '-'}', style: const TextStyle(fontSize: 10)),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() {
                     if (yAxisLabelCount == null) {
                       yAxisLabelCount = 5;
@@ -322,9 +455,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
                     }
                     yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisLabelCount);
                   }),
-                  child: const Text('-'),
+                  child: const Text('-', style: TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() {
                     if (yAxisLabelCount == null) {
                       yAxisLabelCount = 5;
@@ -333,7 +467,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
                     }
                     yAxisConfig = yAxisConfig.copyWith(labelCount: yAxisLabelCount);
                   }),
-                  child: const Text('+'),
+                  child: const Text('+', style: TextStyle(fontSize: 10)),
                 ),
               ],
             )
@@ -354,8 +488,134 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisStepLineBottomLabelLineChartCallback = null;
     xAxisStepLineTopLabelBarChartCallback = null;
     xAxisStepLineBottomLabelBarChartCallback = null;
+    xAxisStepLineBottomSvgBarChartCallback = null;
     yAxisLabelCount = null;
     linechartDataSeries.clear();
+    barchartDataSeries.clear();
+  }
+
+  /// Weather dual axis chart demo - temperature with SVG icons and precipitation as bars
+  _generateWeatherDualAxisChart() async {
+    _resetToDefault();
+    chartType = CooChartType.bar; // Switch to bar chart for combo display
+    
+    // Preload SVG assets for weather icons
+    await CooChartPainterUtil.preloadSvgAssets([
+      kIconWeatherCloudySvg,
+      kIconWeatherRainSvg,
+      kIconWindArrowSvg,
+      kIconWindStrongSvg,
+    ]);
+    
+    // Configure left axis for temperature (will be dynamically calculated)
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+    );
+    
+    // Configure right axis for precipitation (will be dynamically calculated)
+    yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+      showRightAxis: true,
+      showRightLabels: true,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+      showTopLabels: true,
+      topDateFormat: 'HH',
+      useSvgLabels: true, // Enable SVG labels for bottom X-axis
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Generate precipitation BAR data for the bar chart
+    barchartDataSeries.clear();
+    var precipitationBars = <CooBarChartDataPoint>[];
+    var currentTime = DateTime.now().copyWith(hour: 15, minute: 0, second: 0, millisecond: 0);
+    final precipValues = [0, 0, 1, 2, 6, 2, 1, 0, 0, 1, 8, 1, 0, 0, 1, 12, 2, 1]; // Added extreme values: 6mm, 8mm, 12mm
+    
+    for (int i = 0; i < precipValues.length; i++) {
+      precipitationBars.add(CooBarChartDataPoint(
+        value: precipValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 3)),
+      ));
+    }
+
+    barchartDataSeries.add(CooBarChartDataSeries(
+      dataPoints: precipitationBars,
+      barColor: const Color(0xFF54B9E9).withOpacity(0.7),
+      maxBarWidth: 20,
+      opposite: true, // Use the right axis for precipitation bars
+    ));
+
+    // Generate temperature LINE data as overlay (we'll need to add this to the bar chart painter)
+    linechartDataSeries.clear();
+    var temperaturePoints = <CooLineChartDataPoint>[];
+    final tempValues = [32, 30, 28, 24, 21, 19, 18, 19, 22, 26, 29, 32, 30, 28, 25, 22, 20, 18];
+    
+    for (int i = 0; i < tempValues.length; i++) {
+      // Choose different weather icons based on temperature and precipitation
+      final hasRain = precipValues[i] > 0;
+      
+      // Show SVG icon at every point
+      final DataPointSvgIcon weatherIcon = DataPointSvgIcon(
+        assetPath: hasRain ? kIconWeatherRainSvg : kIconWeatherCloudySvg,
+        width: 20,
+        height: 20,
+      );
+      
+      temperaturePoints.add(CooLineChartDataPoint(
+        value: tempValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 3)),
+        // Remove text label since showDataLabels is false
+        svgIcon: weatherIcon,
+      ));
+    }
+
+    linechartDataSeries.add(CooLineChartDataSeries(
+      dataPoints: temperaturePoints,
+      label: 'Temperature',
+      showDataLine: true,
+      showDataPoints: true,
+      showDataLabels: false, // Turn off text labels, show only SVGs
+      opposite: false, // Use the left axis (temperature scale)
+      dataLineColor: const Color(0xFFd85930),
+      dataPointColor: const Color(0xFFd85930),
+      dataPointLabelTextStyle: const TextStyle(
+        color: Color(0xFFd85930),
+        fontWeight: FontWeight.bold,
+        fontSize: 12,
+      ),
+      dataPointLabelPosition: DataPointLabelPos.top,
+    ));
+    
+    // Configure wind direction arrows as SVG labels for X-axis
+    xAxisStepLineBottomLabelBarChartCallback = (index, dataPoints) {
+      // This won't be used when useSvgLabels is true, but kept for fallback
+      return ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][index % 8];
+    };
+    
+    // Set SVG callback for wind direction arrows  
+    xAxisStepLineBottomSvgBarChartCallback = (index, dataPoints) {
+      // Simulate different wind directions with different icons
+      final bool isStrongWind = precipValues[index] > 4; // Strong wind when high precipitation
+      return XAxisLabelSvg(
+        assetPath: isStrongWind ? kIconWindStrongSvg : kIconWindArrowSvg,
+        width: 16,
+        height: 16,
+        offsetY: 0, // Center vertically
+      );
+    };
   }
 
   _create0To10To0ValuesChartDataPoints() {
@@ -1577,4 +1837,346 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showYAxisLables: false,
     );
   }
+
+  // === NEW DEMO FUNCTIONS FOR CHART VARIANTS ===
+
+  /// Simple LineChart only - basic temperature data
+  _generateSimpleLineChart() {
+    _resetToDefault();
+    chartType = CooChartType.line;
+    
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Generate simple temperature line data
+    linechartDataSeries.clear();
+    var temperaturePoints = <CooLineChartDataPoint>[];
+    var currentTime = DateTime.now().copyWith(hour: 6, minute: 0, second: 0, millisecond: 0);
+    final tempValues = [12, 14, 16, 18, 22, 24, 26, 25, 23, 20, 18, 15]; // Simple temperature curve
+    
+    for (int i = 0; i < tempValues.length; i++) {
+      temperaturePoints.add(CooLineChartDataPoint(
+        value: tempValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 3)),
+      ));
+    }
+
+    linechartDataSeries.add(CooLineChartDataSeries(
+      dataPoints: temperaturePoints,
+      dataLineColor: Colors.orange,
+      dataPointColor: Colors.red,
+      showDataPoints: true,
+      showDataLabels: true,
+      dataPointLabelTextStyle: const TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        fontSize: 12,
+      ),
+    ));
+  }
+
+  /// Simple BarChart only - basic precipitation data
+  _generateSimpleBarChart() {
+    _resetToDefault();
+    chartType = CooChartType.bar;
+    
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Generate simple precipitation bar data
+    barchartDataSeries.clear();
+    var precipitationBars = <CooBarChartDataPoint>[];
+    var currentTime = DateTime.now().copyWith(hour: 6, minute: 0, second: 0, millisecond: 0);
+    final precipValues = [0, 1, 3, 5, 2, 0, 0, 1, 4, 2, 1, 0]; // Simple precipitation values
+    
+    for (int i = 0; i < precipValues.length; i++) {
+      precipitationBars.add(CooBarChartDataPoint(
+        value: precipValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 3)),
+      ));
+    }
+
+    barchartDataSeries.add(CooBarChartDataSeries(
+      dataPoints: precipitationBars,
+      barColor: Colors.blue,
+      showDataLabels: true,
+    ));
+  }
+
+  /// LineChart + BarChart combo with normal X-axis labels
+  _generateLineBarComboNormalLabels() async {
+    _resetToDefault();
+    chartType = CooChartType.bar; // Use bar chart with line overlay
+    
+    // Configure left axis for temperature
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+    );
+    
+    // Configure right axis for precipitation
+    yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+      showRightAxis: true,
+      showRightLabels: true,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+      showTopLabels: true,
+      topDateFormat: 'HH',
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Generate data for both charts
+    _generateComboChartData(false, false); // no SVG X-labels, no SVG datapoints
+  }
+
+  /// LineChart + BarChart combo with SVG X-axis labels
+  _generateLineBarComboSvgXLabels() async {
+    _resetToDefault();
+    chartType = CooChartType.bar; // Use bar chart with line overlay
+    
+    // Preload SVG assets for X-axis labels
+    await CooChartPainterUtil.preloadSvgAssets([
+      kIconWeatherCloudySvg,
+      kIconWeatherRainSvg,
+      kIconWindArrowSvg,
+    ]);
+    
+    // Configure left axis for temperature
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+    );
+    
+    // Configure right axis for precipitation
+    yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+      showRightAxis: true,
+      showRightLabels: true,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+      showTopLabels: true,
+      topDateFormat: 'HH',
+      useSvgLabels: true, // Enable SVG labels for bottom X-axis
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Set up SVG callback for X-axis
+    xAxisStepLineBottomSvgBarChartCallback = (index, cooBarChartDataPoints) {
+      // Rotate between different weather SVGs
+      final svgPaths = [kIconWeatherCloudySvg, kIconWeatherRainSvg, kIconWindArrowSvg];
+      return XAxisLabelSvg(
+        assetPath: svgPaths[index % svgPaths.length],
+        width: 24,
+        height: 24,
+      );
+    };
+
+    // Generate data for both charts
+    _generateComboChartData(true, false); // SVG X-labels, no SVG datapoints
+  }
+
+  /// LineChart + BarChart combo with normal data point labels
+  _generateLineBarComboNormalDataPoints() async {
+    _resetToDefault();
+    chartType = CooChartType.bar; // Use bar chart with line overlay
+    
+    // Configure axes
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+    );
+    
+    yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+      showRightAxis: true,
+      showRightLabels: true,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+      showTopLabels: true,
+      topDateFormat: 'HH',
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Generate data for both charts
+    _generateComboChartData(false, false); // no SVG X-labels, normal datapoints
+  }
+
+  /// LineChart + BarChart combo with SVG data point icons
+  _generateLineBarComboSvgDataPoints() async {
+    _resetToDefault();
+    chartType = CooChartType.bar; // Use bar chart with line overlay
+    
+    // Preload SVG assets for data point icons
+    await CooChartPainterUtil.preloadSvgAssets([
+      kIconWeatherCloudySvg,
+      kIconWeatherRainSvg,
+      kIconWindArrowSvg,
+      kIconWindStrongSvg,
+    ]);
+    
+    // Configure axes
+    yAxisConfig = yAxisConfig.copyWith(
+      labelPostfix: '°C',
+      labelCount: 6,
+    );
+    
+    yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
+      labelPostfix: 'mm',
+      labelCount: 5,
+      minLabelValue: 0,
+      showRightAxis: true,
+      showRightLabels: true,
+    );
+    
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime,
+      bottomDateFormat: 'HH',
+      showTopLabels: true,
+      topDateFormat: 'HH',
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      theme: CooChartThemes().defaultTheme.copyWith(
+        labelColor: Colors.black,
+      ),
+    );
+
+    // Generate data for both charts
+    _generateComboChartData(false, true); // no SVG X-labels, SVG datapoints
+  }
+
+  /// Helper function to generate data for combo charts
+  _generateComboChartData(bool useSvgXLabels, bool useSvgDataPoints) {
+    var currentTime = DateTime.now().copyWith(hour: 15, minute: 0, second: 0, millisecond: 0);
+    
+    // Generate precipitation BAR data
+    barchartDataSeries.clear();
+    var precipitationBars = <CooBarChartDataPoint>[];
+    final precipValues = [0, 1, 2, 5, 3, 1, 0, 2, 4, 1, 0, 1];
+    
+    for (int i = 0; i < precipValues.length; i++) {
+      precipitationBars.add(CooBarChartDataPoint(
+        value: precipValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 3)),
+      ));
+    }
+
+    barchartDataSeries.add(CooBarChartDataSeries(
+      dataPoints: precipitationBars,
+      barColor: Colors.blue.withOpacity(0.7),
+      showDataLabels: true,
+      opposite: true, // Right axis
+    ));
+
+    // Generate temperature LINE data
+    linechartDataSeries.clear();
+    var temperaturePoints = <CooLineChartDataPoint>[];
+    final tempValues = [15, 17, 19, 22, 24, 26, 25, 23, 21, 19, 17, 16];
+    final weatherIcons = [
+      kIconWeatherCloudySvg,
+      kIconWeatherRainSvg,
+      kIconWindArrowSvg,
+      kIconWindStrongSvg,
+    ];
+    
+    for (int i = 0; i < tempValues.length; i++) {
+      var dataPoint = CooLineChartDataPoint(
+        value: tempValues[i].toDouble(),
+        time: currentTime.add(Duration(hours: i * 3)),
+        svgIcon: useSvgDataPoints ? DataPointSvgIcon(
+          assetPath: weatherIcons[i % weatherIcons.length],
+          width: 20,
+          height: 20,
+        ) : null,
+      );
+      
+      temperaturePoints.add(dataPoint);
+    }
+
+    linechartDataSeries.add(CooLineChartDataSeries(
+      dataPoints: temperaturePoints,
+      dataLineColor: Colors.orange,
+      dataPointColor: Colors.red,
+      showDataPoints: true,
+      showDataLabels: !useSvgDataPoints, // Show text labels only when NOT using SVG icons
+      opposite: false, // Left axis
+      dataPointLabelTextStyle: const TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        fontSize: 12,
+      ),
+    ));
+  }
+
+  // === END NEW DEMO FUNCTIONS ===
 }

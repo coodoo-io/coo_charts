@@ -22,6 +22,7 @@ class XAxisConfig {
     this.labelTopPostfix,
     this.stepAxisLineStart = 0,
     this.stepAxisLine,
+    this.useSvgLabels = false, // Whether to use SVG labels instead of text labels
   });
 
   /// Shoud the x-axis be printed. Default is true
@@ -64,6 +65,9 @@ class XAxisConfig {
   // start step for the first printed x-axise line
   final int stepAxisLineStart;
 
+  /// Whether to use SVG labels instead of text labels for bottom X-axis
+  final bool useSvgLabels;
+
   XAxisConfig copyWith({
     TextStyle? topLabelTextStyle,
     TextStyle? topLabelTextStyleHighlight,
@@ -82,6 +86,7 @@ class XAxisConfig {
     String? labelTopPostfix,
     int? stepAxisLine,
     int? stepAxisLineStart,
+    bool? useSvgLabels,
   }) {
     return XAxisConfig(
       topLabelTextStyle: topLabelTextStyle ?? this.topLabelTextStyle,
@@ -101,6 +106,7 @@ class XAxisConfig {
       labelTopPostfix: labelTopPostfix ?? this.labelTopPostfix,
       stepAxisLine: stepAxisLine ?? this.stepAxisLine,
       stepAxisLineStart: stepAxisLineStart ?? this.stepAxisLineStart,
+      useSvgLabels: useSvgLabels ?? this.useSvgLabels,
     );
   }
 }

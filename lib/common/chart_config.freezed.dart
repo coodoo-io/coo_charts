@@ -12,7 +12,7 @@ part of 'chart_config.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$ChartConfig {
@@ -48,6 +48,10 @@ mixin _$ChartConfig {
   bool get centerDataPointBetweenVerticalGrid =>
       throw _privateConstructorUsedError;
 
+  /// Liste von Hintergrund-Zeiträumen, die im Chart hervorgehoben werden sollen
+  List<ChartBackgroundTimeRange> get backgroundTimeRanges =>
+      throw _privateConstructorUsedError;
+
   /// Experimental - Background painting style
   PaintingStyle get canvasBackgroundPaintingStyle =>
       throw _privateConstructorUsedError;
@@ -59,7 +63,9 @@ mixin _$ChartConfig {
   /// will be scrollable/draggable
   double? get canvasWidth => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChartConfig
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ChartConfigCopyWith<ChartConfig> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -84,6 +90,7 @@ abstract class $ChartConfigCopyWith<$Res> {
       bool highlightPointsVerticalLine,
       bool highlightPointsHorizontalLine,
       bool centerDataPointBetweenVerticalGrid,
+      List<ChartBackgroundTimeRange> backgroundTimeRanges,
       PaintingStyle canvasBackgroundPaintingStyle,
       bool scrollable,
       double? canvasWidth});
@@ -101,6 +108,8 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ChartConfig
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -117,6 +126,7 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
     Object? highlightPointsVerticalLine = null,
     Object? highlightPointsHorizontalLine = null,
     Object? centerDataPointBetweenVerticalGrid = null,
+    Object? backgroundTimeRanges = null,
     Object? canvasBackgroundPaintingStyle = null,
     Object? scrollable = null,
     Object? canvasWidth = freezed,
@@ -175,6 +185,10 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
           ? _value.centerDataPointBetweenVerticalGrid
           : centerDataPointBetweenVerticalGrid // ignore: cast_nullable_to_non_nullable
               as bool,
+      backgroundTimeRanges: null == backgroundTimeRanges
+          ? _value.backgroundTimeRanges
+          : backgroundTimeRanges // ignore: cast_nullable_to_non_nullable
+              as List<ChartBackgroundTimeRange>,
       canvasBackgroundPaintingStyle: null == canvasBackgroundPaintingStyle
           ? _value.canvasBackgroundPaintingStyle
           : canvasBackgroundPaintingStyle // ignore: cast_nullable_to_non_nullable
@@ -190,6 +204,8 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
     ) as $Val);
   }
 
+  /// Create a copy of ChartConfig
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $CooChartThemeCopyWith<$Res>? get theme {
@@ -225,6 +241,7 @@ abstract class _$$ChartConfigImplCopyWith<$Res>
       bool highlightPointsVerticalLine,
       bool highlightPointsHorizontalLine,
       bool centerDataPointBetweenVerticalGrid,
+      List<ChartBackgroundTimeRange> backgroundTimeRanges,
       PaintingStyle canvasBackgroundPaintingStyle,
       bool scrollable,
       double? canvasWidth});
@@ -241,6 +258,8 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
       _$ChartConfigImpl _value, $Res Function(_$ChartConfigImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ChartConfig
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -257,6 +276,7 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
     Object? highlightPointsVerticalLine = null,
     Object? highlightPointsHorizontalLine = null,
     Object? centerDataPointBetweenVerticalGrid = null,
+    Object? backgroundTimeRanges = null,
     Object? canvasBackgroundPaintingStyle = null,
     Object? scrollable = null,
     Object? canvasWidth = freezed,
@@ -315,6 +335,10 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
           ? _value.centerDataPointBetweenVerticalGrid
           : centerDataPointBetweenVerticalGrid // ignore: cast_nullable_to_non_nullable
               as bool,
+      backgroundTimeRanges: null == backgroundTimeRanges
+          ? _value._backgroundTimeRanges
+          : backgroundTimeRanges // ignore: cast_nullable_to_non_nullable
+              as List<ChartBackgroundTimeRange>,
       canvasBackgroundPaintingStyle: null == canvasBackgroundPaintingStyle
           ? _value.canvasBackgroundPaintingStyle
           : canvasBackgroundPaintingStyle // ignore: cast_nullable_to_non_nullable
@@ -348,9 +372,11 @@ class _$ChartConfigImpl implements _ChartConfig {
       this.highlightPointsVerticalLine = false,
       this.highlightPointsHorizontalLine = false,
       this.centerDataPointBetweenVerticalGrid = true,
+      final List<ChartBackgroundTimeRange> backgroundTimeRanges = const [],
       this.canvasBackgroundPaintingStyle = PaintingStyle.fill,
       this.scrollable = false,
-      this.canvasWidth});
+      this.canvasWidth})
+      : _backgroundTimeRanges = backgroundTimeRanges;
 
   /// The color schema for the whole chart. If not set the default color schema will be used
   @override
@@ -408,6 +434,19 @@ class _$ChartConfigImpl implements _ChartConfig {
   @JsonKey()
   final bool centerDataPointBetweenVerticalGrid;
 
+  /// Liste von Hintergrund-Zeiträumen, die im Chart hervorgehoben werden sollen
+  final List<ChartBackgroundTimeRange> _backgroundTimeRanges;
+
+  /// Liste von Hintergrund-Zeiträumen, die im Chart hervorgehoben werden sollen
+  @override
+  @JsonKey()
+  List<ChartBackgroundTimeRange> get backgroundTimeRanges {
+    if (_backgroundTimeRanges is EqualUnmodifiableListView)
+      return _backgroundTimeRanges;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_backgroundTimeRanges);
+  }
+
   /// Experimental - Background painting style
   @override
   @JsonKey()
@@ -425,11 +464,11 @@ class _$ChartConfigImpl implements _ChartConfig {
 
   @override
   String toString() {
-    return 'ChartConfig(theme: $theme, curvedLine: $curvedLine, crosshair: $crosshair, showChartBorder: $showChartBorder, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, scrollable: $scrollable, canvasWidth: $canvasWidth)';
+    return 'ChartConfig(theme: $theme, curvedLine: $curvedLine, crosshair: $crosshair, showChartBorder: $showChartBorder, showGridHorizontal: $showGridHorizontal, showGridVertical: $showGridVertical, showDataPath: $showDataPath, highlightMouseColumn: $highlightMouseColumn, highlightPoints: $highlightPoints, addYAxisValueBuffer: $addYAxisValueBuffer, highlightPointsVerticalLine: $highlightPointsVerticalLine, highlightPointsHorizontalLine: $highlightPointsHorizontalLine, centerDataPointBetweenVerticalGrid: $centerDataPointBetweenVerticalGrid, backgroundTimeRanges: $backgroundTimeRanges, canvasBackgroundPaintingStyle: $canvasBackgroundPaintingStyle, scrollable: $scrollable, canvasWidth: $canvasWidth)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChartConfigImpl &&
@@ -464,6 +503,8 @@ class _$ChartConfigImpl implements _ChartConfig {
                     centerDataPointBetweenVerticalGrid) ||
                 other.centerDataPointBetweenVerticalGrid ==
                     centerDataPointBetweenVerticalGrid) &&
+            const DeepCollectionEquality()
+                .equals(other._backgroundTimeRanges, _backgroundTimeRanges) &&
             (identical(other.canvasBackgroundPaintingStyle,
                     canvasBackgroundPaintingStyle) ||
                 other.canvasBackgroundPaintingStyle ==
@@ -490,11 +531,14 @@ class _$ChartConfigImpl implements _ChartConfig {
       highlightPointsVerticalLine,
       highlightPointsHorizontalLine,
       centerDataPointBetweenVerticalGrid,
+      const DeepCollectionEquality().hash(_backgroundTimeRanges),
       canvasBackgroundPaintingStyle,
       scrollable,
       canvasWidth);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChartConfig
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ChartConfigImplCopyWith<_$ChartConfigImpl> get copyWith =>
@@ -516,61 +560,73 @@ abstract class _ChartConfig implements ChartConfig {
       final bool highlightPointsVerticalLine,
       final bool highlightPointsHorizontalLine,
       final bool centerDataPointBetweenVerticalGrid,
+      final List<ChartBackgroundTimeRange> backgroundTimeRanges,
       final PaintingStyle canvasBackgroundPaintingStyle,
       final bool scrollable,
       final double? canvasWidth}) = _$ChartConfigImpl;
 
-  @override
-
   /// The color schema for the whole chart. If not set the default color schema will be used
-  CooChartTheme? get theme;
   @override
+  CooChartTheme? get theme;
 
   /// Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
-  bool get curvedLine;
   @override
+  bool get curvedLine;
 
   /// Soll ein Fadenkreuz angezeigt werden?
-  bool get crosshair;
   @override
+  bool get crosshair;
 
   /// Paint the outer chart border?
-  bool get showChartBorder;
-  @override // if true, grid horizontal lines are painted
-  bool get showGridHorizontal;
-  @override // if true, grid vertical lines are painted
-  bool get showGridVertical;
-  @override // Soll der path auf der Kurve angezeigt werden?
-  bool get showDataPath;
-  @override // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
-  bool get highlightMouseColumn;
-  @override // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
-  bool get highlightPoints;
-  @override // Fügt einen Puffer auf der Y-Achse vor dem Min-Wert und nach dem Max-Wert hinzu
-  bool get addYAxisValueBuffer;
-  @override // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
-  bool get highlightPointsVerticalLine;
-  @override // Zeichnet eine horizontale Line über den Datenpunkt wenn die Maus in der Nähe ist.
-  bool get highlightPointsHorizontalLine;
   @override
+  bool get showChartBorder; // if true, grid horizontal lines are painted
+  @override
+  bool get showGridHorizontal; // if true, grid vertical lines are painted
+  @override
+  bool get showGridVertical; // Soll der path auf der Kurve angezeigt werden?
+  @override
+  bool
+      get showDataPath; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
+  @override
+  bool
+      get highlightMouseColumn; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
+  @override
+  bool
+      get highlightPoints; // Fügt einen Puffer auf der Y-Achse vor dem Min-Wert und nach dem Max-Wert hinzu
+  @override
+  bool
+      get addYAxisValueBuffer; // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
+  @override
+  bool
+      get highlightPointsVerticalLine; // Zeichnet eine horizontale Line über den Datenpunkt wenn die Maus in der Nähe ist.
+  @override
+  bool get highlightPointsHorizontalLine;
 
   /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
-  bool get centerDataPointBetweenVerticalGrid;
   @override
+  bool get centerDataPointBetweenVerticalGrid;
+
+  /// Liste von Hintergrund-Zeiträumen, die im Chart hervorgehoben werden sollen
+  @override
+  List<ChartBackgroundTimeRange> get backgroundTimeRanges;
 
   /// Experimental - Background painting style
-  PaintingStyle get canvasBackgroundPaintingStyle;
   @override
+  PaintingStyle get canvasBackgroundPaintingStyle;
 
   /// Is the canvas scrollable? if true a canvasWidth can be given and the axis are fix.
-  bool get scrollable;
   @override
+  bool get scrollable;
 
   /// Width of the canvas. if scrollable is true or the width is greater than the available space the chart
   /// will be scrollable/draggable
-  double? get canvasWidth;
   @override
-  @JsonKey(ignore: true)
+  double? get canvasWidth;
+
+  /// Create a copy of ChartConfig
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ChartConfigImplCopyWith<_$ChartConfigImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

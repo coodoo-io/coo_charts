@@ -12,7 +12,7 @@ part of 'chart_painter_metadata.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$ChartPainterMetadata {
@@ -70,7 +70,9 @@ mixin _$ChartPainterMetadata {
   /// Number of y-axis labels
   int get yAxisLabelCount => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChartPainterMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ChartPainterMetadataCopyWith<ChartPainterMetadata> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -115,6 +117,8 @@ class _$ChartPainterMetadataCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ChartPainterMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -263,6 +267,8 @@ class __$$ChartPainterMetadataImplCopyWithImpl<$Res>
       $Res Function(_$ChartPainterMetadataImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ChartPainterMetadata
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -517,7 +523,7 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChartPainterMetadataImpl &&
@@ -590,7 +596,9 @@ class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
         yAxisLabelCount
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChartPainterMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ChartPainterMetadataImplCopyWith<_$ChartPainterMetadataImpl>
@@ -624,72 +632,81 @@ abstract class _ChartPainterMetadata implements ChartPainterMetadata {
       required final double xSegementWidthHalf,
       required final int yAxisLabelCount}) = _$ChartPainterMetadataImpl;
 
-  @override // All sich auf diesem Index befindenden LineChart Datenpunkte
+// All sich auf diesem Index befindenden LineChart Datenpunkte
 // Die exakte Punkt (X,Y) eines LineChart DataPoint Objekts müsste man in Verbidung dises Objektes noch in einem
 // eigenen Objekt halten. Dann könnte man auch den nächstgelegenen Punkt zum Maus Pointer herausfinden
+  @override
   Map<int, List<CooLineChartDataPoint>> get lineChartDataPointsByColumnIndex;
   @override
-  Map<int, List<CooBarChartDataPoint>> get barChartDataPointsByColumnIndex;
-  @override // If there are datapoints wich are marked as opposite this flag will be true
-  bool get hasOpposite;
+  Map<int, List<CooBarChartDataPoint>>
+      get barChartDataPointsByColumnIndex; // If there are datapoints wich are marked as opposite this flag will be true
   @override
+  bool get hasOpposite;
 
   /// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
   /// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
-  List<DateTime> get allDateTimeXAxisValues;
   @override
+  List<DateTime> get allDateTimeXAxisValues;
 
   /// Die Werte aller Datenreihen werden hier gehalten. Dabei werden alle gegebenen Datenreihen angesehen und jeder
   /// Wert exakt einmal in diesem Set gespeichrt. So kanne infach über alle vorkommenden Datenwerte iteriert werden.
-  Set<double> get allDataPointValues;
-  @override // Größter Datenpunktwert aller gegbenen Datenpunkt
-  double get maxDataPointValue;
-  @override // Kleinster Datenpunktwert aller gegbenen Datenpunkt
-  double get minDataPointValue;
-  @override // Anzahl aller gegebener Punkt auf dem x-Achsenwert
-  int get maxAbsoluteValueCount;
   @override
+  Set<double>
+      get allDataPointValues; // Größter Datenpunktwert aller gegbenen Datenpunkt
+  @override
+  double
+      get maxDataPointValue; // Kleinster Datenpunktwert aller gegbenen Datenpunkt
+  @override
+  double
+      get minDataPointValue; // Anzahl aller gegebener Punkt auf dem x-Achsenwert
+  @override
+  int get maxAbsoluteValueCount;
 
   /// Y-Achse maximale Label-Wert
-  double get yAxisMaxValue;
   @override
+  double get yAxisMaxValue;
 
   /// Y-Achse kleinster Label-Wert
-  double get yAxisMinValue;
   @override
+  double get yAxisMinValue;
 
   /// Größe des "Pixel-Steps" zwischen zwie y-Achse Labelpunkten
   /// Wird zum Berechnen der Datenpunkte für das malen auf dem Canvas benötigt
-  double get yAxisSteps;
   @override
+  double get yAxisSteps;
 
   /// Layout Attributes
   /// The width and height of the constraints
+  @override
   double get layoutWidth;
   @override
   double get layoutHeight;
-  @override
 
   /// The height of the given canvas
+  @override
   double get canvasWidth;
   @override
   double get canvasHeight;
-  @override
 
   /// calculated height of painted chart
+  @override
   double get chartWidth;
   @override
-  double get chartHeight;
-  @override // Abstand zwischen zwei Datenpunkte auf der X-Achse
-  double get xSegmentWidth;
-  @override // Hilfsvariable zu xSegmentWidth, damit sie nicht jedesmal berechnet werden muss
-  double get xSegementWidthHalf;
+  double get chartHeight; // Abstand zwischen zwei Datenpunkte auf der X-Achse
   @override
+  double
+      get xSegmentWidth; // Hilfsvariable zu xSegmentWidth, damit sie nicht jedesmal berechnet werden muss
+  @override
+  double get xSegementWidthHalf;
 
   /// Number of y-axis labels
-  int get yAxisLabelCount;
   @override
-  @JsonKey(ignore: true)
+  int get yAxisLabelCount;
+
+  /// Create a copy of ChartPainterMetadata
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ChartPainterMetadataImplCopyWith<_$ChartPainterMetadataImpl>
       get copyWith => throw _privateConstructorUsedError;
 }

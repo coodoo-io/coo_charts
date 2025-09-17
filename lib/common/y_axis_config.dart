@@ -11,6 +11,8 @@ class YAxisConfig {
     this.addValuePadding = true,
     this.labelPostfix,
     this.showAboveGrid = false,
+    this.showRightAxis = false,
+    this.showRightLabels = false,
   });
 
   /// Shoud the y-axis be printed. Default is true
@@ -46,6 +48,12 @@ class YAxisConfig {
   /// If set to true the y-labels will be viewed above the grid, not next to the chart-canvas.
   final bool showAboveGrid;
 
+  /// Should the right y-axis be shown? Default is false
+  final bool showRightAxis;
+
+  /// Should labels on the right y-axis be shown? Default is false
+  final bool showRightLabels;
+
   YAxisConfig copyWith({
     bool? showAxis,
     bool? showYAxisLables,
@@ -54,6 +62,8 @@ class YAxisConfig {
     double? maxLabelValue,
     bool? addValuePadding,
     String? labelPostfix,
+    bool? showRightAxis,
+    bool? showRightLabels,
   }) {
     return YAxisConfig(
       showAxis: showAxis ?? this.showAxis,
@@ -63,6 +73,8 @@ class YAxisConfig {
       maxLabelValue: maxLabelValue ?? this.maxLabelValue,
       addValuePadding: addValuePadding ?? this.addValuePadding,
       labelPostfix: labelPostfix ?? this.labelPostfix,
+      showRightAxis: showRightAxis ?? this.showRightAxis,
+      showRightLabels: showRightLabels ?? this.showRightLabels,
     );
   }
 }
