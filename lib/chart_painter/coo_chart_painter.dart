@@ -734,17 +734,21 @@ class CooChartPainter extends CustomPainter {
       // Don't draw the first vertical grid line because there is already the y-Axis line
       // Draw only vertical lines if general config enabled it and no individual config is given
       bool isStepAxisLine = false;
+
+      // Calculate isStepAxisLine independent of grid line drawing conditions
+      if (xAxisConfig.stepAxisLine != null) {
+        bool drawLine = i == xAxisConfig.stepAxisLineStart; // Wenn i exakt der Startangabe ist
+        // Wenn i auf einem vielfachen der angegebenen step liegt. Ist ein Start angegben wird dieser von i abgezogen
+        drawLine = drawLine || (i - xAxisConfig.stepAxisLineStart) % xAxisConfig.stepAxisLine! == 0;
+        isStepAxisLine = drawLine;
+      }
+
       if (showGridVertical && (i != 0 && i != xGridLineCount || !config.showChartBorder)) {
         if (xAxisConfig.stepAxisLine == null) {
           canvas.drawLine(
               Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), gridPaint);
         } else {
-          bool drawLine = i == xAxisConfig.stepAxisLineStart; // Wenn i exakt der Startangabe ist
-          // Wenn i auf einem vielfachen der angegebenen step liegt. Ist ein Start angegben wird dieser von i abgezogen
-          drawLine = drawLine || (i - xAxisConfig.stepAxisLineStart) % xAxisConfig.stepAxisLine! == 0;
-
-          if (drawLine) {
-            isStepAxisLine = true;
+          if (isStepAxisLine) {
             // Nur zeichen wenn der Start Step oder der konfigierte Step ab dem start übereinstimmt
             canvas.drawLine(
                 Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), gridPaint);
@@ -848,7 +852,10 @@ class CooChartPainter extends CustomPainter {
           if (xAxisConfig.stepAxisLine != null) {
             if (!isStepAxisLine) {
               drawLabel = false;
-            } else if (xAxisConfig.stepAxisLineStart > 0 && i <= xAxisConfig.stepAxisLineStart) {}
+            } else if (xAxisConfig.stepAxisLineStart > 0 && i < xAxisConfig.stepAxisLineStart) {
+              // Skip labels before the start position (but only if stepAxisLineStart > 0)
+              drawLabel = false;
+            }
 
             // TODO Prüfen ob es auch in den abgeschnittenen Space passt
           }
@@ -957,7 +964,10 @@ class CooChartPainter extends CustomPainter {
                 drawLabel = false;
               } else {
                 // Prüfen ob die Größe noch in den Bereich passt
-                if (xAxisConfig.stepAxisLineStart > 0 && i <= xAxisConfig.stepAxisLineStart) {}
+                if (xAxisConfig.stepAxisLineStart > 0 && i < xAxisConfig.stepAxisLineStart) {
+                  // Skip labels before the start position (but only if stepAxisLineStart > 0)
+                  drawLabel = false;
+                }
                 // TODO Prüfen ob es auch in den abgeschnittenen Space passt
               }
             }
