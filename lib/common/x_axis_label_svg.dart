@@ -6,6 +6,7 @@ class XAxisLabelSvg {
     this.height = 16.0,
     this.offsetX = 0.0,
     this.offsetY = 0.0,
+    this.rotationDegrees = 0.0,
   });
 
   /// Path to the SVG asset
@@ -22,4 +23,7 @@ class XAxisLabelSvg {
   
   /// Vertical offset from the label position
   final double offsetY;
+
+  /// Rotation in degrees (0-360)
+  final double rotationDegrees;
 }

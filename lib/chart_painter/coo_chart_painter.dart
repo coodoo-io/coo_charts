@@ -1173,6 +1173,16 @@ class CooChartPainter extends CustomPainter {
         // Translate to the final position
         canvas.translate(centerX, centerY);
 
+        // Apply rotation if specified
+        if (svgLabel.rotationDegrees != 0.0) {
+          // Translate to center of SVG for rotation
+          canvas.translate(svgLabel.width / 2, svgLabel.height / 2);
+          // Convert degrees to radians and rotate
+          canvas.rotate(svgLabel.rotationDegrees * (pi / 180.0));
+          // Translate back
+          canvas.translate(-svgLabel.width / 2, -svgLabel.height / 2);
+        }
+
         // Scale the SVG to the desired size
         final scaleX = svgLabel.width / pictureInfo.size.width;
         final scaleY = svgLabel.height / pictureInfo.size.height;
