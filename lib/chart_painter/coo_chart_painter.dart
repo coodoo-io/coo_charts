@@ -1176,7 +1176,7 @@ class CooChartPainter extends CustomPainter {
       } else {
         // Fallback: draw a colored circle if SVG is not in cache
         final fallbackPaint = Paint()
-          ..color = Colors.orange
+          ..color = Colors.transparent
           ..style = PaintingStyle.fill;
         canvas.drawCircle(Offset(x + svgLabel.offsetX, y + svgLabel.offsetY), 8.0, fallbackPaint);
       }

@@ -861,29 +861,29 @@ class CooChartPainterUtil {
     try {
       // Try to get the SVG from cache
       final PictureInfo? pictureInfo = getSvgFromCache(svgIcon.assetPath);
-      
+
       if (pictureInfo != null) {
         // Calculate the position with offset
         // Automatically position above the data point if no custom offsetY is provided
         final autoOffsetY = svgIcon.offsetY == 0.0 ? -svgIcon.height - 8 : svgIcon.offsetY;
-        
+
         final x = dataPointOffset.dx + svgIcon.offsetX - (svgIcon.width / 2);
         final y = dataPointOffset.dy + autoOffsetY - (svgIcon.height / 2);
 
         // Save canvas state
         canvas.save();
-        
+
         // Translate to the final position
         canvas.translate(x, y);
-        
+
         // Scale the SVG to the desired size
         final scaleX = svgIcon.width / pictureInfo.size.width;
         final scaleY = svgIcon.height / pictureInfo.size.height;
         canvas.scale(scaleX, scaleY);
-        
+
         // Draw the SVG picture
         canvas.drawPicture(pictureInfo.picture);
-        
+
         // Restore canvas state
         canvas.restore();
       } else {
@@ -895,22 +895,16 @@ class CooChartPainterUtil {
       _drawSvgFallback(canvas, svgIcon, dataPointOffset);
     }
   }
-  
+
   /// Draws a fallback icon when SVG loading fails
   static void _drawSvgFallback(Canvas canvas, DataPointSvgIcon svgIcon, Offset dataPointOffset) {
     // Apply the same automatic positioning logic as in _drawSvgIcon
     final autoOffsetY = svgIcon.offsetY == 0.0 ? -svgIcon.height - 8 : svgIcon.offsetY;
-    
+
     final fallbackPaint = Paint()
-      ..color = Colors.orange
+      ..color = Colors.transparent
       ..style = PaintingStyle.fill;
     canvas.drawCircle(
-      Offset(
-        dataPointOffset.dx + svgIcon.offsetX, 
-        dataPointOffset.dy + autoOffsetY
-      ), 
-      8.0, 
-      fallbackPaint
-    );
+        Offset(dataPointOffset.dx + svgIcon.offsetX, dataPointOffset.dy + autoOffsetY), 8.0, fallbackPaint);
   }
 }
