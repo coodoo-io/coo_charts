@@ -14,6 +14,7 @@ import 'package:coo_charts/common/coo_chart_color_theme.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
 import 'package:coo_charts/common/x_axis_config.dart';
 import 'package:coo_charts/common/x_axis_label_svg.dart';
+import 'package:coo_charts/common/x_axis_label_widget.dart';
 import 'package:coo_charts/common/x_axis_value_type.enum.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_point.dart';
@@ -59,6 +60,7 @@ class CooChartPainter extends CustomPainter {
     this.xAxisStepLineTopLabelBarChartCallback,
     this.xAxisStepLineBottomLabelBarChartCallback,
     this.xAxisStepLineBottomSvgBarChartCallback,
+    this.xAxisStepLineBottomWidgetBarChartCallback,
   });
 
   final ChartConfig chartConfig;
@@ -114,6 +116,9 @@ class CooChartPainter extends CustomPainter {
 
   // SVG callbacks for X-axis labels
   final XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgBarChartCallback;
+
+  // Widget callbacks for X-axis labels
+  final XAxisLabelWidget? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomWidgetBarChartCallback;
 
   final Map<Rect, int> chartRectYPos = {}; // Merken welches Rect bei welcher Y-Pos liegt
 
@@ -479,6 +484,20 @@ class CooChartPainter extends CustomPainter {
           if (localLinechartDataSeries.barWidth != null) {
             barWidth = localLinechartDataSeries.barWidth!.toDouble();
           }
+
+          // Validate all values before creating rectangle to prevent NaN
+          if (x.isNaN ||
+              y.isNaN ||
+              barWidth.isNaN ||
+              startYPos.isNaN ||
+              x.isInfinite ||
+              y.isInfinite ||
+              barWidth.isInfinite ||
+              startYPos.isInfinite ||
+              barWidth <= 0) {
+            continue; // Skip this bar if any value is invalid
+          }
+
           double x0 = x - barWidth;
           double y0 = y;
           double x1 = x + barWidth;
@@ -490,6 +509,18 @@ class CooChartPainter extends CustomPainter {
             //ck chart
             y0 = y0 - (localLinechartDataSeries.barHeight!.toDouble() / 2);
             y1 = y0 + localLinechartDataSeries.barHeight!.toDouble();
+          }
+
+          // Final validation of rectangle coordinates
+          if (x0.isNaN ||
+              y0.isNaN ||
+              x1.isNaN ||
+              y1.isNaN ||
+              x0.isInfinite ||
+              y0.isInfinite ||
+              x1.isInfinite ||
+              y1.isInfinite) {
+            continue; // Skip this bar if coordinates are invalid
           }
 
           var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
@@ -883,6 +914,7 @@ class CooChartPainter extends CustomPainter {
 
         String? bottomLabel;
         XAxisLabelSvg? bottomSvgLabel;
+        XAxisLabelWidget? bottomWidgetLabel;
 
         // Check if we should use SVG labels
         bool shouldUseSvgLabels = false;
@@ -895,6 +927,10 @@ class CooChartPainter extends CustomPainter {
         if (shouldUseSvgLabels && chartType == CooChartType.bar && xAxisStepLineBottomSvgBarChartCallback != null) {
           // For SVG labels, we don't need the dataPoints parameter since wind direction is based on index
           bottomSvgLabel = xAxisStepLineBottomSvgBarChartCallback!(i, []);
+        } else if (chartType == CooChartType.bar && xAxisStepLineBottomWidgetBarChartCallback != null) {
+          // For widget labels
+          final dataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? [];
+          bottomWidgetLabel = xAxisStepLineBottomWidgetBarChartCallback!(i, dataPoints);
         } else {
           // Bottom Labels Callbacks
           switch (chartType) {
@@ -933,9 +969,17 @@ class CooChartPainter extends CustomPainter {
           }
         }
 
-        // Render bottom labels (either SVG or text)
+        // Render bottom labels (either Widget, SVG or text)
         if (xAxisConfig.showBottomLabels) {
-          if (bottomSvgLabel != null) {
+          if (bottomWidgetLabel != null) {
+            // Render widget label
+            _drawXAxisWidgetLabel(
+              canvas: canvas,
+              widgetLabel: bottomWidgetLabel,
+              x: x,
+              y: bottomLabelsYPos,
+            );
+          } else if (bottomSvgLabel != null) {
             // Render SVG label
             _drawXAxisSvgLabel(
               canvas: canvas,
@@ -1206,6 +1250,123 @@ class CooChartPainter extends CustomPainter {
         ..color = Colors.red
         ..style = PaintingStyle.fill;
       canvas.drawCircle(Offset(x + svgLabel.offsetX, y + svgLabel.offsetY), 8.0, fallbackPaint);
+    }
+  }
+
+  /// Renders a custom widget for X-axis label
+  void _drawXAxisWidgetLabel({
+    required Canvas canvas,
+    required XAxisLabelWidget widgetLabel,
+    required double x,
+    required double y,
+  }) {
+    try {
+      // Validate inputs to prevent NaN calculations
+      if (widgetLabel.width <= 0 ||
+          widgetLabel.height <= 0 ||
+          widgetLabel.width.isNaN ||
+          widgetLabel.height.isNaN ||
+          widgetLabel.width.isInfinite ||
+          widgetLabel.height.isInfinite ||
+          x.isNaN ||
+          y.isNaN ||
+          x.isInfinite ||
+          y.isInfinite) {
+        // Draw fallback for invalid dimensions
+        final fallbackPaint = Paint()
+          ..color = Colors.red
+          ..style = PaintingStyle.fill;
+        canvas.drawCircle(Offset(x, y), 4.0, fallbackPaint);
+        return;
+      }
+
+      // Create the render object for the widget
+      final Size widgetSize = Size(widgetLabel.width, widgetLabel.height);
+
+      // Save canvas state
+      canvas.save();
+
+      // Calculate center position with additional validation
+      final centerX = x + widgetLabel.offsetX - (widgetLabel.width / 2);
+      final centerY = y + widgetLabel.offsetY - (widgetLabel.height / 2);
+
+      // Validate calculated positions
+      if (centerX.isNaN || centerY.isNaN || centerX.isInfinite || centerY.isInfinite) {
+        canvas.restore();
+        return;
+      }
+
+      // Translate to the final position
+      canvas.translate(centerX, centerY);
+
+      // Apply rotation if specified
+      if (widgetLabel.rotationDegrees != 0.0 && !widgetLabel.rotationDegrees.isNaN) {
+        // Translate to center of widget for rotation
+        canvas.translate(widgetLabel.width / 2, widgetLabel.height / 2);
+        // Convert degrees to radians and rotate
+        canvas.rotate(widgetLabel.rotationDegrees * (pi / 180.0));
+        // Translate back
+        canvas.translate(-widgetLabel.width / 2, -widgetLabel.height / 2);
+      }
+
+      // Create a simple render widget approach
+      // Note: This is a simplified approach. In a real implementation, you might want to
+      // use RenderBox or similar for more complex widgets
+      bool widgetRendered = false;
+
+      if (widgetLabel.widget is CustomPaint) {
+        final customPaint = widgetLabel.widget as CustomPaint;
+        if (customPaint.painter != null) {
+          customPaint.painter!.paint(canvas, widgetSize);
+          widgetRendered = true;
+        }
+      }
+
+      if (!widgetRendered) {
+        // For custom widgets, try multiple approaches to get the painter
+        try {
+          final dynamic widget = widgetLabel.widget;
+
+          // Approach 1: Try to call getPainter() method if it exists
+          try {
+            final painter = widget.getPainter();
+            if (painter != null) {
+              painter.paint(canvas, widgetSize);
+              widgetRendered = true;
+            }
+          } catch (e) {
+            // getPainter method doesn't exist or failed
+          }
+
+          // Approach 2: Try to build the widget if getPainter failed
+          if (!widgetRendered) {
+            final builtWidget = widget.build(null);
+            if (builtWidget is CustomPaint && builtWidget.painter != null) {
+              builtWidget.painter!.paint(canvas, widgetSize);
+              widgetRendered = true;
+            }
+          }
+        } catch (e) {
+          // All approaches failed
+        }
+      }
+
+      // If nothing worked, draw a fallback indicator
+      if (!widgetRendered) {
+        final fallbackPaint = Paint()
+          ..color = Colors.transparent
+          ..style = PaintingStyle.fill;
+        canvas.drawCircle(Offset(widgetSize.width / 2, widgetSize.height / 2), 6.0, fallbackPaint);
+      }
+
+      // Restore canvas state
+      canvas.restore();
+    } catch (e) {
+      // Fallback for any errors - draw a simple colored circle
+      final fallbackPaint = Paint()
+        ..color = Colors.blue
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(x + widgetLabel.offsetX, y + widgetLabel.offsetY), 8.0, fallbackPaint);
     }
   }
 
