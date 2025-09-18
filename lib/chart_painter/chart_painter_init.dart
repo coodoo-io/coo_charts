@@ -306,14 +306,34 @@ class ChartPainterInit {
     // Festlegen wie viel Breite zwischen zwei Datenpunkten liegen kann
     double chartWidth = (chartConfig.scrollable ? canvasWidth : layoutWidth) - padding.left - padding.right;
     double chartHeight = layoutHeight - padding.bottom - padding.top;
+
+    // Validate chartWidth to prevent NaN calculations
+    if (chartWidth <= 0 || chartWidth.isNaN || chartWidth.isInfinite) {
+      chartWidth = 100.0; // Fallback minimum width
+    }
+
+    // Validate maxAbsoluteValueCount to prevent division by zero
+    if (maxAbsoluteValueCount <= 0) {
+      maxAbsoluteValueCount = 1; // Fallback minimum count
+    }
+
     double xSegmentWidth;
     if (!chartConfig.centerDataPointBetweenVerticalGrid) {
       // Es sind die Punkte links und rechts auf der Y-Achse verfügbar
       // Der erste Datenpunkt liegt direkt auf der Y-Achse
-      xSegmentWidth = chartWidth / (maxAbsoluteValueCount - 1);
+      if (maxAbsoluteValueCount > 1) {
+        xSegmentWidth = chartWidth / (maxAbsoluteValueCount - 1);
+      } else {
+        xSegmentWidth = chartWidth; // Only one data point
+      }
     } else {
       // Hier liegen die Punkte zwischen den Linien in der MItte
       xSegmentWidth = chartWidth / maxAbsoluteValueCount;
+    }
+
+    // Final validation of xSegmentWidth
+    if (xSegmentWidth <= 0 || xSegmentWidth.isNaN || xSegmentWidth.isInfinite) {
+      xSegmentWidth = 10.0; // Fallback minimum segment width
     }
 
     return ChartPainterMetadata(

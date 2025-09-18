@@ -26,12 +26,9 @@ mixin _$ChartConfig {
   bool get crosshair => throw _privateConstructorUsedError;
 
   /// Paint the outer chart border?
-  bool get showChartBorder =>
-      throw _privateConstructorUsedError; // if true, grid horizontal lines are painted
-  bool get showGridHorizontal =>
-      throw _privateConstructorUsedError; // if true, grid vertical lines are painted
-  bool get showGridVertical =>
-      throw _privateConstructorUsedError; // Soll der path auf der Kurve angezeigt werden?
+  bool get showChartBorder => throw _privateConstructorUsedError; // if true, grid horizontal lines are painted
+  bool get showGridHorizontal => throw _privateConstructorUsedError; // if true, grid vertical lines are painted
+  bool get showGridVertical => throw _privateConstructorUsedError; // Soll der path auf der Kurve angezeigt werden?
   bool get showDataPath =>
       throw _privateConstructorUsedError; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
   bool get highlightMouseColumn =>
@@ -45,16 +42,13 @@ mixin _$ChartConfig {
   bool get highlightPointsHorizontalLine => throw _privateConstructorUsedError;
 
   /// Zentriert den Datenpunkte in der Mitte des vertikalen Grids (shift nach rechts der Datenpunkte - beginnt nicht bei 0)
-  bool get centerDataPointBetweenVerticalGrid =>
-      throw _privateConstructorUsedError;
+  bool get centerDataPointBetweenVerticalGrid => throw _privateConstructorUsedError;
 
   /// Liste von Hintergrund-Zeiträumen, die im Chart hervorgehoben werden sollen
-  List<ChartBackgroundTimeRange> get backgroundTimeRanges =>
-      throw _privateConstructorUsedError;
+  List<ChartBackgroundTimeRange> get backgroundTimeRanges => throw _privateConstructorUsedError;
 
   /// Experimental - Background painting style
-  PaintingStyle get canvasBackgroundPaintingStyle =>
-      throw _privateConstructorUsedError;
+  PaintingStyle get canvasBackgroundPaintingStyle => throw _privateConstructorUsedError;
 
   /// Is the canvas scrollable? if true a canvasWidth can be given and the axis are fix.
   bool get scrollable => throw _privateConstructorUsedError;
@@ -66,14 +60,12 @@ mixin _$ChartConfig {
   /// Create a copy of ChartConfig
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $ChartConfigCopyWith<ChartConfig> get copyWith =>
-      throw _privateConstructorUsedError;
+  $ChartConfigCopyWith<ChartConfig> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $ChartConfigCopyWith<$Res> {
-  factory $ChartConfigCopyWith(
-          ChartConfig value, $Res Function(ChartConfig) then) =
+  factory $ChartConfigCopyWith(ChartConfig value, $Res Function(ChartConfig) then) =
       _$ChartConfigCopyWithImpl<$Res, ChartConfig>;
   @useResult
   $Res call(
@@ -99,8 +91,7 @@ abstract class $ChartConfigCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
-    implements $ChartConfigCopyWith<$Res> {
+class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig> implements $ChartConfigCopyWith<$Res> {
   _$ChartConfigCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
@@ -180,8 +171,7 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
           ? _value.highlightPointsHorizontalLine
           : highlightPointsHorizontalLine // ignore: cast_nullable_to_non_nullable
               as bool,
-      centerDataPointBetweenVerticalGrid: null ==
-              centerDataPointBetweenVerticalGrid
+      centerDataPointBetweenVerticalGrid: null == centerDataPointBetweenVerticalGrid
           ? _value.centerDataPointBetweenVerticalGrid
           : centerDataPointBetweenVerticalGrid // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -220,10 +210,8 @@ class _$ChartConfigCopyWithImpl<$Res, $Val extends ChartConfig>
 }
 
 /// @nodoc
-abstract class _$$ChartConfigImplCopyWith<$Res>
-    implements $ChartConfigCopyWith<$Res> {
-  factory _$$ChartConfigImplCopyWith(
-          _$ChartConfigImpl value, $Res Function(_$ChartConfigImpl) then) =
+abstract class _$$ChartConfigImplCopyWith<$Res> implements $ChartConfigCopyWith<$Res> {
+  factory _$$ChartConfigImplCopyWith(_$ChartConfigImpl value, $Res Function(_$ChartConfigImpl) then) =
       __$$ChartConfigImplCopyWithImpl<$Res>;
   @override
   @useResult
@@ -251,11 +239,9 @@ abstract class _$$ChartConfigImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$ChartConfigImplCopyWithImpl<$Res>
-    extends _$ChartConfigCopyWithImpl<$Res, _$ChartConfigImpl>
+class __$$ChartConfigImplCopyWithImpl<$Res> extends _$ChartConfigCopyWithImpl<$Res, _$ChartConfigImpl>
     implements _$$ChartConfigImplCopyWith<$Res> {
-  __$$ChartConfigImplCopyWithImpl(
-      _$ChartConfigImpl _value, $Res Function(_$ChartConfigImpl) _then)
+  __$$ChartConfigImplCopyWithImpl(_$ChartConfigImpl _value, $Res Function(_$ChartConfigImpl) _then)
       : super(_value, _then);
 
   /// Create a copy of ChartConfig
@@ -330,8 +316,7 @@ class __$$ChartConfigImplCopyWithImpl<$Res>
           ? _value.highlightPointsHorizontalLine
           : highlightPointsHorizontalLine // ignore: cast_nullable_to_non_nullable
               as bool,
-      centerDataPointBetweenVerticalGrid: null ==
-              centerDataPointBetweenVerticalGrid
+      centerDataPointBetweenVerticalGrid: null == centerDataPointBetweenVerticalGrid
           ? _value.centerDataPointBetweenVerticalGrid
           : centerDataPointBetweenVerticalGrid // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -441,8 +426,7 @@ class _$ChartConfigImpl implements _ChartConfig {
   @override
   @JsonKey()
   List<ChartBackgroundTimeRange> get backgroundTimeRanges {
-    if (_backgroundTimeRanges is EqualUnmodifiableListView)
-      return _backgroundTimeRanges;
+    if (_backgroundTimeRanges is EqualUnmodifiableListView) return _backgroundTimeRanges;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_backgroundTimeRanges);
   }
@@ -473,46 +457,29 @@ class _$ChartConfigImpl implements _ChartConfig {
         (other.runtimeType == runtimeType &&
             other is _$ChartConfigImpl &&
             (identical(other.theme, theme) || other.theme == theme) &&
-            (identical(other.curvedLine, curvedLine) ||
-                other.curvedLine == curvedLine) &&
-            (identical(other.crosshair, crosshair) ||
-                other.crosshair == crosshair) &&
-            (identical(other.showChartBorder, showChartBorder) ||
-                other.showChartBorder == showChartBorder) &&
+            (identical(other.curvedLine, curvedLine) || other.curvedLine == curvedLine) &&
+            (identical(other.crosshair, crosshair) || other.crosshair == crosshair) &&
+            (identical(other.showChartBorder, showChartBorder) || other.showChartBorder == showChartBorder) &&
             (identical(other.showGridHorizontal, showGridHorizontal) ||
                 other.showGridHorizontal == showGridHorizontal) &&
-            (identical(other.showGridVertical, showGridVertical) ||
-                other.showGridVertical == showGridVertical) &&
-            (identical(other.showDataPath, showDataPath) ||
-                other.showDataPath == showDataPath) &&
+            (identical(other.showGridVertical, showGridVertical) || other.showGridVertical == showGridVertical) &&
+            (identical(other.showDataPath, showDataPath) || other.showDataPath == showDataPath) &&
             (identical(other.highlightMouseColumn, highlightMouseColumn) ||
                 other.highlightMouseColumn == highlightMouseColumn) &&
-            (identical(other.highlightPoints, highlightPoints) ||
-                other.highlightPoints == highlightPoints) &&
+            (identical(other.highlightPoints, highlightPoints) || other.highlightPoints == highlightPoints) &&
             (identical(other.addYAxisValueBuffer, addYAxisValueBuffer) ||
                 other.addYAxisValueBuffer == addYAxisValueBuffer) &&
-            (identical(other.highlightPointsVerticalLine,
-                    highlightPointsVerticalLine) ||
-                other.highlightPointsVerticalLine ==
-                    highlightPointsVerticalLine) &&
-            (identical(other.highlightPointsHorizontalLine,
-                    highlightPointsHorizontalLine) ||
-                other.highlightPointsHorizontalLine ==
-                    highlightPointsHorizontalLine) &&
-            (identical(other.centerDataPointBetweenVerticalGrid,
-                    centerDataPointBetweenVerticalGrid) ||
-                other.centerDataPointBetweenVerticalGrid ==
-                    centerDataPointBetweenVerticalGrid) &&
-            const DeepCollectionEquality()
-                .equals(other._backgroundTimeRanges, _backgroundTimeRanges) &&
-            (identical(other.canvasBackgroundPaintingStyle,
-                    canvasBackgroundPaintingStyle) ||
-                other.canvasBackgroundPaintingStyle ==
-                    canvasBackgroundPaintingStyle) &&
-            (identical(other.scrollable, scrollable) ||
-                other.scrollable == scrollable) &&
-            (identical(other.canvasWidth, canvasWidth) ||
-                other.canvasWidth == canvasWidth));
+            (identical(other.highlightPointsVerticalLine, highlightPointsVerticalLine) ||
+                other.highlightPointsVerticalLine == highlightPointsVerticalLine) &&
+            (identical(other.highlightPointsHorizontalLine, highlightPointsHorizontalLine) ||
+                other.highlightPointsHorizontalLine == highlightPointsHorizontalLine) &&
+            (identical(other.centerDataPointBetweenVerticalGrid, centerDataPointBetweenVerticalGrid) ||
+                other.centerDataPointBetweenVerticalGrid == centerDataPointBetweenVerticalGrid) &&
+            const DeepCollectionEquality().equals(other._backgroundTimeRanges, _backgroundTimeRanges) &&
+            (identical(other.canvasBackgroundPaintingStyle, canvasBackgroundPaintingStyle) ||
+                other.canvasBackgroundPaintingStyle == canvasBackgroundPaintingStyle) &&
+            (identical(other.scrollable, scrollable) || other.scrollable == scrollable) &&
+            (identical(other.canvasWidth, canvasWidth) || other.canvasWidth == canvasWidth));
   }
 
   @override
@@ -585,17 +552,13 @@ abstract class _ChartConfig implements ChartConfig {
   @override
   bool get showGridVertical; // Soll der path auf der Kurve angezeigt werden?
   @override
-  bool
-      get showDataPath; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
+  bool get showDataPath; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
   @override
-  bool
-      get highlightMouseColumn; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
+  bool get highlightMouseColumn; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
   @override
-  bool
-      get highlightPoints; // Fügt einen Puffer auf der Y-Achse vor dem Min-Wert und nach dem Max-Wert hinzu
+  bool get highlightPoints; // Fügt einen Puffer auf der Y-Achse vor dem Min-Wert und nach dem Max-Wert hinzu
   @override
-  bool
-      get addYAxisValueBuffer; // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
+  bool get addYAxisValueBuffer; // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
   @override
   bool
       get highlightPointsVerticalLine; // Zeichnet eine horizontale Line über den Datenpunkt wenn die Maus in der Nähe ist.
@@ -627,6 +590,5 @@ abstract class _ChartConfig implements ChartConfig {
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ChartConfigImplCopyWith<_$ChartConfigImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$ChartConfigImplCopyWith<_$ChartConfigImpl> get copyWith => throw _privateConstructorUsedError;
 }

@@ -21,8 +21,7 @@ mixin _$CooChartTheme {
 
   /// If the chart is scrollable the background of the labels can be configured as transparent gradient
   /// Default is not transperant.
-  bool get labelBackgroundTransparentGradient =>
-      throw _privateConstructorUsedError;
+  bool get labelBackgroundTransparentGradient => throw _privateConstructorUsedError;
 
   /// The color of the outer chart canvas background
   Color get chartBackgroundColor => throw _privateConstructorUsedError;
@@ -55,14 +54,12 @@ mixin _$CooChartTheme {
   /// Create a copy of CooChartTheme
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $CooChartThemeCopyWith<CooChartTheme> get copyWith =>
-      throw _privateConstructorUsedError;
+  $CooChartThemeCopyWith<CooChartTheme> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $CooChartThemeCopyWith<$Res> {
-  factory $CooChartThemeCopyWith(
-          CooChartTheme value, $Res Function(CooChartTheme) then) =
+  factory $CooChartThemeCopyWith(CooChartTheme value, $Res Function(CooChartTheme) then) =
       _$CooChartThemeCopyWithImpl<$Res, CooChartTheme>;
   @useResult
   $Res call(
@@ -83,8 +80,7 @@ abstract class $CooChartThemeCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$CooChartThemeCopyWithImpl<$Res, $Val extends CooChartTheme>
-    implements $CooChartThemeCopyWith<$Res> {
+class _$CooChartThemeCopyWithImpl<$Res, $Val extends CooChartTheme> implements $CooChartThemeCopyWith<$Res> {
   _$CooChartThemeCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
@@ -117,8 +113,7 @@ class _$CooChartThemeCopyWithImpl<$Res, $Val extends CooChartTheme>
           ? _value.backgroundColor
           : backgroundColor // ignore: cast_nullable_to_non_nullable
               as Color,
-      labelBackgroundTransparentGradient: null ==
-              labelBackgroundTransparentGradient
+      labelBackgroundTransparentGradient: null == labelBackgroundTransparentGradient
           ? _value.labelBackgroundTransparentGradient
           : labelBackgroundTransparentGradient // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -175,10 +170,8 @@ class _$CooChartThemeCopyWithImpl<$Res, $Val extends CooChartTheme>
 }
 
 /// @nodoc
-abstract class _$$CooChartThemeImplCopyWith<$Res>
-    implements $CooChartThemeCopyWith<$Res> {
-  factory _$$CooChartThemeImplCopyWith(
-          _$CooChartThemeImpl value, $Res Function(_$CooChartThemeImpl) then) =
+abstract class _$$CooChartThemeImplCopyWith<$Res> implements $CooChartThemeCopyWith<$Res> {
+  factory _$$CooChartThemeImplCopyWith(_$CooChartThemeImpl value, $Res Function(_$CooChartThemeImpl) then) =
       __$$CooChartThemeImplCopyWithImpl<$Res>;
   @override
   @useResult
@@ -200,11 +193,9 @@ abstract class _$$CooChartThemeImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$CooChartThemeImplCopyWithImpl<$Res>
-    extends _$CooChartThemeCopyWithImpl<$Res, _$CooChartThemeImpl>
+class __$$CooChartThemeImplCopyWithImpl<$Res> extends _$CooChartThemeCopyWithImpl<$Res, _$CooChartThemeImpl>
     implements _$$CooChartThemeImplCopyWith<$Res> {
-  __$$CooChartThemeImplCopyWithImpl(
-      _$CooChartThemeImpl _value, $Res Function(_$CooChartThemeImpl) _then)
+  __$$CooChartThemeImplCopyWithImpl(_$CooChartThemeImpl _value, $Res Function(_$CooChartThemeImpl) _then)
       : super(_value, _then);
 
   /// Create a copy of CooChartTheme
@@ -232,8 +223,7 @@ class __$$CooChartThemeImplCopyWithImpl<$Res>
           ? _value.backgroundColor
           : backgroundColor // ignore: cast_nullable_to_non_nullable
               as Color,
-      labelBackgroundTransparentGradient: null ==
-              labelBackgroundTransparentGradient
+      labelBackgroundTransparentGradient: null == labelBackgroundTransparentGradient
           ? _value.labelBackgroundTransparentGradient
           : labelBackgroundTransparentGradient // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -368,37 +358,24 @@ class _$CooChartThemeImpl implements _CooChartTheme {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CooChartThemeImpl &&
-            (identical(other.backgroundColor, backgroundColor) ||
-                other.backgroundColor == backgroundColor) &&
-            (identical(other.labelBackgroundTransparentGradient,
-                    labelBackgroundTransparentGradient) ||
-                other.labelBackgroundTransparentGradient ==
-                    labelBackgroundTransparentGradient) &&
+            (identical(other.backgroundColor, backgroundColor) || other.backgroundColor == backgroundColor) &&
+            (identical(other.labelBackgroundTransparentGradient, labelBackgroundTransparentGradient) ||
+                other.labelBackgroundTransparentGradient == labelBackgroundTransparentGradient) &&
             (identical(other.chartBackgroundColor, chartBackgroundColor) ||
                 other.chartBackgroundColor == chartBackgroundColor) &&
-            (identical(other.chartBorderColor, chartBorderColor) ||
-                other.chartBorderColor == chartBorderColor) &&
-            (identical(other.labelColor, labelColor) ||
-                other.labelColor == labelColor) &&
-            (identical(other.labelFontSize, labelFontSize) ||
-                other.labelFontSize == labelFontSize) &&
-            (identical(other.labelTextStyle, labelTextStyle) ||
-                other.labelTextStyle == labelTextStyle) &&
-            (identical(other.gridColor, gridColor) ||
-                other.gridColor == gridColor) &&
-            (identical(other.dataPointColor, dataPointColor) ||
-                other.dataPointColor == dataPointColor) &&
-            (identical(
-                    other.dataPointHighlightColor, dataPointHighlightColor) ||
+            (identical(other.chartBorderColor, chartBorderColor) || other.chartBorderColor == chartBorderColor) &&
+            (identical(other.labelColor, labelColor) || other.labelColor == labelColor) &&
+            (identical(other.labelFontSize, labelFontSize) || other.labelFontSize == labelFontSize) &&
+            (identical(other.labelTextStyle, labelTextStyle) || other.labelTextStyle == labelTextStyle) &&
+            (identical(other.gridColor, gridColor) || other.gridColor == gridColor) &&
+            (identical(other.dataPointColor, dataPointColor) || other.dataPointColor == dataPointColor) &&
+            (identical(other.dataPointHighlightColor, dataPointHighlightColor) ||
                 other.dataPointHighlightColor == dataPointHighlightColor) &&
             (identical(other.columnHighlightColor, columnHighlightColor) ||
                 other.columnHighlightColor == columnHighlightColor) &&
-            (identical(other.barColor, barColor) ||
-                other.barColor == barColor) &&
-            (identical(other.barColorHighlight, barColorHighlight) ||
-                other.barColorHighlight == barColorHighlight) &&
-            (identical(other.minMaxRangeColor, minMaxRangeColor) ||
-                other.minMaxRangeColor == minMaxRangeColor));
+            (identical(other.barColor, barColor) || other.barColor == barColor) &&
+            (identical(other.barColorHighlight, barColorHighlight) || other.barColorHighlight == barColorHighlight) &&
+            (identical(other.minMaxRangeColor, minMaxRangeColor) || other.minMaxRangeColor == minMaxRangeColor));
   }
 
   @override
@@ -498,6 +475,5 @@ abstract class _CooChartTheme implements CooChartTheme {
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$CooChartThemeImplCopyWith<_$CooChartThemeImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$CooChartThemeImplCopyWith<_$CooChartThemeImpl> get copyWith => throw _privateConstructorUsedError;
 }
