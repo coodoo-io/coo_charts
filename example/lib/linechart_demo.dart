@@ -278,7 +278,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
     // _create0To10ValuesChartDataPoints();
-    _generateWindBarbChart();
+    _generateRainSnowGroupedBarChart();
+    // _generateWindBarbChart();
     // _genrateRandomCooLinechartDataPoints();
     // _generateRandomDualLinechart();
     // _generateKachelmannVorhersageXL();
@@ -318,6 +319,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelLineChartCallback,
                 ),
               CooChartType.bar => CooBarChart(
+                  key: ValueKey(
+                      'bar_chart_${barchartDataSeries.length}_${DateTime.now().millisecondsSinceEpoch}'), // Force rebuild
                   dataSeries: barchartDataSeries,
                   lineDataSeries: linechartDataSeries, // Add line overlay to bar chart
                   columnBlocks: chartColumnBlocks,
@@ -348,6 +351,17 @@ class _LineChartDemoState extends State<LineChartDemo> {
                       setState(() {});
                     },
                     child: const Text('🌦️ Wetter', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () {
+                      _generateRainSnowGroupedBarChart();
+                      setState(() {
+                        // Force complete rebuild with new key
+                      });
+                    },
+                    child: const Text('🌧️❄️ Regen+Schnee', style: TextStyle(fontSize: 12)),
                   ),
                   const SizedBox(width: 4),
                   ElevatedButton(
@@ -785,7 +799,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     barchartDataSeries.add(CooBarChartDataSeries(
       dataPoints: precipitationBars,
-      barColor: const Color(0xFF54B9E9).withOpacity(0.7),
+      barColor: const Color(0xFF54B9E9).withValues(alpha: 0.7),
       maxBarWidth: 20,
       opposite: true, // Use the right axis for precipitation bars
     ));
@@ -1067,7 +1081,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
         minValue: 0,
         maxValue: 1.2,
         time: DateTime(2023, 10, 22),
-        columnBackgroundColor: Colors.grey.withOpacity(0.2)));
+        columnBackgroundColor: Colors.grey.withValues(alpha: 0.2)));
     sonnenscheindauer.add(CooBarChartDataPoint(
       value: 03.3,
       minValue: 0.3,
@@ -1151,8 +1165,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     );
     barchartDataSeries.add(serie);
 
-    final bgColor = Colors.grey.withOpacity(0.2);
-    final bgColorBottom = Colors.blue.withOpacity(0.2);
+    final bgColor = Colors.grey.withValues(alpha: 0.2);
+    final bgColorBottom = Colors.blue.withValues(alpha: 0.2);
     const blockTextStyle = TextStyle(color: Colors.green, fontSize: 7);
     final columnTopDatas = List<ChartColumnBlockData>.empty(growable: true);
     columnTopDatas.add(ChartColumnBlockData(
@@ -1233,7 +1247,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
         minValue: 0,
         maxValue: 1.2,
         time: DateTime(2023, 10, 22),
-        columnBackgroundColor: Colors.grey.withOpacity(0.2)));
+        columnBackgroundColor: Colors.grey.withValues(alpha: 0.2)));
     sonnenscheindauer.add(CooBarChartDataPoint(
       value: 03.3,
       minValue: 0.3,
@@ -1319,8 +1333,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     );
     barchartDataSeries.add(serie);
 
-    final bgColor = Colors.grey.withOpacity(0.2);
-    final bgColorBottom = Colors.blue.withOpacity(0.2);
+    final bgColor = Colors.grey.withValues(alpha: 0.2);
+    final bgColorBottom = Colors.blue.withValues(alpha: 0.2);
     final columnTopDatas = List<ChartColumnBlockData>.empty(growable: true);
     columnTopDatas.add(ChartColumnBlockData(
         text: 'a',
@@ -1730,7 +1744,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     columnBottomDatas.add(ChartColumnBlockData(
       time: DateTime(2023, 4, 9),
       text: 'a',
-      backgroundColor: colorLimitClear.withOpacity(1),
+      backgroundColor: colorLimitClear.withValues(alpha: 1),
       assetImages: [
         const BlockAssetImage(path: kIconWeatherCloudySvg),
         const BlockAssetImage(path: kIconWindOver50Svg, offsetTop: 50),
@@ -2365,7 +2379,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     barchartDataSeries.add(CooBarChartDataSeries(
       dataPoints: precipitationBars,
-      barColor: Colors.blue.withOpacity(0.7),
+      barColor: Colors.blue.withValues(alpha: 0.7),
       showDataLabels: true,
       opposite: true, // Right axis
     ));
@@ -2553,5 +2567,124 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     print('Wind barb chart configured with ${barchartDataSeries.length} series');
     print('Each series has $dataSeriesSize data points');
+  }
+
+  /// NEW: Demo function for Rain & Snow grouped bars
+  /// Shows precipitation data with rain (dark blue #005288) and snow (light blue #7DBBEA) side by side
+  _generateRainSnowGroupedBarChart() {
+    print('=== Starting Rain/Snow Grouped Bar Chart Demo ===');
+
+    // Clear everything first
+    barchartDataSeries.clear();
+    linechartDataSeries.clear();
+    chartColumnBlocks = null;
+
+    _resetToDefault();
+    chartType = CooChartType.bar;
+    print('Chart type set to: $chartType');
+
+    // Configure Y-axis for precipitation in mm
+    yAxisConfig = yAxisConfig.copyWith(
+      labelCount: 8,
+      labelPostfix: ' mm',
+      minLabelValue: 0,
+      maxLabelValue: 20, // Increased for higher values (up to ~8mm)
+    );
+    print('Y-axis configured: ${yAxisConfig.labelPostfix}');
+
+    // Configure X-axis for time-based data
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime, // Use datetime like other examples
+      showBottomLabels: true,
+    );
+    print('X-axis configured for datetime type');
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      highlightMouseColumn: true,
+      scrollable: true, // Make it scrollable to see all bars
+      centerDataPointBetweenVerticalGrid: false, // Better spacing
+    );
+
+    // Data already cleared above - no need to clear again
+    print('Data series already cleared');
+
+    // Generate sample rain and snow data for 14 days
+    var precipitationData = <CooBarChartDataPoint>[];
+    var baseTime = DateTime(2023, 10, 22); // Use fixed date like other examples
+
+    // Sample data: Rain and Snow values in mm - More varied examples
+    final rainSnowData = [
+      {'rain': 2.5, 'snow': 1.0}, // Day 1: Both, more rain
+      {'rain': 4.2, 'snow': 0.0}, // Day 2: Only rain
+      {'rain': 0.0, 'snow': 3.5}, // Day 3: Only snow
+      {'rain': 1.8, 'snow': 2.2}, // Day 4: Both, more snow
+      {'rain': 6.1, 'snow': 0.0}, // Day 5: Heavy rain only
+      {'rain': 0.5, 'snow': 4.8}, // Day 6: Light rain, heavy snow
+      {'rain': 3.3, 'snow': 1.5}, // Day 7: Both, more rain
+      {'rain': 0.8, 'snow': 3.2}, // Day 8: Both, more snow
+      {'rain': 5.5, 'snow': 0.0}, // Day 9: Heavy rain only
+      {'rain': 0.0, 'snow': 2.1}, // Day 10: Medium snow only
+      {'rain': 2.9, 'snow': 2.9}, // Day 11: Equal amounts
+      {'rain': 0.0, 'snow': 5.2}, // Day 12: Heavy snow only
+      {'rain': 1.2, 'snow': 0.7}, // Day 13: Both, light amounts
+      {'rain': 7.3, 'snow': 0.0}, // Day 14: Very heavy rain
+    ];
+
+    for (int i = 0; i < rainSnowData.length; i++) {
+      final dayData = rainSnowData[i];
+      final rainValue = dayData['rain']!;
+      final snowValue = dayData['snow']!;
+
+      precipitationData.add(CooBarChartDataPoint(
+        time: baseTime.add(Duration(days: i)),
+        label: 'Tag ${i + 1}',
+        groupedValue: GroupedBarValue(
+          primaryValue: rainValue,
+          secondaryValue: snowValue,
+          primaryColor: const Color(0xFF005288), // Dark blue for rain
+          secondaryColor: const Color(0xFF7DBBEA), // Light blue for snow
+          primaryLabel: 'Regen: ${rainValue.toStringAsFixed(1)}mm',
+          secondaryLabel: 'Schnee: ${snowValue.toStringAsFixed(1)}mm',
+        ),
+      ));
+      print(
+          'Added data point ${i + 1}: Rain=${rainValue}mm, Snow=${snowValue}mm, hasGrouped=${precipitationData.last.hasGroupedValues}');
+    }
+    print('Created ${precipitationData.length} data points');
+
+    // Add the series
+    CooBarChartDataSeries series = CooBarChartDataSeries(
+      dataPoints: precipitationData,
+      label: 'Niederschlag',
+      showDataLabels: false, // Will be handled by grouped bars
+      opposite: false,
+      barWidth: 20, // Reduced width to prevent overlap (was 30)
+      maxBarWidth: 25, // Set maximum width limit
+    );
+    barchartDataSeries.add(series);
+    print('Added series with ${series.dataPoints.length} points');
+    print('Total bar chart series: ${barchartDataSeries.length}');
+
+    // Debug: Print all data points
+    for (int i = 0; i < precipitationData.length; i++) {
+      final dp = precipitationData[i];
+      print(
+          'Data Point ${i + 1}: ${dp.label}, hasGrouped: ${dp.hasGroupedValues}, rain: ${dp.groupedValue?.primaryValue}, snow: ${dp.groupedValue?.secondaryValue}');
+    }
+
+    // Optional: Add X-axis labels showing dates
+    xAxisStepLineBottomLabelBarChartCallback = (index, dataPoints) {
+      if (index < dataPoints.length) {
+        final DateTime? time = dataPoints[index].time;
+        if (time != null) {
+          return '${time.day}.${time.month}';
+        }
+      }
+      return 'Tag ${index + 1}';
+    };
+
+    print('=== Rain/Snow Demo Setup Complete ===');
   }
 }

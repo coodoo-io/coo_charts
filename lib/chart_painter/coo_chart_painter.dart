@@ -123,7 +123,7 @@ class CooChartPainter extends CustomPainter {
   final Map<Rect, int> chartRectYPos = {}; // Merken welches Rect bei welcher Y-Pos liegt
 
   final Paint _highlightLinePaint = Paint()
-    ..color = Colors.white.withOpacity(0.7)
+    ..color = Colors.white.withValues(alpha: 0.7)
     ..strokeWidth = 1;
 
   final Paint _mousePositionPaint = Paint()
@@ -343,6 +343,189 @@ class CooChartPainter extends CustomPainter {
     }
   }
 
+  double _calculateBarWidth(CooBarChartDataSeries dataSeries, int dataSeriesCount) {
+    var barWidth = metadata.xSegementWidthHalf * 0.66; // Default: 2/3 of column space
+
+    if (dataSeries.maxBarWidth != null && barWidth > dataSeries.maxBarWidth!) {
+      barWidth = dataSeries.maxBarWidth!.toDouble();
+    }
+
+    if (dataSeriesCount > 1) {
+      barWidth = metadata.xSegementWidthHalf / dataSeriesCount * 0.66;
+    }
+
+    if (dataSeries.barWidth != null) {
+      barWidth = dataSeries.barWidth!.toDouble();
+    }
+
+    return barWidth;
+  }
+
+  double? _normalizeValue({
+    required double value,
+    required double yAxisMinValue,
+    required double yAxisMaxValue,
+  }) {
+    if (yAxisMaxValue == yAxisMinValue) {
+      return 0.0; // Prevent division by zero
+    }
+
+    var minDataPointDiff = 0.0;
+    if (yAxisMinValue < 0) {
+      minDataPointDiff = yAxisMinValue.abs();
+    }
+
+    double valueOverZeroDiff = yAxisMinValue > 0 ? yAxisMinValue : 0;
+    var maxDataPoint = yAxisMaxValue + minDataPointDiff - valueOverZeroDiff;
+
+    double normalizedValue = value;
+    normalizedValue += minDataPointDiff;
+    normalizedValue -= valueOverZeroDiff;
+    normalizedValue = maxDataPoint == 0 ? 0 : normalizedValue / maxDataPoint;
+
+    return normalizedValue;
+  }
+
+  void _drawSingleBar({
+    required Canvas canvas,
+    required CooBarChartDataPoint dataPoint,
+    required double x,
+    required double y,
+    required double startYPos,
+    required double topColumnHeight,
+    required ChartPadding padding,
+    required double barWidth,
+    required Paint barPaint,
+    required Paint barHightlightPaint,
+    required Offset? mousePosition,
+    required bool highlightMouseColumn,
+  }) {
+    // Validate all values before creating rectangle to prevent NaN
+    if (x.isNaN ||
+        y.isNaN ||
+        barWidth.isNaN ||
+        startYPos.isNaN ||
+        x.isInfinite ||
+        y.isInfinite ||
+        barWidth.isInfinite ||
+        startYPos.isInfinite ||
+        barWidth <= 0) {
+      return; // Skip this bar if any value is invalid
+    }
+
+    double x0 = x - barWidth;
+    double y0 = y;
+    double x1 = x + barWidth;
+    double y1 = startYPos + padding.top + topColumnHeight;
+
+    // Final validation of rectangle coordinates
+    if (x0.isNaN ||
+        y0.isNaN ||
+        x1.isNaN ||
+        y1.isNaN ||
+        x0.isInfinite ||
+        y0.isInfinite ||
+        x1.isInfinite ||
+        y1.isInfinite) {
+      return; // Skip this bar if coordinates are invalid
+    }
+
+    var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
+
+    bool mouseOverBarHighlight = false;
+    if (mousePosition != null) {
+      bool contains = rect.contains(Offset(mousePosition.dx, mousePosition.dy));
+      mouseOverBarHighlight = contains && highlightMouseColumn;
+    }
+
+    if (mouseOverBarHighlight) {
+      canvas.drawRect(rect, barHightlightPaint);
+    } else {
+      canvas.drawRect(rect, barPaint);
+    }
+  }
+
+  void _drawGroupedBars({
+    required Canvas canvas,
+    required CooBarChartDataPoint dataPoint,
+    required double x,
+    required double startYPos,
+    required double topColumnHeight,
+    required ChartPadding padding,
+    required double barWidth,
+    required double yAxisMinValue,
+    required double yAxisMaxValue,
+    required Offset? mousePosition,
+    required bool highlightMouseColumn,
+    required CooChartTheme theme,
+  }) {
+    if (!dataPoint.hasGroupedValues) {
+      return;
+    }
+
+    final groupedValue = dataPoint.groupedValue!;
+
+    final primaryNormalized = _normalizeValue(
+      value: groupedValue.primaryValue,
+      yAxisMinValue: yAxisMinValue,
+      yAxisMaxValue: yAxisMaxValue,
+    );
+    final secondaryNormalized = _normalizeValue(
+      value: groupedValue.secondaryValue,
+      yAxisMinValue: yAxisMinValue,
+      yAxisMaxValue: yAxisMaxValue,
+    );
+
+    final Color primaryColor = groupedValue.primaryColor ?? const Color(0xFF005288);
+    final Color secondaryColor = groupedValue.secondaryColor ?? const Color(0xFF7DBBEA);
+
+    final Paint primaryPaint = Paint()
+      ..color = primaryColor
+      ..strokeWidth = 1;
+    final Paint secondaryPaint = Paint()
+      ..color = secondaryColor
+      ..strokeWidth = 1;
+    final Paint primaryHighlightPaint = Paint()
+      ..color = primaryColor.withValues(alpha: 0.8)
+      ..strokeWidth = 1;
+    final Paint secondaryHighlightPaint = Paint()
+      ..color = secondaryColor.withValues(alpha: 0.8)
+      ..strokeWidth = 1;
+
+    final chartBottom = startYPos + padding.top + topColumnHeight;
+
+    if (primaryNormalized != null && primaryNormalized > 0) {
+      final primaryHeight = primaryNormalized * startYPos;
+      final primaryTop = chartBottom - primaryHeight;
+
+      final primaryRect = Rect.fromLTRB(x - barWidth, primaryTop, x + barWidth, chartBottom);
+
+      bool mouseOverPrimary = false;
+      if (mousePosition != null) {
+        mouseOverPrimary = primaryRect.contains(mousePosition) && highlightMouseColumn;
+      }
+
+      canvas.drawRect(primaryRect, mouseOverPrimary ? primaryHighlightPaint : primaryPaint);
+    }
+
+    if (secondaryNormalized != null && secondaryNormalized > 0) {
+      final primaryHeight = (primaryNormalized ?? 0) * startYPos;
+      final secondaryHeight = secondaryNormalized * startYPos;
+
+      final secondaryBottom = chartBottom - primaryHeight;
+      final secondaryTop = secondaryBottom - secondaryHeight;
+
+      final secondaryRect = Rect.fromLTRB(x - barWidth, secondaryTop, x + barWidth, secondaryBottom);
+
+      bool mouseOverSecondary = false;
+      if (mousePosition != null) {
+        mouseOverSecondary = secondaryRect.contains(mousePosition) && highlightMouseColumn;
+      }
+
+      canvas.drawRect(secondaryRect, mouseOverSecondary ? secondaryHighlightPaint : secondaryPaint);
+    }
+  }
+
   @override
   bool shouldRepaint(covariant CooChartPainter oldDelegate) {
     return mousePosition != oldDelegate.mousePosition;
@@ -387,7 +570,13 @@ class CooChartPainter extends CustomPainter {
       List<String?> dataSeriesLabels = List.empty(growable: true);
 
       // Alle Punkte auf einen Bereich zwischen 0.0 und 1.0 bringen um sie in der Fläche relativ berechnen zu können
-      List<double?> dataPointValues = localLinechartDataSeries.dataPoints.map((e) => e.value).toList();
+      List<double?> dataPointValues = localLinechartDataSeries.dataPoints.map((e) {
+        if (e.hasGroupedValues) {
+          return e.effectiveValue;
+        }
+        return e.value;
+      }).toList();
+
       List<double?> dataSeriesNormalizedValues = CooChartPainterUtil.normalizeChartDataPoints(
         linechartDataPoints: dataPointValues,
         minDataPointValue: minDataPointValue,
@@ -460,81 +649,36 @@ class CooChartPainter extends CustomPainter {
         final startYPos = metadata.canvasHeight - padding.bottom - padding.top - bottomColumnHeight - topColumnHeight;
         final dataValue = dataSeriesNormalizedValues[j];
         if (dataValue != null) {
-          // Berechnen der Position zum Plotten der Linie
-          final y = startYPos - (dataValue * (startYPos)) + padding.top + topColumnHeight;
-
-          /// Pos(x0,y0) - Pos(x1,y0)
-          ///     |                |
-          ///     |                |
-          ///     |                |
-          ///     |                |
-          ///     |                |
-          /// Pos(x0,y1)  -  Pos(x1,y1)
-
-          // Durch die X-Verschiebung des Punktes ist die Hälfte des Segments die komplette Breite eines Segments
-          // in der Berechnung
-          var barWidth = xSegementWidthHalf * 0.66; // Default Bar Breite soll 2/3 des Spaltenplaztes einnehmen
-          if (localLinechartDataSeries.maxBarWidth != null && barWidth > localLinechartDataSeries.maxBarWidth!) {
-            barWidth = localLinechartDataSeries.maxBarWidth!.toDouble();
-          }
-          if (dataSeriesCount > 1) {
-            // Breite muss sich durch die Anzahl der Serien aufteilen
-            barWidth = xSegementWidthHalf / dataSeriesCount * 0.66;
-          }
-          if (localLinechartDataSeries.barWidth != null) {
-            barWidth = localLinechartDataSeries.barWidth!.toDouble();
-          }
-
-          // Validate all values before creating rectangle to prevent NaN
-          if (x.isNaN ||
-              y.isNaN ||
-              barWidth.isNaN ||
-              startYPos.isNaN ||
-              x.isInfinite ||
-              y.isInfinite ||
-              barWidth.isInfinite ||
-              startYPos.isInfinite ||
-              barWidth <= 0) {
-            continue; // Skip this bar if any value is invalid
-          }
-
-          double x0 = x - barWidth;
-          double y0 = y;
-          double x1 = x + barWidth;
-          double y1 = startYPos + padding.top + topColumnHeight;
-
-          if (localLinechartDataSeries.barHeight != null) {
-            // Ist eigentlich ein Candle-Stick-Chart
-            // TODO move to candle sti
-            //ck chart
-            y0 = y0 - (localLinechartDataSeries.barHeight!.toDouble() / 2);
-            y1 = y0 + localLinechartDataSeries.barHeight!.toDouble();
-          }
-
-          // Final validation of rectangle coordinates
-          if (x0.isNaN ||
-              y0.isNaN ||
-              x1.isNaN ||
-              y1.isNaN ||
-              x0.isInfinite ||
-              y0.isInfinite ||
-              x1.isInfinite ||
-              y1.isInfinite) {
-            continue; // Skip this bar if coordinates are invalid
-          }
-
-          var rect = Rect.fromPoints(Offset(x0, y0), Offset(x1, y1));
-
-          bool mouseOverBarHiglight = false;
-          if (mousePosition != null) {
-            bool contains = rect.contains(Offset(mousePosition.dx, mousePosition.dy));
-            mouseOverBarHiglight = contains && highlightMouseColumn;
-          }
-
-          if (mouseOverBarHiglight) {
-            canvas.drawRect(rect, barHightlightPaint);
+          if (dataPoint.hasGroupedValues) {
+            _drawGroupedBars(
+              canvas: canvas,
+              dataPoint: dataPoint,
+              x: x,
+              startYPos: startYPos,
+              topColumnHeight: topColumnHeight,
+              padding: padding,
+              barWidth: _calculateBarWidth(localLinechartDataSeries, dataSeriesCount),
+              yAxisMinValue: yAxisMinValue,
+              yAxisMaxValue: yAxisMaxValue,
+              mousePosition: mousePosition,
+              highlightMouseColumn: highlightMouseColumn,
+              theme: theme,
+            );
           } else {
-            canvas.drawRect(rect, barPaint);
+            _drawSingleBar(
+              canvas: canvas,
+              dataPoint: dataPoint,
+              x: x,
+              y: startYPos - (dataValue * (startYPos)) + padding.top + topColumnHeight,
+              startYPos: startYPos,
+              topColumnHeight: topColumnHeight,
+              padding: padding,
+              barWidth: _calculateBarWidth(localLinechartDataSeries, dataSeriesCount),
+              barPaint: barPaint,
+              barHightlightPaint: barHightlightPaint,
+              mousePosition: mousePosition,
+              highlightMouseColumn: highlightMouseColumn,
+            );
           }
         }
 
@@ -1412,7 +1556,7 @@ class CooChartPainter extends CustomPainter {
     required double chartEndY,
   }) {
     final backgroundPaint = Paint()
-      ..color = timeRange.backgroundColor.withOpacity(timeRange.opacity)
+      ..color = timeRange.backgroundColor.withValues(alpha: timeRange.opacity)
       ..style = PaintingStyle.fill;
 
     List<int> validIndices = [];

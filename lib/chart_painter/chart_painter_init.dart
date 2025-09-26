@@ -100,7 +100,20 @@ class ChartPainterInit {
     for (var barchartDataSerie in barchartDataSeries) {
       {
         // Alle Datenwerte  prüfen
-        List<double?> values = barchartDataSerie.dataPoints.map((e) => e.value).toList();
+        List<double?> values = [];
+
+        for (var dataPoint in barchartDataSerie.dataPoints) {
+          if (dataPoint.hasGroupedValues) {
+            // Für gruppierte Werte (Regen & Schnee) beide Werte berücksichtigen
+            values.add(dataPoint.groupedValue!.primaryValue);
+            values.add(dataPoint.groupedValue!.secondaryValue);
+            // Summe für die Skalierung berücksichtigen
+            values.add(dataPoint.effectiveValue);
+          } else {
+            values.add(dataPoint.value);
+          }
+        }
+
         values.removeWhere((element) => element == null);
 
         // Min-Max Range beachten
