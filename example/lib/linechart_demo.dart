@@ -6,6 +6,7 @@ import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_data.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
+import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/coo_chart_themes.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
 import 'package:coo_charts/common/data_point_label_pos.enum.dart';
@@ -237,8 +238,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelLineChartCallback;
   String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelLineChartCallback;
+  String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineSecondTopLabelLineChartCallback;
   String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelBarChartCallback;
   String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelBarChartCallback;
+  String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineSecondTopLabelBarChartCallback;
 
   // SVG callback for X-axis labels
   XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgBarChartCallback;
@@ -288,6 +291,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generate10DataPointsLargeNumer();
     // _generateEmptyLists();
     // _generateRandomDualLinechart();
+    // _generateWeatherDualAxisChart();
   }
 
   @override
@@ -317,7 +321,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   yAxisOppositeConfig: yAxisOppositeConfig,
                   xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelLineChartCallback,
                   xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelLineChartCallback,
-                ),
+                  xAxisStepLineSecondTopLabelCallback: xAxisStepLineSecondTopLabelLineChartCallback),
               CooChartType.bar => CooBarChart(
                   key: ValueKey(
                       'bar_chart_${barchartDataSeries.length}_${DateTime.now().millisecondsSinceEpoch}'), // Force rebuild
@@ -328,8 +332,11 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   xAxisConfig: xAxisConfig,
                   yAxisConfig: yAxisConfig,
                   yAxisOppositeConfig: yAxisOppositeConfig,
+                  padding: const ChartPadding(
+                      top: 100, left: 50, right: 50, bottom: 50), // Extra top padding for second labels
                   xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelBarChartCallback,
                   xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelBarChartCallback,
+                  xAxisStepLineSecondTopLabelCallback: xAxisStepLineSecondTopLabelBarChartCallback,
                   xAxisStepLineBottomSvgCallback: xAxisStepLineBottomSvgBarChartCallback,
                   xAxisStepLineBottomWidgetCallback: xAxisStepLineBottomWidgetBarChartCallback,
                 ),
@@ -712,8 +719,10 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartColumnBlocks = null;
     xAxisStepLineTopLabelLineChartCallback = null;
     xAxisStepLineBottomLabelLineChartCallback = null;
+    xAxisStepLineSecondTopLabelLineChartCallback = null;
     xAxisStepLineTopLabelBarChartCallback = null;
     xAxisStepLineBottomLabelBarChartCallback = null;
+    xAxisStepLineSecondTopLabelBarChartCallback = null;
     xAxisStepLineBottomSvgBarChartCallback = null;
     xAxisStepLineBottomWidgetBarChartCallback = null;
     yAxisLabelCount = null;
@@ -753,8 +762,20 @@ class _LineChartDemoState extends State<LineChartDemo> {
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
       showTopLabels: true,
+      showSecondTopLabels: true,
       topDateFormat: 'HH',
-      useSvgLabels: true, // Enable SVG labels for bottom X-axis
+      secondTopDateFormat: 'E', // Show day abbreviation (Mon, Tue, Wed, etc.) for second top labels
+      topLabelSecondTextStyle: const TextStyle(
+        color: Colors.green,
+        fontSize: 10,
+        fontWeight: FontWeight.bold,
+      ),
+      topLabelSecondTextStyleHighlight: const TextStyle(
+        color: Color(0xFF006400),
+        fontSize: 11,
+        fontWeight: FontWeight.bold,
+      ),
+      useSvgLabels: true,
     );
 
     chartConfig = chartConfig.copyWith(
@@ -862,6 +883,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
         offsetY: 0, // Center vertically
       );
     };
+
+    // Remove custom top label callback - let it use default date formatting
+    // This way we can test if second top labels work with default first top labels
+    xAxisStepLineTopLabelBarChartCallback = null;
+
+    // Set SECOND TOP LABELS callback for wind speed and direction information
+    // Temporarily disabled to test secondTopDateFormat feature
+    xAxisStepLineSecondTopLabelBarChartCallback = null;
   }
 
   _create0To10To0ValuesChartDataPoints() {
@@ -2596,6 +2625,16 @@ class _LineChartDemoState extends State<LineChartDemo> {
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime, // Use datetime like other examples
       showBottomLabels: true,
+      showTopLabels: true,
+      showSecondTopLabels: true,
+      topDateFormat: 'EEE',
+      secondTopDateFormat: 'MMM d', // Custom format for second top labels (e.g., "Oct 22")
+      bottomDateFormat: 'dd.MM',
+      topLabelSecondTextStyle: const TextStyle(
+        color: Color(0xFF7DBBEA),
+        fontSize: 9,
+        fontWeight: FontWeight.w600,
+      ),
     );
     print('X-axis configured for datetime type');
 
@@ -2646,7 +2685,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
           primaryColor: const Color(0xFF005288), // Dark blue for rain
           secondaryColor: const Color(0xFF7DBBEA), // Light blue for snow
           primaryLabel: 'Regen: ${rainValue.toStringAsFixed(1)}mm',
-          secondaryLabel: 'Schnee: ${snowValue.toStringAsFixed(1)}mm',
+          // secondaryLabel: 'Schnee: ${snowValue.toStringAsFixed(1)}mm', // Commented out to test secondTopDateFormat
         ),
       ));
       print(
