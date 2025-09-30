@@ -38,6 +38,7 @@ class CooBarChart extends StatefulWidget {
     this.onDataPointTab,
     this.xAxisStepLineTopLabelCallback,
     this.xAxisStepLineBottomLabelCallback,
+    this.xAxisStepLineSecondTopLabelCallback,
     this.xAxisStepLineBottomSvgCallback,
     this.xAxisStepLineBottomWidgetCallback,
   });
@@ -64,6 +65,7 @@ class CooBarChart extends StatefulWidget {
   /// If given every step this callback will be invoekd
   final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelCallback;
   final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelCallback;
+  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineSecondTopLabelCallback;
 
   /// SVG label callbacks for X-axis
   final XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgCallback;
@@ -194,6 +196,7 @@ class _CooBarChartState extends State<CooBarChart> {
               onBarChartDataPointTabCallback: widget.onDataPointTab,
               xAxisStepLineTopLabelBarChartCallback: widget.xAxisStepLineTopLabelCallback,
               xAxisStepLineBottomLabelBarChartCallback: widget.xAxisStepLineBottomLabelCallback,
+              xAxisStepLineSecondTopLabelBarChartCallback: widget.xAxisStepLineSecondTopLabelCallback,
               xAxisStepLineBottomSvgBarChartCallback: widget.xAxisStepLineBottomSvgCallback,
               xAxisStepLineBottomWidgetBarChartCallback: widget.xAxisStepLineBottomWidgetCallback,
             ),

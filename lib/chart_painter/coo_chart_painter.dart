@@ -59,6 +59,8 @@ class CooChartPainter extends CustomPainter {
     this.xAxisStepLineBottomLabelLineChartCallback,
     this.xAxisStepLineTopLabelBarChartCallback,
     this.xAxisStepLineBottomLabelBarChartCallback,
+    this.xAxisStepLineSecondTopLabelLineChartCallback,
+    this.xAxisStepLineSecondTopLabelBarChartCallback,
     this.xAxisStepLineBottomSvgBarChartCallback,
     this.xAxisStepLineBottomWidgetBarChartCallback,
   });
@@ -113,6 +115,8 @@ class CooChartPainter extends CustomPainter {
   final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelLineChartCallback;
   final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelBarChartCallback;
   final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelBarChartCallback;
+  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineSecondTopLabelLineChartCallback;
+  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineSecondTopLabelBarChartCallback;
 
   // SVG callbacks for X-axis labels
   final XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgBarChartCallback;
@@ -870,16 +874,18 @@ class CooChartPainter extends CustomPainter {
 
     // In case of a date label define the default date format
     DateFormat? topDateFormat;
+    DateFormat? secondTopDateFormat;
     DateFormat? bottomDateFormat;
     switch (xAxisConfig.valueType) {
       case XAxisValueType.date:
         topDateFormat = DateFormat.MMMMd();
+        secondTopDateFormat = DateFormat.MMMMd();
         bottomDateFormat = DateFormat.MMMMd();
         break;
 
       case XAxisValueType.datetime:
         topDateFormat = DateFormat.yMd().add_Hm();
-
+        secondTopDateFormat = DateFormat.yMd().add_Hm();
         bottomDateFormat = DateFormat.yMd().add_Hm();
         break;
       default:
@@ -890,6 +896,11 @@ class CooChartPainter extends CustomPainter {
     if (xAxisConfig.topDateFormat != null) {
       // Custom date format given by implementer
       topDateFormat = DateFormat(xAxisConfig.topDateFormat);
+    }
+
+    if (xAxisConfig.secondTopDateFormat != null) {
+      // Custom date format given by implementer for second top labels
+      secondTopDateFormat = DateFormat(xAxisConfig.secondTopDateFormat);
     }
 
     if (xAxisConfig.bottomDateFormat != null) {
@@ -992,7 +1003,17 @@ class CooChartPainter extends CustomPainter {
           switch (xAxisConfig.valueType) {
             case XAxisValueType.date:
             case XAxisValueType.datetime:
-              topLabel = topDateFormat!.format(metadata.allDateTimeXAxisValues[i]);
+              if (i < metadata.allDateTimeXAxisValues.length) {
+                final currentDateTime = metadata.allDateTimeXAxisValues[i];
+                // Check if we should show top label at this hour
+                bool shouldShowLabel = true;
+                if (xAxisConfig.topLabelsAtHours != null) {
+                  shouldShowLabel = xAxisConfig.topLabelsAtHours!.contains(currentDateTime.hour);
+                }
+                if (shouldShowLabel) {
+                  topLabel = topDateFormat!.format(currentDateTime);
+                }
+              }
               break;
             case XAxisValueType.number:
               topLabel = startNumber.toString();
@@ -1053,6 +1074,122 @@ class CooChartPainter extends CustomPainter {
               yPos += xAxisConfig.topLabelOffset!.dy;
             }
             _axisLabelPainter.paint(canvas, Offset(xPos, yPos));
+          }
+        }
+
+        if (xAxisConfig.showSecondTopLabels) {
+          String? secondTopLabel;
+          TextStyle? secondTopLabelTextStyle;
+
+          if (xAxisConfig.topLabelSecondTextStyle != null) {
+            secondTopLabelTextStyle = xAxisConfig.topLabelSecondTextStyle!;
+          }
+
+          if (highlightPointsVerticalLine && i != 0 && i == mouseInRectYIndex) {
+            if (xAxisConfig.topLabelSecondTextStyleHighlight != null) {
+              secondTopLabelTextStyle = xAxisConfig.topLabelSecondTextStyleHighlight!;
+            } else {
+              secondTopLabelTextStyle ??= const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: ui.Color.fromARGB(255, 71, 0, 251),
+              );
+            }
+          }
+
+          secondTopLabelTextStyle ??= const TextStyle(color: Colors.grey, fontSize: 9);
+
+          switch (chartType) {
+            case CooChartType.line:
+              if (xAxisStepLineSecondTopLabelLineChartCallback != null) {
+                final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
+                if (dataPoints != null) {
+                  secondTopLabel = xAxisStepLineSecondTopLabelLineChartCallback!(i, dataPoints);
+                }
+              }
+              break;
+            case CooChartType.bar:
+              if (xAxisStepLineSecondTopLabelBarChartCallback != null) {
+                final dataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? [];
+                secondTopLabel = xAxisStepLineSecondTopLabelBarChartCallback!(i, dataPoints);
+              } else {
+                final dataPoints = metadata.barChartDataPointsByColumnIndex[i];
+                if (dataPoints != null && dataPoints.isNotEmpty) {
+                  final firstDataPoint = dataPoints.first;
+                  if (firstDataPoint.groupedValue?.secondaryLabel != null) {
+                    secondTopLabel = firstDataPoint.groupedValue!.secondaryLabel;
+                  }
+                }
+              }
+              break;
+          }
+
+          // Second Top Labels Defaults - only if no callback/grouped value provided a label
+          if (secondTopLabel == null) {
+            switch (xAxisConfig.valueType) {
+              case XAxisValueType.date:
+              case XAxisValueType.datetime:
+                if (i < metadata.allDateTimeXAxisValues.length) {
+                  final currentDateTime = metadata.allDateTimeXAxisValues[i];
+                  // Check if we should show second top label at this hour
+                  bool shouldShowLabel = true;
+                  if (xAxisConfig.secondTopLabelsAtHours != null) {
+                    shouldShowLabel = xAxisConfig.secondTopLabelsAtHours!.contains(currentDateTime.hour);
+                  }
+                  if (shouldShowLabel) {
+                    secondTopLabel = secondTopDateFormat!.format(currentDateTime);
+                  }
+                }
+                break;
+              case XAxisValueType.number:
+                // For number type, don't provide a default second top label
+                // Users should use callbacks or grouped values for meaningful second labels
+                break;
+            }
+          }
+
+          if (secondTopLabel != null) {
+            _axisLabelPainter.text = TextSpan(text: secondTopLabel, style: secondTopLabelTextStyle);
+            _axisLabelPainter.layout();
+            final double labelTextWidth = _axisLabelPainter.width;
+
+            // Check if text fits in space (same logic as primary top labels)
+            bool textFitsInSpace = true;
+            if (labelTextWidth < (i * (metadata.xSegmentWidth - 1))) {
+              textFitsInSpace = true;
+            } else {
+              textFitsInSpace = false;
+            }
+
+            bool drawLabel = true;
+            if (xAxisConfig.stepAxisLine != null) {
+              if (!isStepAxisLine) {
+                drawLabel = false;
+              } else if (xAxisConfig.stepAxisLineStart > 0 && i < xAxisConfig.stepAxisLineStart) {
+                drawLabel = false;
+              }
+            }
+
+            if (drawLabel) {
+              // Calculate center position
+              final xPosCenter = (xOffsetInterval / 2) - (labelTextWidth / 2);
+
+              double xPos;
+              if (isStepAxisLine && textFitsInSpace) {
+                xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
+              } else {
+                xPos = x - (xOffsetInterval / 2) + xPosCenter;
+              }
+
+              // Position second top labels above the first top labels
+              double yPos = padding.top.toDouble() - 45; // 20px higher than first top labels
+              if (xAxisConfig.topLabelOffset != null) {
+                xPos += xAxisConfig.topLabelOffset!.dx;
+                yPos += xAxisConfig.topLabelOffset!.dy;
+              }
+
+              _axisLabelPainter.paint(canvas, Offset(xPos, yPos));
+            }
           }
         }
 
