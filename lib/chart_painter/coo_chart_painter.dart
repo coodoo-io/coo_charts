@@ -978,41 +978,51 @@ class CooChartPainter extends CustomPainter {
       // nicht, denn das wäre ein nicht vorhandener Datenpunkt zu viel
       if (!centerDataPointBetweenVerticalGrid || i != xGridLineCount) {
         String? topLabel;
-        // Top Labels Callbacks
+
+        bool shouldShowLabelAtHour = true;
+        if (xAxisConfig.topLabelsAtHours != null &&
+            i < metadata.allDateTimeXAxisValues.length &&
+            (xAxisConfig.valueType == XAxisValueType.date || xAxisConfig.valueType == XAxisValueType.datetime)) {
+          final currentDateTime = metadata.allDateTimeXAxisValues[i];
+          shouldShowLabelAtHour = xAxisConfig.topLabelsAtHours!.contains(currentDateTime.hour);
+        }
+
+        bool callbackHandled = false;
         switch (chartType) {
           case CooChartType.line:
             if (xAxisStepLineTopLabelLineChartCallback != null) {
               final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
               if (dataPoints != null) {
-                topLabel = xAxisStepLineTopLabelLineChartCallback!(i, dataPoints);
+                final callbackResult = xAxisStepLineTopLabelLineChartCallback!(i, dataPoints);
+                if (callbackResult.isNotEmpty) {
+                  topLabel = callbackResult;
+                  callbackHandled = true;
+                }
               }
             }
             break;
           case CooChartType.bar:
             if (xAxisStepLineTopLabelBarChartCallback != null) {
-              final dataPoints = metadata.barChartDataPointsByColumnIndex[i];
+              final dataPoints =
+                  metadata.barChartDataPointsByColumnIndex[i] ?? metadataOpposite?.barChartDataPointsByColumnIndex[i];
               if (dataPoints != null) {
-                topLabel = xAxisStepLineTopLabelBarChartCallback!(i, dataPoints);
+                final callbackResult = xAxisStepLineTopLabelBarChartCallback!(i, dataPoints);
+                if (callbackResult.isNotEmpty) {
+                  topLabel = callbackResult;
+                  callbackHandled = true;
+                }
               }
-              break;
             }
+            break;
         }
 
-        // Top Labels Defaults
-        if (topLabel == null) {
+        if (!callbackHandled && topLabel == null && shouldShowLabelAtHour) {
           switch (xAxisConfig.valueType) {
             case XAxisValueType.date:
             case XAxisValueType.datetime:
               if (i < metadata.allDateTimeXAxisValues.length) {
                 final currentDateTime = metadata.allDateTimeXAxisValues[i];
-                // Check if we should show top label at this hour
-                bool shouldShowLabel = true;
-                if (xAxisConfig.topLabelsAtHours != null) {
-                  shouldShowLabel = xAxisConfig.topLabelsAtHours!.contains(currentDateTime.hour);
-                }
-                if (shouldShowLabel) {
-                  topLabel = topDateFormat!.format(currentDateTime);
-                }
+                topLabel = topDateFormat!.format(currentDateTime);
               }
               break;
             case XAxisValueType.number:
@@ -1099,46 +1109,54 @@ class CooChartPainter extends CustomPainter {
 
           secondTopLabelTextStyle ??= const TextStyle(color: Colors.grey, fontSize: 9);
 
-          switch (chartType) {
-            case CooChartType.line:
-              if (xAxisStepLineSecondTopLabelLineChartCallback != null) {
-                final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
-                if (dataPoints != null) {
-                  secondTopLabel = xAxisStepLineSecondTopLabelLineChartCallback!(i, dataPoints);
-                }
-              }
-              break;
-            case CooChartType.bar:
-              if (xAxisStepLineSecondTopLabelBarChartCallback != null) {
-                final dataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? [];
-                secondTopLabel = xAxisStepLineSecondTopLabelBarChartCallback!(i, dataPoints);
-              } else {
-                final dataPoints = metadata.barChartDataPointsByColumnIndex[i];
-                if (dataPoints != null && dataPoints.isNotEmpty) {
-                  final firstDataPoint = dataPoints.first;
-                  if (firstDataPoint.groupedValue?.secondaryLabel != null) {
-                    secondTopLabel = firstDataPoint.groupedValue!.secondaryLabel;
-                  }
-                }
-              }
-              break;
+          bool shouldShowSecondLabelAtHour = true;
+          if (xAxisConfig.secondTopLabelsAtHours != null &&
+              i < metadata.allDateTimeXAxisValues.length &&
+              (xAxisConfig.valueType == XAxisValueType.date || xAxisConfig.valueType == XAxisValueType.datetime)) {
+            final currentDateTime = metadata.allDateTimeXAxisValues[i];
+            shouldShowSecondLabelAtHour = xAxisConfig.secondTopLabelsAtHours!.contains(currentDateTime.hour);
           }
 
-          // Second Top Labels Defaults - only if no callback/grouped value provided a label
-          if (secondTopLabel == null) {
+          if (shouldShowSecondLabelAtHour) {
+            switch (chartType) {
+              case CooChartType.line:
+                if (xAxisStepLineSecondTopLabelLineChartCallback != null) {
+                  final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
+                  if (dataPoints != null) {
+                    final callbackResult = xAxisStepLineSecondTopLabelLineChartCallback!(i, dataPoints);
+                    if (callbackResult.isNotEmpty) {
+                      secondTopLabel = callbackResult;
+                    }
+                  }
+                }
+                break;
+              case CooChartType.bar:
+                if (xAxisStepLineSecondTopLabelBarChartCallback != null) {
+                  final dataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? [];
+                  final callbackResult = xAxisStepLineSecondTopLabelBarChartCallback!(i, dataPoints);
+                  if (callbackResult.isNotEmpty) {
+                    secondTopLabel = callbackResult;
+                  }
+                } else {
+                  final dataPoints = metadata.barChartDataPointsByColumnIndex[i];
+                  if (dataPoints != null && dataPoints.isNotEmpty) {
+                    final firstDataPoint = dataPoints.first;
+                    if (firstDataPoint.groupedValue?.secondaryLabel != null) {
+                      secondTopLabel = firstDataPoint.groupedValue!.secondaryLabel;
+                    }
+                  }
+                }
+                break;
+            }
+          }
+
+          if (secondTopLabel == null && shouldShowSecondLabelAtHour) {
             switch (xAxisConfig.valueType) {
               case XAxisValueType.date:
               case XAxisValueType.datetime:
                 if (i < metadata.allDateTimeXAxisValues.length) {
                   final currentDateTime = metadata.allDateTimeXAxisValues[i];
-                  // Check if we should show second top label at this hour
-                  bool shouldShowLabel = true;
-                  if (xAxisConfig.secondTopLabelsAtHours != null) {
-                    shouldShowLabel = xAxisConfig.secondTopLabelsAtHours!.contains(currentDateTime.hour);
-                  }
-                  if (shouldShowLabel) {
-                    secondTopLabel = secondTopDateFormat!.format(currentDateTime);
-                  }
+                  secondTopLabel = secondTopDateFormat!.format(currentDateTime);
                 }
                 break;
               case XAxisValueType.number:
