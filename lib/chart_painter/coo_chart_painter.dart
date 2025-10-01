@@ -469,17 +469,6 @@ class CooChartPainter extends CustomPainter {
 
     final groupedValue = dataPoint.groupedValue!;
 
-    final primaryNormalized = _normalizeValue(
-      value: groupedValue.primaryValue,
-      yAxisMinValue: yAxisMinValue,
-      yAxisMaxValue: yAxisMaxValue,
-    );
-    final secondaryNormalized = _normalizeValue(
-      value: groupedValue.secondaryValue,
-      yAxisMinValue: yAxisMinValue,
-      yAxisMaxValue: yAxisMaxValue,
-    );
-
     final Color primaryColor = groupedValue.primaryColor ?? const Color(0xFF005288);
     final Color secondaryColor = groupedValue.secondaryColor ?? const Color(0xFF7DBBEA);
 
@@ -498,35 +487,92 @@ class CooChartPainter extends CustomPainter {
 
     final chartBottom = startYPos + padding.top + topColumnHeight;
 
-    if (primaryNormalized != null && primaryNormalized > 0) {
-      final primaryHeight = primaryNormalized * startYPos;
-      final primaryTop = chartBottom - primaryHeight;
+    // Determine which value is larger (primary or secondary)
+    // If equal, use primary (precipitation) as base
+    final primaryValue = groupedValue.primaryValue;
+    final secondaryValue = groupedValue.secondaryValue;
 
-      final primaryRect = Rect.fromLTRB(x - barWidth, primaryTop, x + barWidth, chartBottom);
-
-      bool mouseOverPrimary = false;
-      if (mousePosition != null) {
-        mouseOverPrimary = primaryRect.contains(mousePosition) && highlightMouseColumn;
-      }
-
-      canvas.drawRect(primaryRect, mouseOverPrimary ? primaryHighlightPaint : primaryPaint);
+    if (primaryValue <= 0 && secondaryValue <= 0) {
+      return; // Nothing to draw
     }
 
-    if (secondaryNormalized != null && secondaryNormalized > 0) {
-      final primaryHeight = (primaryNormalized ?? 0) * startYPos;
-      final secondaryHeight = secondaryNormalized * startYPos;
+    // Special case: if both values are equal, draw only in primary color (precipitation)
+    if (primaryValue == secondaryValue && primaryValue > 0) {
+      final primaryNormalized = _normalizeValue(
+        value: primaryValue,
+        yAxisMinValue: yAxisMinValue,
+        yAxisMaxValue: yAxisMaxValue,
+      );
 
-      final secondaryBottom = chartBottom - primaryHeight;
-      final secondaryTop = secondaryBottom - secondaryHeight;
-
-      final secondaryRect = Rect.fromLTRB(x - barWidth, secondaryTop, x + barWidth, secondaryBottom);
-
-      bool mouseOverSecondary = false;
-      if (mousePosition != null) {
-        mouseOverSecondary = secondaryRect.contains(mousePosition) && highlightMouseColumn;
+      if (primaryNormalized == null || primaryNormalized <= 0) {
+        return;
       }
 
-      canvas.drawRect(secondaryRect, mouseOverSecondary ? secondaryHighlightPaint : secondaryPaint);
+      final barHeight = primaryNormalized * startYPos;
+      final barTop = chartBottom - barHeight;
+      final barRect = Rect.fromLTRB(x - barWidth, barTop, x + barWidth, chartBottom);
+
+      bool mouseOverBar = false;
+      if (mousePosition != null) {
+        mouseOverBar = barRect.contains(mousePosition) && highlightMouseColumn;
+      }
+
+      canvas.drawRect(barRect, mouseOverBar ? primaryHighlightPaint : primaryPaint);
+      return;
+    }
+
+    final bool primaryIsLarger = primaryValue > secondaryValue;
+    final double largerValue = primaryIsLarger ? primaryValue : secondaryValue;
+    final double smallerValue = primaryIsLarger ? secondaryValue : primaryValue;
+    final Paint largerPaint = primaryIsLarger ? primaryPaint : secondaryPaint;
+    final Paint smallerPaint = primaryIsLarger ? secondaryPaint : primaryPaint;
+    final Paint largerHighlightPaint = primaryIsLarger ? primaryHighlightPaint : secondaryHighlightPaint;
+    final Paint smallerHighlightPaint = primaryIsLarger ? secondaryHighlightPaint : primaryHighlightPaint;
+
+    final largerNormalized = _normalizeValue(
+      value: largerValue,
+      yAxisMinValue: yAxisMinValue,
+      yAxisMaxValue: yAxisMaxValue,
+    );
+    final smallerNormalized = _normalizeValue(
+      value: smallerValue,
+      yAxisMinValue: yAxisMinValue,
+      yAxisMaxValue: yAxisMaxValue,
+    );
+
+    if (largerNormalized == null || largerNormalized <= 0) {
+      return;
+    }
+
+    // Calculate bar heights
+    final totalHeight = largerNormalized * startYPos;
+    final smallerHeight = (smallerNormalized ?? 0) * startYPos;
+    final largerOnlyHeight = totalHeight - smallerHeight;
+
+    // Bottom position of the bar
+    final barBottom = chartBottom;
+    final barTop = chartBottom - totalHeight;
+
+    // Check if mouse is over the bar
+    bool mouseOverBar = false;
+    if (mousePosition != null) {
+      final barRect = Rect.fromLTRB(x - barWidth, barTop, x + barWidth, barBottom);
+      mouseOverBar = barRect.contains(mousePosition) && highlightMouseColumn;
+    }
+
+    // Draw the smaller value at the bottom (if > 0)
+    if (smallerHeight > 0) {
+      final smallerTop = barBottom - smallerHeight;
+      final smallerRect = Rect.fromLTRB(x - barWidth, smallerTop, x + barWidth, barBottom);
+      canvas.drawRect(smallerRect, mouseOverBar ? smallerHighlightPaint : smallerPaint);
+    }
+
+    // Draw the larger value remainder at the top
+    if (largerOnlyHeight > 0) {
+      final largerTop = barTop;
+      final largerBottom = barBottom - smallerHeight;
+      final largerRect = Rect.fromLTRB(x - barWidth, largerTop, x + barWidth, largerBottom);
+      canvas.drawRect(largerRect, mouseOverBar ? largerHighlightPaint : largerPaint);
     }
   }
 
@@ -978,41 +1024,57 @@ class CooChartPainter extends CustomPainter {
       // nicht, denn das wäre ein nicht vorhandener Datenpunkt zu viel
       if (!centerDataPointBetweenVerticalGrid || i != xGridLineCount) {
         String? topLabel;
-        // Top Labels Callbacks
+
+        // Check if we should show label at this hour based on topLabelsAtHours filter
+        bool shouldShowLabelAtHour = true;
+        if (xAxisConfig.topLabelsAtHours != null &&
+            i < metadata.allDateTimeXAxisValues.length &&
+            (xAxisConfig.valueType == XAxisValueType.date || xAxisConfig.valueType == XAxisValueType.datetime)) {
+          final currentDateTime = metadata.allDateTimeXAxisValues[i];
+          shouldShowLabelAtHour = xAxisConfig.topLabelsAtHours!.contains(currentDateTime.hour);
+        }
+
+        // Top Labels Callbacks - always call if callback exists, let callback decide
+        bool callbackHandled = false;
         switch (chartType) {
           case CooChartType.line:
             if (xAxisStepLineTopLabelLineChartCallback != null) {
               final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
               if (dataPoints != null) {
-                topLabel = xAxisStepLineTopLabelLineChartCallback!(i, dataPoints);
+                final callbackResult = xAxisStepLineTopLabelLineChartCallback!(i, dataPoints);
+                // Only use callback result if it's not empty
+                if (callbackResult.isNotEmpty) {
+                  topLabel = callbackResult;
+                  callbackHandled = true;
+                }
               }
             }
             break;
           case CooChartType.bar:
             if (xAxisStepLineTopLabelBarChartCallback != null) {
-              final dataPoints = metadata.barChartDataPointsByColumnIndex[i];
+              // Check both metadata and metadataOpposite for bar chart data
+              final dataPoints =
+                  metadata.barChartDataPointsByColumnIndex[i] ?? metadataOpposite?.barChartDataPointsByColumnIndex[i];
               if (dataPoints != null) {
-                topLabel = xAxisStepLineTopLabelBarChartCallback!(i, dataPoints);
+                final callbackResult = xAxisStepLineTopLabelBarChartCallback!(i, dataPoints);
+                // Only use callback result if it's not empty
+                if (callbackResult.isNotEmpty) {
+                  topLabel = callbackResult;
+                  callbackHandled = true;
+                }
               }
-              break;
             }
+            break;
         }
 
-        // Top Labels Defaults
-        if (topLabel == null) {
+        // Top Labels Defaults - only if callback didn't handle it and hour filter allows
+        if (!callbackHandled && topLabel == null && shouldShowLabelAtHour) {
           switch (xAxisConfig.valueType) {
             case XAxisValueType.date:
             case XAxisValueType.datetime:
               if (i < metadata.allDateTimeXAxisValues.length) {
                 final currentDateTime = metadata.allDateTimeXAxisValues[i];
-                // Check if we should show top label at this hour
-                bool shouldShowLabel = true;
-                if (xAxisConfig.topLabelsAtHours != null) {
-                  shouldShowLabel = xAxisConfig.topLabelsAtHours!.contains(currentDateTime.hour);
-                }
-                if (shouldShowLabel) {
-                  topLabel = topDateFormat!.format(currentDateTime);
-                }
+                topLabel = topDateFormat!.format(currentDateTime);
               }
               break;
             case XAxisValueType.number:
@@ -1099,46 +1161,59 @@ class CooChartPainter extends CustomPainter {
 
           secondTopLabelTextStyle ??= const TextStyle(color: Colors.grey, fontSize: 9);
 
-          switch (chartType) {
-            case CooChartType.line:
-              if (xAxisStepLineSecondTopLabelLineChartCallback != null) {
-                final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
-                if (dataPoints != null) {
-                  secondTopLabel = xAxisStepLineSecondTopLabelLineChartCallback!(i, dataPoints);
-                }
-              }
-              break;
-            case CooChartType.bar:
-              if (xAxisStepLineSecondTopLabelBarChartCallback != null) {
-                final dataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? [];
-                secondTopLabel = xAxisStepLineSecondTopLabelBarChartCallback!(i, dataPoints);
-              } else {
-                final dataPoints = metadata.barChartDataPointsByColumnIndex[i];
-                if (dataPoints != null && dataPoints.isNotEmpty) {
-                  final firstDataPoint = dataPoints.first;
-                  if (firstDataPoint.groupedValue?.secondaryLabel != null) {
-                    secondTopLabel = firstDataPoint.groupedValue!.secondaryLabel;
-                  }
-                }
-              }
-              break;
+          // Check if we should show second label at this hour based on secondTopLabelsAtHours filter
+          bool shouldShowSecondLabelAtHour = true;
+          if (xAxisConfig.secondTopLabelsAtHours != null &&
+              i < metadata.allDateTimeXAxisValues.length &&
+              (xAxisConfig.valueType == XAxisValueType.date || xAxisConfig.valueType == XAxisValueType.datetime)) {
+            final currentDateTime = metadata.allDateTimeXAxisValues[i];
+            shouldShowSecondLabelAtHour = xAxisConfig.secondTopLabelsAtHours!.contains(currentDateTime.hour);
           }
 
-          // Second Top Labels Defaults - only if no callback/grouped value provided a label
-          if (secondTopLabel == null) {
+          // Callbacks - only if hour filter allows it
+          if (shouldShowSecondLabelAtHour) {
+            switch (chartType) {
+              case CooChartType.line:
+                if (xAxisStepLineSecondTopLabelLineChartCallback != null) {
+                  final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
+                  if (dataPoints != null) {
+                    final callbackResult = xAxisStepLineSecondTopLabelLineChartCallback!(i, dataPoints);
+                    // Only use callback result if it's not empty, otherwise fall through to defaults
+                    if (callbackResult.isNotEmpty) {
+                      secondTopLabel = callbackResult;
+                    }
+                  }
+                }
+                break;
+              case CooChartType.bar:
+                if (xAxisStepLineSecondTopLabelBarChartCallback != null) {
+                  final dataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? [];
+                  final callbackResult = xAxisStepLineSecondTopLabelBarChartCallback!(i, dataPoints);
+                  // Only use callback result if it's not empty, otherwise fall through to defaults
+                  if (callbackResult.isNotEmpty) {
+                    secondTopLabel = callbackResult;
+                  }
+                } else {
+                  final dataPoints = metadata.barChartDataPointsByColumnIndex[i];
+                  if (dataPoints != null && dataPoints.isNotEmpty) {
+                    final firstDataPoint = dataPoints.first;
+                    if (firstDataPoint.groupedValue?.secondaryLabel != null) {
+                      secondTopLabel = firstDataPoint.groupedValue!.secondaryLabel;
+                    }
+                  }
+                }
+                break;
+            }
+          }
+
+          // Second Top Labels Defaults - only if no callback/grouped value provided a label and hour filter allows
+          if (secondTopLabel == null && shouldShowSecondLabelAtHour) {
             switch (xAxisConfig.valueType) {
               case XAxisValueType.date:
               case XAxisValueType.datetime:
                 if (i < metadata.allDateTimeXAxisValues.length) {
                   final currentDateTime = metadata.allDateTimeXAxisValues[i];
-                  // Check if we should show second top label at this hour
-                  bool shouldShowLabel = true;
-                  if (xAxisConfig.secondTopLabelsAtHours != null) {
-                    shouldShowLabel = xAxisConfig.secondTopLabelsAtHours!.contains(currentDateTime.hour);
-                  }
-                  if (shouldShowLabel) {
-                    secondTopLabel = secondTopDateFormat!.format(currentDateTime);
-                  }
+                  secondTopLabel = secondTopDateFormat!.format(currentDateTime);
                 }
                 break;
               case XAxisValueType.number:
