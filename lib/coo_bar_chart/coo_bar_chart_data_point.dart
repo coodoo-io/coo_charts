@@ -52,11 +52,13 @@ class CooBarChartDataPoint<T> {
   Color? columnBackgroundColor;
 
   /// Helper method to get the effective value for calculations
-  /// If groupedValue is set, returns the sum of primary and secondary values
+  /// If groupedValue is set, returns the maximum of primary and secondary values (not their sum)
   /// Otherwise returns the single value
   double? get effectiveValue {
     if (groupedValue != null) {
-      return groupedValue!.primaryValue + groupedValue!.secondaryValue;
+      return groupedValue!.primaryValue > groupedValue!.secondaryValue
+          ? groupedValue!.primaryValue
+          : groupedValue!.secondaryValue;
     }
     return value;
   }
