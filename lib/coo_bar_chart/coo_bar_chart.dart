@@ -100,31 +100,6 @@ class _CooBarChartState extends State<CooBarChart> {
 
   @override
   Widget build(BuildContext context) {
-    // CooBarChartDataPoint p0 = CooBarChartDataPoint(value: 2);
-    // CooBarChartDataPoint p1 =
-    //     CooBarChartDataPoint(value: 3, color: Colors.yellow);
-    // CooBarChartDataPoint p2 = CooBarChartDataPoint(value: 4);
-    // CooBarChartDataPoint p3 = CooBarChartDataPoint(value: 5);
-
-    // List<CooBarChartDataPoint> dataPoints = [];
-    // dataPoints.add(p0);
-    // dataPoints.add(p1);
-    // dataPoints.add(p2);
-    // dataPoints.add(p3);
-
-    // List<CooBarChartDataSeries> customDataSeries = [
-    //   CooBarChartDataSeries(dataPoints: dataPoints)
-    // ];
-
-    // debugPrint(
-    //     'hier ${customDataSeries[0].dataPoints[0].value} ${customDataSeries[0].dataPoints[0].color}');
-    // debugPrint(
-    //     'hier ${customDataSeries[0].dataPoints[1].value} ${customDataSeries[0].dataPoints[1].color}');
-    // debugPrint(
-    //     'hier ${customDataSeries[0].dataPoints[2].value} ${customDataSeries[0].dataPoints[2].color}');
-    // debugPrint(
-    //     'hier ${customDataSeries[0].dataPoints[3].value} ${customDataSeries[0].dataPoints[3].color}');
-
     if (widget.columnBlocks != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         loadColumnDataImageAssets(widget.columnBlocks!, () {
@@ -219,7 +194,6 @@ class _CooBarChartState extends State<CooBarChart> {
                   chartType: CooChartType.bar,
                   linechartDataSeries:
                       widget.lineDataSeries, // Pass line data for overlay
-                  // barchartDataSeries: customDataSeries,
                   barchartDataSeries: widget.dataSeries,
                   columnBlocks: widget.columnBlocks,
                   padding: widget.padding,

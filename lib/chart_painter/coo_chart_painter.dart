@@ -478,6 +478,7 @@ class CooChartPainter extends CustomPainter {
     } else {
       canvas.drawRect(
           rect,
+          // Use specific color for the bar if provided, otherwise use default bar paint
           Paint()
             ..color = dataPoint.color ?? barPaint.color
             ..strokeWidth = 1);
