@@ -63,15 +63,20 @@ class CooBarChart extends StatefulWidget {
   final Function(int, List<CooBarChartDataPoint>)? onDataPointTab;
 
   /// If given every step this callback will be invoekd
-  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelCallback;
-  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelCallback;
-  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineSecondTopLabelCallback;
+  final String Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineTopLabelCallback;
+  final String Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineBottomLabelCallback;
+  final String Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineSecondTopLabelCallback;
 
   /// SVG label callbacks for X-axis
-  final XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgCallback;
+  final XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineBottomSvgCallback;
 
   /// Widget label callbacks for X-axis
-  final XAxisLabelWidget? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomWidgetCallback;
+  final XAxisLabelWidget? Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineBottomWidgetCallback;
 
   @override
   State<CooBarChart> createState() => _CooBarChartState();
@@ -105,7 +110,8 @@ class _CooBarChartState extends State<CooBarChart> {
         // executes after build
       });
     }
-    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
       double width = MediaQuery.of(context).size.width;
       double height = MediaQuery.of(context).size.height;
 
@@ -118,8 +124,12 @@ class _CooBarChartState extends State<CooBarChart> {
       }
 
       ChartPainterMetadata metadata = ChartPainterInit.initializeValues(
-        linechartDataSeries: widget.lineDataSeries.where((element) => element.opposite == false).toList(),
-        barchartDataSeries: widget.dataSeries.where((element) => element.opposite == false).toList(),
+        linechartDataSeries: widget.lineDataSeries
+            .where((element) => element.opposite == false)
+            .toList(),
+        barchartDataSeries: widget.dataSeries
+            .where((element) => element.opposite == false)
+            .toList(),
         opposite: false,
         layoutHeight: height,
         layoutWidth: width,
@@ -130,9 +140,13 @@ class _CooBarChartState extends State<CooBarChart> {
       );
       ChartPainterMetadata metadataOpposite = ChartPainterInit.initializeValues(
         chartConfig: widget.chartConfig,
-        barchartDataSeries: widget.dataSeries.where((element) => element.opposite == true).toList(),
+        barchartDataSeries: widget.dataSeries
+            .where((element) => element.opposite == true)
+            .toList(),
         opposite: true,
-        linechartDataSeries: widget.lineDataSeries.where((element) => element.opposite == true).toList(),
+        linechartDataSeries: widget.lineDataSeries
+            .where((element) => element.opposite == true)
+            .toList(),
         layoutHeight: height,
         layoutWidth: width,
         padding: widget.padding,
@@ -147,7 +161,9 @@ class _CooBarChartState extends State<CooBarChart> {
 
       Offset? scrollPositionMousePointer;
       if (scrollControllerOffset != null) {
-        scrollPositionMousePointer = Offset(scrollControllerOffset! + (_mousePointer != null ? _mousePointer!.dx : 0),
+        scrollPositionMousePointer = Offset(
+            scrollControllerOffset! +
+                (_mousePointer != null ? _mousePointer!.dx : 0),
             _mousePointer != null ? _mousePointer!.dy : -1);
       } else if (_mousePointer != null) {
         scrollPositionMousePointer = _mousePointer;
@@ -165,41 +181,56 @@ class _CooBarChartState extends State<CooBarChart> {
               _mousePointer = null;
             });
           },
-          child: CustomPaint(
-            size: Size(metadata.canvasWidth, metadata.canvasHeight),
-            painter: CooChartPainter(
-              chartConfig: widget.chartConfig,
-              theme: widget.chartConfig.theme ?? CooChartThemes().defaultTheme,
-              metadata: metadata,
-              metadataOpposite: metadataOpposite,
-              chartType: CooChartType.bar,
-              linechartDataSeries: widget.lineDataSeries, // Pass line data for overlay
-              barchartDataSeries: widget.dataSeries,
-              columnBlocks: widget.columnBlocks,
-              padding: widget.padding,
-              mousePosition: scrollPositionMousePointer,
-              chartTabInfo: chartTabInfo,
-              curvedLine: widget.chartConfig.curvedLine,
-              crosshair: widget.chartConfig.crosshair,
-              showGridHorizontal: widget.chartConfig.showGridHorizontal,
-              showGridVertical: widget.chartConfig.showGridVertical,
-              highlightMouseColumn: widget.chartConfig.highlightMouseColumn,
-              highlightPoints: widget.chartConfig.highlightPoints,
-              highlightPointsVerticalLine: widget.chartConfig.highlightPointsVerticalLine,
-              highlightPointsHorizontalLine: widget.chartConfig.highlightPointsHorizontalLine,
-              xAxisConfig: widget.xAxisConfig,
-              centerDataPointBetweenVerticalGrid: widget.chartConfig.centerDataPointBetweenVerticalGrid,
-              yAxisConfig: widget.yAxisConfig,
-              yAxisOppositeConfig: widget.yAxisOppositeConfig,
-              columLegendsAssetImages: columLegendsAssetImages,
-              columLegendsAssetSvgPictureInfos: columLegendsAssetSvgPictureInfos,
-              onBarChartDataPointTabCallback: widget.onDataPointTab,
-              xAxisStepLineTopLabelBarChartCallback: widget.xAxisStepLineTopLabelCallback,
-              xAxisStepLineBottomLabelBarChartCallback: widget.xAxisStepLineBottomLabelCallback,
-              xAxisStepLineSecondTopLabelBarChartCallback: widget.xAxisStepLineSecondTopLabelCallback,
-              xAxisStepLineBottomSvgBarChartCallback: widget.xAxisStepLineBottomSvgCallback,
-              xAxisStepLineBottomWidgetBarChartCallback: widget.xAxisStepLineBottomWidgetCallback,
-            ),
+          child: Column(
+            children: [
+              CustomPaint(
+                size: Size(metadata.canvasWidth, metadata.canvasHeight),
+                painter: CooChartPainter(
+                  chartConfig: widget.chartConfig,
+                  theme:
+                      widget.chartConfig.theme ?? CooChartThemes().defaultTheme,
+                  metadata: metadata,
+                  metadataOpposite: metadataOpposite,
+                  chartType: CooChartType.bar,
+                  linechartDataSeries:
+                      widget.lineDataSeries, // Pass line data for overlay
+                  barchartDataSeries: widget.dataSeries,
+                  columnBlocks: widget.columnBlocks,
+                  padding: widget.padding,
+                  mousePosition: scrollPositionMousePointer,
+                  chartTabInfo: chartTabInfo,
+                  curvedLine: widget.chartConfig.curvedLine,
+                  crosshair: widget.chartConfig.crosshair,
+                  showGridHorizontal: widget.chartConfig.showGridHorizontal,
+                  showGridVertical: widget.chartConfig.showGridVertical,
+                  highlightMouseColumn: widget.chartConfig.highlightMouseColumn,
+                  highlightPoints: widget.chartConfig.highlightPoints,
+                  highlightPointsVerticalLine:
+                      widget.chartConfig.highlightPointsVerticalLine,
+                  highlightPointsHorizontalLine:
+                      widget.chartConfig.highlightPointsHorizontalLine,
+                  xAxisConfig: widget.xAxisConfig,
+                  centerDataPointBetweenVerticalGrid:
+                      widget.chartConfig.centerDataPointBetweenVerticalGrid,
+                  yAxisConfig: widget.yAxisConfig,
+                  yAxisOppositeConfig: widget.yAxisOppositeConfig,
+                  columLegendsAssetImages: columLegendsAssetImages,
+                  columLegendsAssetSvgPictureInfos:
+                      columLegendsAssetSvgPictureInfos,
+                  onBarChartDataPointTabCallback: widget.onDataPointTab,
+                  xAxisStepLineTopLabelBarChartCallback:
+                      widget.xAxisStepLineTopLabelCallback,
+                  xAxisStepLineBottomLabelBarChartCallback:
+                      widget.xAxisStepLineBottomLabelCallback,
+                  xAxisStepLineSecondTopLabelBarChartCallback:
+                      widget.xAxisStepLineSecondTopLabelCallback,
+                  xAxisStepLineBottomSvgBarChartCallback:
+                      widget.xAxisStepLineBottomSvgCallback,
+                  xAxisStepLineBottomWidgetBarChartCallback:
+                      widget.xAxisStepLineBottomWidgetCallback,
+                ),
+              ),
+            ],
           ),
         ),
         onTapDown: (detail) {

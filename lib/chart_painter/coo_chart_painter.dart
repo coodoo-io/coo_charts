@@ -81,17 +81,21 @@ class CooChartPainter extends CustomPainter {
 
   final ChartPadding padding;
 
-  final Offset? mousePosition; // Position des Mauszeigers - wird für das Fadenkreuz benötigt (interne Variable)
+  final Offset?
+      mousePosition; // Position des Mauszeigers - wird für das Fadenkreuz benötigt (interne Variable)
   final ChartTabInfo chartTabInfo;
 
   /// Externe Konfigurationsmöglichkeiten
-  final bool curvedLine; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
+  final bool
+      curvedLine; // Soll der Linechart weich gebogen (true) oder kantik (false) verlaufen?
   final bool crosshair; // Soll ein Fadenkreuz angezeigt werden?
   final bool showGridHorizontal; // if true, grid horizontal lines are painted
   final bool showGridVertical; // if true, grid vertical lines are painted
 
-  final bool highlightMouseColumn; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
-  final bool highlightPoints; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
+  final bool
+      highlightMouseColumn; // Hinterlegt die Spalte hinter dem Punkt mit einer Highlightfarbe
+  final bool
+      highlightPoints; // Ändert den Punkt wenn mit der Maus über die Spalte gefahren wird
   final bool
       highlightPointsVerticalLine; // Zeichnet eine vertikale Line über den Datenpunkt wenn die Maus in der Nähe ist.
   final bool
@@ -109,22 +113,32 @@ class CooChartPainter extends CustomPainter {
   Function(int, List<CooBarChartDataPoint>)? onBarChartDataPointTabCallback;
 
 // Hält alle Punkte die zu einer Axe Vertikal liegen. Das rect bestimmt den Maus-Hover-Bereich
-  int mouseInRectYIndex = -1; // In welchem Y-Index befindet sich die Maus gerade?
+  int mouseInRectYIndex =
+      -1; // In welchem Y-Index befindet sich die Maus gerade?
 
-  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelLineChartCallback;
-  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelLineChartCallback;
-  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelBarChartCallback;
-  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelBarChartCallback;
-  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineSecondTopLabelLineChartCallback;
-  final String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineSecondTopLabelBarChartCallback;
+  final String Function(int, List<CooLineChartDataPoint>)?
+      xAxisStepLineTopLabelLineChartCallback;
+  final String Function(int, List<CooLineChartDataPoint>)?
+      xAxisStepLineBottomLabelLineChartCallback;
+  final String Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineTopLabelBarChartCallback;
+  final String Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineBottomLabelBarChartCallback;
+  final String Function(int, List<CooLineChartDataPoint>)?
+      xAxisStepLineSecondTopLabelLineChartCallback;
+  final String Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineSecondTopLabelBarChartCallback;
 
   // SVG callbacks for X-axis labels
-  final XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgBarChartCallback;
+  final XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineBottomSvgBarChartCallback;
 
   // Widget callbacks for X-axis labels
-  final XAxisLabelWidget? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomWidgetBarChartCallback;
+  final XAxisLabelWidget? Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineBottomWidgetBarChartCallback;
 
-  final Map<Rect, int> chartRectYPos = {}; // Merken welches Rect bei welcher Y-Pos liegt
+  final Map<Rect, int> chartRectYPos =
+      {}; // Merken welches Rect bei welcher Y-Pos liegt
 
   final Paint _highlightLinePaint = Paint()
     ..color = Colors.white.withValues(alpha: 0.7)
@@ -237,7 +251,9 @@ class CooChartPainter extends CustomPainter {
         curvedLine: curvedLine,
         highlightPoints: highlightPoints,
         mouseInRectYIndex: mouseInRectYIndex,
-        linechartDataSeries: linechartDataSeries.where((element) => element.opposite == false).toList(),
+        linechartDataSeries: linechartDataSeries
+            .where((element) => element.opposite == false)
+            .toList(),
         columnBlocks: columnBlocks,
         canvas: canvas,
         mousePosition: mousePosition,
@@ -248,11 +264,14 @@ class CooChartPainter extends CustomPainter {
         CooChartPainterUtil.drawDataLinechartDataPointsAndPath(
           metadata: metadataOpposite!,
           padding: padding,
-          centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+          centerDataPointBetweenVerticalGrid:
+              centerDataPointBetweenVerticalGrid,
           curvedLine: curvedLine,
           highlightPoints: highlightPoints,
           mouseInRectYIndex: mouseInRectYIndex,
-          linechartDataSeries: linechartDataSeries.where((element) => element.opposite == true).toList(),
+          linechartDataSeries: linechartDataSeries
+              .where((element) => element.opposite == true)
+              .toList(),
           columnBlocks: columnBlocks,
           canvas: canvas,
           mousePosition: mousePosition,
@@ -261,7 +280,9 @@ class CooChartPainter extends CustomPainter {
     }
     if (chartType == CooChartType.bar) {
       // Draw non-opposite bar charts (left axis)
-      final nonOppositeBarSeries = barchartDataSeries.where((element) => element.opposite == false).toList();
+      final nonOppositeBarSeries = barchartDataSeries
+          .where((element) => element.opposite == false)
+          .toList();
       if (nonOppositeBarSeries.isNotEmpty) {
         _drawDataBarchartBars(
           theme: theme,
@@ -283,7 +304,9 @@ class CooChartPainter extends CustomPainter {
 
       // Draw opposite bar charts (right axis) with opposite metadata
       if (metadataOpposite != null && yAxisOppositeConfig != null) {
-        final oppositeBarSeries = barchartDataSeries.where((element) => element.opposite == true).toList();
+        final oppositeBarSeries = barchartDataSeries
+            .where((element) => element.opposite == true)
+            .toList();
         if (oppositeBarSeries.isNotEmpty) {
           _drawDataBarchartBars(
             theme: theme,
@@ -309,11 +332,14 @@ class CooChartPainter extends CustomPainter {
         CooChartPainterUtil.drawDataLinechartDataPointsAndPath(
           metadata: metadata,
           padding: padding,
-          centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+          centerDataPointBetweenVerticalGrid:
+              centerDataPointBetweenVerticalGrid,
           curvedLine: curvedLine,
           highlightPoints: highlightPoints,
           mouseInRectYIndex: mouseInRectYIndex,
-          linechartDataSeries: linechartDataSeries.where((element) => element.opposite == false).toList(),
+          linechartDataSeries: linechartDataSeries
+              .where((element) => element.opposite == false)
+              .toList(),
           columnBlocks: columnBlocks,
           canvas: canvas,
           mousePosition: mousePosition,
@@ -325,11 +351,14 @@ class CooChartPainter extends CustomPainter {
         CooChartPainterUtil.drawDataLinechartDataPointsAndPath(
           metadata: metadataOpposite!,
           padding: padding,
-          centerDataPointBetweenVerticalGrid: centerDataPointBetweenVerticalGrid,
+          centerDataPointBetweenVerticalGrid:
+              centerDataPointBetweenVerticalGrid,
           curvedLine: curvedLine,
           highlightPoints: highlightPoints,
           mouseInRectYIndex: mouseInRectYIndex,
-          linechartDataSeries: linechartDataSeries.where((element) => element.opposite == true).toList(),
+          linechartDataSeries: linechartDataSeries
+              .where((element) => element.opposite == true)
+              .toList(),
           columnBlocks: columnBlocks,
           canvas: canvas,
           mousePosition: mousePosition,
@@ -347,8 +376,10 @@ class CooChartPainter extends CustomPainter {
     }
   }
 
-  double _calculateBarWidth(CooBarChartDataSeries dataSeries, int dataSeriesCount) {
-    var barWidth = metadata.xSegementWidthHalf * 0.66; // Default: 2/3 of column space
+  double _calculateBarWidth(
+      CooBarChartDataSeries dataSeries, int dataSeriesCount) {
+    var barWidth =
+        metadata.xSegementWidthHalf * 0.66; // Default: 2/3 of column space
 
     if (dataSeries.maxBarWidth != null && barWidth > dataSeries.maxBarWidth!) {
       barWidth = dataSeries.maxBarWidth!.toDouble();
@@ -445,7 +476,12 @@ class CooChartPainter extends CustomPainter {
     if (mouseOverBarHighlight) {
       canvas.drawRect(rect, barHightlightPaint);
     } else {
-      canvas.drawRect(rect, barPaint);
+      canvas.drawRect(
+          rect,
+          // Use specific color for the bar if provided, otherwise use default bar paint
+          Paint()
+            ..color = dataPoint.color ?? barPaint.color
+            ..strokeWidth = 1);
     }
   }
 
@@ -469,8 +505,10 @@ class CooChartPainter extends CustomPainter {
 
     final groupedValue = dataPoint.groupedValue!;
 
-    final Color primaryColor = groupedValue.primaryColor ?? const Color(0xFF005288);
-    final Color secondaryColor = groupedValue.secondaryColor ?? const Color(0xFF7DBBEA);
+    final Color primaryColor =
+        groupedValue.primaryColor ?? const Color(0xFF005288);
+    final Color secondaryColor =
+        groupedValue.secondaryColor ?? const Color(0xFF7DBBEA);
 
     final Paint primaryPaint = Paint()
       ..color = primaryColor
@@ -510,14 +548,16 @@ class CooChartPainter extends CustomPainter {
 
       final barHeight = primaryNormalized * startYPos;
       final barTop = chartBottom - barHeight;
-      final barRect = Rect.fromLTRB(x - barWidth, barTop, x + barWidth, chartBottom);
+      final barRect =
+          Rect.fromLTRB(x - barWidth, barTop, x + barWidth, chartBottom);
 
       bool mouseOverBar = false;
       if (mousePosition != null) {
         mouseOverBar = barRect.contains(mousePosition) && highlightMouseColumn;
       }
 
-      canvas.drawRect(barRect, mouseOverBar ? primaryHighlightPaint : primaryPaint);
+      canvas.drawRect(
+          barRect, mouseOverBar ? primaryHighlightPaint : primaryPaint);
       return;
     }
 
@@ -526,8 +566,10 @@ class CooChartPainter extends CustomPainter {
     final double smallerValue = primaryIsLarger ? secondaryValue : primaryValue;
     final Paint largerPaint = primaryIsLarger ? primaryPaint : secondaryPaint;
     final Paint smallerPaint = primaryIsLarger ? secondaryPaint : primaryPaint;
-    final Paint largerHighlightPaint = primaryIsLarger ? primaryHighlightPaint : secondaryHighlightPaint;
-    final Paint smallerHighlightPaint = primaryIsLarger ? secondaryHighlightPaint : primaryHighlightPaint;
+    final Paint largerHighlightPaint =
+        primaryIsLarger ? primaryHighlightPaint : secondaryHighlightPaint;
+    final Paint smallerHighlightPaint =
+        primaryIsLarger ? secondaryHighlightPaint : primaryHighlightPaint;
 
     final largerNormalized = _normalizeValue(
       value: largerValue,
@@ -556,23 +598,28 @@ class CooChartPainter extends CustomPainter {
     // Check if mouse is over the bar
     bool mouseOverBar = false;
     if (mousePosition != null) {
-      final barRect = Rect.fromLTRB(x - barWidth, barTop, x + barWidth, barBottom);
+      final barRect =
+          Rect.fromLTRB(x - barWidth, barTop, x + barWidth, barBottom);
       mouseOverBar = barRect.contains(mousePosition) && highlightMouseColumn;
     }
 
     // Draw the smaller value at the bottom (if > 0)
     if (smallerHeight > 0) {
       final smallerTop = barBottom - smallerHeight;
-      final smallerRect = Rect.fromLTRB(x - barWidth, smallerTop, x + barWidth, barBottom);
-      canvas.drawRect(smallerRect, mouseOverBar ? smallerHighlightPaint : smallerPaint);
+      final smallerRect =
+          Rect.fromLTRB(x - barWidth, smallerTop, x + barWidth, barBottom);
+      canvas.drawRect(
+          smallerRect, mouseOverBar ? smallerHighlightPaint : smallerPaint);
     }
 
     // Draw the larger value remainder at the top
     if (largerOnlyHeight > 0) {
       final largerTop = barTop;
       final largerBottom = barBottom - smallerHeight;
-      final largerRect = Rect.fromLTRB(x - barWidth, largerTop, x + barWidth, largerBottom);
-      canvas.drawRect(largerRect, mouseOverBar ? largerHighlightPaint : largerPaint);
+      final largerRect =
+          Rect.fromLTRB(x - barWidth, largerTop, x + barWidth, largerBottom);
+      canvas.drawRect(
+          largerRect, mouseOverBar ? largerHighlightPaint : largerPaint);
     }
   }
 
@@ -602,12 +649,14 @@ class CooChartPainter extends CustomPainter {
     bool showColumnTopDatas = false;
     double topColumnHeight = 0;
     if (columnBlocks != null) {
-      showColumnBottomDatas = columnBlocks.showBottomBlocks && columnBlocks.bottomDatas.isNotEmpty;
+      showColumnBottomDatas =
+          columnBlocks.showBottomBlocks && columnBlocks.bottomDatas.isNotEmpty;
       if (showColumnBottomDatas) {
         bottomColumnHeight = columnBlocks.bottomConfig.height.toDouble();
       }
 
-      showColumnTopDatas = columnBlocks.showTopBlocks && columnBlocks.topDatas.isNotEmpty;
+      showColumnTopDatas =
+          columnBlocks.showTopBlocks && columnBlocks.topDatas.isNotEmpty;
       if (showColumnTopDatas) {
         topColumnHeight = columnBlocks.topConfig.height.toDouble();
       }
@@ -620,47 +669,56 @@ class CooChartPainter extends CustomPainter {
       List<String?> dataSeriesLabels = List.empty(growable: true);
 
       // Alle Punkte auf einen Bereich zwischen 0.0 und 1.0 bringen um sie in der Fläche relativ berechnen zu können
-      List<double?> dataPointValues = localLinechartDataSeries.dataPoints.map((e) {
+      List<double?> dataPointValues =
+          localLinechartDataSeries.dataPoints.map((e) {
         if (e.hasGroupedValues) {
           return e.effectiveValue;
         }
         return e.value;
       }).toList();
 
-      List<double?> dataSeriesNormalizedValues = CooChartPainterUtil.normalizeChartDataPoints(
+      List<double?> dataSeriesNormalizedValues =
+          CooChartPainterUtil.normalizeChartDataPoints(
         linechartDataPoints: dataPointValues,
         minDataPointValue: minDataPointValue,
         yAxisMinValue: yAxisMinValue,
         yAxisMaxValue: yAxisMaxValue,
       );
 
-      List<double?> dataPointMaxValues = localLinechartDataSeries.dataPoints.map((e) => e.maxValue).toList();
-      List<double?> maxPointsNormalized = CooChartPainterUtil.normalizeChartDataPoints(
+      List<double?> dataPointMaxValues =
+          localLinechartDataSeries.dataPoints.map((e) => e.maxValue).toList();
+      List<double?> maxPointsNormalized =
+          CooChartPainterUtil.normalizeChartDataPoints(
         linechartDataPoints: dataPointMaxValues,
         minDataPointValue: minDataPointValue,
         yAxisMinValue: yAxisMinValue,
         yAxisMaxValue: yAxisMaxValue,
       );
 
-      List<double?> dataPointMinalues = localLinechartDataSeries.dataPoints.map((e) => e.minValue).toList();
-      List<double?> minPointsNormalized = CooChartPainterUtil.normalizeChartDataPoints(
+      List<double?> dataPointMinalues =
+          localLinechartDataSeries.dataPoints.map((e) => e.minValue).toList();
+      List<double?> minPointsNormalized =
+          CooChartPainterUtil.normalizeChartDataPoints(
         linechartDataPoints: dataPointMinalues,
         minDataPointValue: minDataPointValue,
         yAxisMinValue: yAxisMinValue,
         yAxisMaxValue: yAxisMaxValue,
       );
       // TODO verschiedene Farben müssen über des Theme vorbestimmt werden können
-      final Color barColor = localLinechartDataSeries.barColor ?? theme.barColor;
+      final Color barColor =
+          localLinechartDataSeries.barColor ?? theme.barColor;
       final Paint barPaint = Paint()
         ..color = barColor
         ..strokeWidth = 1;
 
-      final Color barColorHighlight = localLinechartDataSeries.barColor ?? theme.barColorHighlight;
+      final Color barColorHighlight =
+          localLinechartDataSeries.barColor ?? theme.barColorHighlight;
       final Paint barHightlightPaint = Paint()
         ..color = barColorHighlight
         ..strokeWidth = 1;
 
-      final Color minMaxRangeLineColor = localLinechartDataSeries.minMaxLineColor ?? theme.minMaxRangeColor;
+      final Color minMaxRangeLineColor =
+          localLinechartDataSeries.minMaxLineColor ?? theme.minMaxRangeColor;
       final Paint minMaxRangePaint = Paint()
         ..color = minMaxRangeLineColor
         ..strokeWidth = 1;
@@ -688,15 +746,23 @@ class CooChartPainter extends CustomPainter {
         } else {
           x = (j * xSegmentWidth) + padding.left;
         }
-        final multipleBarchartSegmentWidth = xSegmentWidth * 0.12; // Extra Space von links und rechts in einem Segment
+        final multipleBarchartSegmentWidth = xSegmentWidth *
+            0.12; // Extra Space von links und rechts in einem Segment
         final multipleSegmentWidth =
-            (xSegmentWidth - multipleBarchartSegmentWidth) / (dataSeriesCount); // Mögliche Gesamtbreite für jeden bar
+            (xSegmentWidth - multipleBarchartSegmentWidth) /
+                (dataSeriesCount); // Mögliche Gesamtbreite für jeden bar
         // Verschieben um die serienanzahl der breite -> z.B. 3. Serie muss direkt um 2 * bar-segment-breite verschoben werden
         // anschließend um die hälfte verschieben, dann ist der bar in der mitte
         // Dann nochmal um den angepassten platz für das gesamte segment aller bars verschieben
-        x += (i * multipleSegmentWidth) + (multipleSegmentWidth / 2) + (multipleBarchartSegmentWidth / 2);
+        x += (i * multipleSegmentWidth) +
+            (multipleSegmentWidth / 2) +
+            (multipleBarchartSegmentWidth / 2);
 
-        final startYPos = metadata.canvasHeight - padding.bottom - padding.top - bottomColumnHeight - topColumnHeight;
+        final startYPos = metadata.canvasHeight -
+            padding.bottom -
+            padding.top -
+            bottomColumnHeight -
+            topColumnHeight;
         final dataValue = dataSeriesNormalizedValues[j];
         if (dataValue != null) {
           if (dataPoint.hasGroupedValues) {
@@ -707,7 +773,8 @@ class CooChartPainter extends CustomPainter {
               startYPos: startYPos,
               topColumnHeight: topColumnHeight,
               padding: padding,
-              barWidth: _calculateBarWidth(localLinechartDataSeries, dataSeriesCount),
+              barWidth:
+                  _calculateBarWidth(localLinechartDataSeries, dataSeriesCount),
               yAxisMinValue: yAxisMinValue,
               yAxisMaxValue: yAxisMaxValue,
               mousePosition: mousePosition,
@@ -719,11 +786,15 @@ class CooChartPainter extends CustomPainter {
               canvas: canvas,
               dataPoint: dataPoint,
               x: x,
-              y: startYPos - (dataValue * (startYPos)) + padding.top + topColumnHeight,
+              y: startYPos -
+                  (dataValue * (startYPos)) +
+                  padding.top +
+                  topColumnHeight,
               startYPos: startYPos,
               topColumnHeight: topColumnHeight,
               padding: padding,
-              barWidth: _calculateBarWidth(localLinechartDataSeries, dataSeriesCount),
+              barWidth:
+                  _calculateBarWidth(localLinechartDataSeries, dataSeriesCount),
               barPaint: barPaint,
               barHightlightPaint: barHightlightPaint,
               mousePosition: mousePosition,
@@ -749,7 +820,8 @@ class CooChartPainter extends CustomPainter {
           double yMax0 = yMax + topColumnHeight;
           double xMax1 = x + (xSegementWidthHalf / 3);
           double yMax1 = yMax + topColumnHeight;
-          canvas.drawLine(Offset(xMax0, yMax0), Offset(xMax1, yMax1), minMaxRangePaint);
+          canvas.drawLine(
+              Offset(xMax0, yMax0), Offset(xMax1, yMax1), minMaxRangePaint);
 
           // Horizontale Linie für MIN
           double minDataValue = minPointsNormalized[j]!;
@@ -758,14 +830,16 @@ class CooChartPainter extends CustomPainter {
           double yMin0 = yMin + topColumnHeight;
           double xMin1 = x + (xSegementWidthHalf / 3);
           double yMin1 = yMin + topColumnHeight;
-          canvas.drawLine(Offset(xMin0, yMin0), Offset(xMin1, yMin1), minMaxRangePaint);
+          canvas.drawLine(
+              Offset(xMin0, yMin0), Offset(xMin1, yMin1), minMaxRangePaint);
 
           // Linie von Min zu Max
           double xLinie0 = x;
           double yLinie0 = yMax + topColumnHeight;
           double xLinie1 = x;
           double yLinie1 = yMin + topColumnHeight;
-          canvas.drawLine(Offset(xLinie0, yLinie0), Offset(xLinie1, yLinie1), minMaxRangePaint);
+          canvas.drawLine(Offset(xLinie0, yLinie0), Offset(xLinie1, yLinie1),
+              minMaxRangePaint);
         }
       }
     }
@@ -789,10 +863,15 @@ class CooChartPainter extends CustomPainter {
 
     // das erste und das letzte Rect sind nur halb so groß, wenn der Punkt direkt bei 0 auf der Y-Achse liegt
     for (var i = 0; i < metadata.maxAbsoluteValueCount; i++) {
-      var x1 = (i * metadata.xSegmentWidth) + padding.left - metadata.xSegementWidthHalf;
+      var x1 = (i * metadata.xSegmentWidth) +
+          padding.left -
+          metadata.xSegementWidthHalf;
       var y1 = padding.top.toDouble();
 
-      var x2 = (i * metadata.xSegmentWidth) + metadata.xSegmentWidth + padding.left - metadata.xSegementWidthHalf;
+      var x2 = (i * metadata.xSegmentWidth) +
+          metadata.xSegmentWidth +
+          padding.left -
+          metadata.xSegementWidthHalf;
       var y2 = padding.top + chartHeigt;
 
       // Erster und letzter Datenpunkt sind nur halb zu sehen
@@ -809,11 +888,14 @@ class CooChartPainter extends CustomPainter {
       var rect = Rect.fromPoints(Offset(x1, y1), Offset(x2, y2));
 
       // Falls es sich um ein Barchart handelt kann auch nur dieser "bar" gehighlightet werden.
-      final barchartDataPointsNullable = metadata.barChartDataPointsByColumnIndex[i];
+      final barchartDataPointsNullable =
+          metadata.barChartDataPointsByColumnIndex[i];
       if (barchartDataPointsNullable != null) {
-        List<CooBarChartDataPoint> barchartDataPoints = barchartDataPointsNullable;
+        List<CooBarChartDataPoint> barchartDataPoints =
+            barchartDataPointsNullable;
         // get first background color, if available
-        final dataPoint = barchartDataPoints.firstWhereOrNull((element) => element.columnBackgroundColor != null);
+        final dataPoint = barchartDataPoints.firstWhereOrNull(
+            (element) => element.columnBackgroundColor != null);
         if (dataPoint != null) {
           final Paint columnBackgroundColor = Paint()
             ..color = dataPoint.columnBackgroundColor!
@@ -825,18 +907,27 @@ class CooChartPainter extends CustomPainter {
       // Tab Callback der gesamten Spalte
       if (chartTabInfo.tabDownDetails != null) {
         final tabDownDetails = chartTabInfo.tabDownDetails!;
-        bool contains = rect.contains(Offset(tabDownDetails.localPosition.dx, tabDownDetails.localPosition.dy));
+        bool contains = rect.contains(Offset(
+            tabDownDetails.localPosition.dx, tabDownDetails.localPosition.dy));
         if (contains) {
           canvas.drawRect(rect, backgroundRectHighlightPaint);
           // invoke callbacks, but only once a time on a column
-          if (chartTabInfo.tabCount != chartTabInfo.tabCountCallbackInvocation) {
-            chartTabInfo.tabCountCallbackInvocation = chartTabInfo.tabCountCallbackInvocation + 1;
+          if (chartTabInfo.tabCount !=
+              chartTabInfo.tabCountCallbackInvocation) {
+            chartTabInfo.tabCountCallbackInvocation =
+                chartTabInfo.tabCountCallbackInvocation + 1;
 
             // Linechart callback
-            if (chartType == CooChartType.line && onLineChartDataPointTabCallback != null) {
-              final selectedDataPoints = metadata.lineChartDataPointsByColumnIndex[i] ?? List.empty(growable: false);
-              if (metadataOpposite != null && metadataOpposite!.lineChartDataPointsByColumnIndex[i] != null) {
-                selectedDataPoints.addAll(metadataOpposite!.lineChartDataPointsByColumnIndex[i]!);
+            if (chartType == CooChartType.line &&
+                onLineChartDataPointTabCallback != null) {
+              final selectedDataPoints =
+                  metadata.lineChartDataPointsByColumnIndex[i] ??
+                      List.empty(growable: false);
+              if (metadataOpposite != null &&
+                  metadataOpposite!.lineChartDataPointsByColumnIndex[i] !=
+                      null) {
+                selectedDataPoints.addAll(
+                    metadataOpposite!.lineChartDataPointsByColumnIndex[i]!);
               }
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 onLineChartDataPointTabCallback!(i, selectedDataPoints);
@@ -844,10 +935,16 @@ class CooChartPainter extends CustomPainter {
             }
 
             // Barchchart callback
-            if (chartType == CooChartType.bar && onBarChartDataPointTabCallback != null) {
-              final selectedDataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? List.empty(growable: false);
-              if (metadataOpposite != null && metadataOpposite!.lineChartDataPointsByColumnIndex[i] != null) {
-                selectedDataPoints.addAll(metadataOpposite!.barChartDataPointsByColumnIndex[i]!);
+            if (chartType == CooChartType.bar &&
+                onBarChartDataPointTabCallback != null) {
+              final selectedDataPoints =
+                  metadata.barChartDataPointsByColumnIndex[i] ??
+                      List.empty(growable: false);
+              if (metadataOpposite != null &&
+                  metadataOpposite!.lineChartDataPointsByColumnIndex[i] !=
+                      null) {
+                selectedDataPoints.addAll(
+                    metadataOpposite!.barChartDataPointsByColumnIndex[i]!);
               }
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 onBarChartDataPointTabCallback!(i, selectedDataPoints);
@@ -874,8 +971,10 @@ class CooChartPainter extends CustomPainter {
     }
 
     // Nur anzeigen, wenn die Mausposition im Feld des gemalten Charts liegt.
-    var rectangle = Rectangle(padding.left, padding.top, chartWidth, chartHeight);
-    bool containsPoint = rectangle.containsPoint(Point(mousePosition.dx, mousePosition.dy));
+    var rectangle =
+        Rectangle(padding.left, padding.top, chartWidth, chartHeight);
+    bool containsPoint =
+        rectangle.containsPoint(Point(mousePosition.dx, mousePosition.dy));
     if (!containsPoint) {
       return;
     }
@@ -915,7 +1014,8 @@ class CooChartPainter extends CustomPainter {
     if (!centerDataPointBetweenVerticalGrid) {
       xGridLineCount -= 1;
     }
-    double xOffsetInterval = xGridLineCount == 0 ? chartWidth : chartWidth / (xGridLineCount);
+    double xOffsetInterval =
+        xGridLineCount == 0 ? chartWidth : chartWidth / (xGridLineCount);
     double xBottomPos = chartHeight + padding.top;
 
     // In case of a date label define the default date format
@@ -969,28 +1069,33 @@ class CooChartPainter extends CustomPainter {
 
       // Calculate isStepAxisLine independent of grid line drawing conditions
       if (xAxisConfig.stepAxisLine != null) {
-        bool drawLine = i == xAxisConfig.stepAxisLineStart; // Wenn i exakt der Startangabe ist
+        bool drawLine = i ==
+            xAxisConfig.stepAxisLineStart; // Wenn i exakt der Startangabe ist
         // Wenn i auf einem vielfachen der angegebenen step liegt. Ist ein Start angegben wird dieser von i abgezogen
-        drawLine = drawLine || (i - xAxisConfig.stepAxisLineStart) % xAxisConfig.stepAxisLine! == 0;
+        drawLine = drawLine ||
+            (i - xAxisConfig.stepAxisLineStart) % xAxisConfig.stepAxisLine! ==
+                0;
         isStepAxisLine = drawLine;
       }
 
-      if (showGridVertical && (i != 0 && i != xGridLineCount || !config.showChartBorder)) {
+      if (showGridVertical &&
+          (i != 0 && i != xGridLineCount || !config.showChartBorder)) {
         if (xAxisConfig.stepAxisLine == null) {
-          canvas.drawLine(
-              Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), gridPaint);
+          canvas.drawLine(Offset(xVerticalGridline, padding.top.toDouble()),
+              Offset(xVerticalGridline, xBottomPos), gridPaint);
         } else {
           if (isStepAxisLine) {
             // Nur zeichen wenn der Start Step oder der konfigierte Step ab dem start übereinstimmt
-            canvas.drawLine(
-                Offset(xVerticalGridline, padding.top.toDouble()), Offset(xVerticalGridline, xBottomPos), gridPaint);
+            canvas.drawLine(Offset(xVerticalGridline, padding.top.toDouble()),
+                Offset(xVerticalGridline, xBottomPos), gridPaint);
           }
         }
       }
 
       // draw highlight vertical line on mouse-over
       if (highlightPointsVerticalLine && i != 0 && i == mouseInRectYIndex) {
-        canvas.drawLine(Offset(x, padding.top.toDouble()), Offset(x, xBottomPos), _highlightLinePaint);
+        canvas.drawLine(Offset(x, padding.top.toDouble()),
+            Offset(x, xBottomPos), _highlightLinePaint);
       }
 
       if (!xAxisConfig.showTopLabels && !xAxisConfig.showBottomLabels) {
@@ -1017,7 +1122,8 @@ class CooChartPainter extends CustomPainter {
       }
 
       // Defaults
-      bottomLabelTextStyle ??= const TextStyle(color: Colors.grey, fontSize: 11);
+      bottomLabelTextStyle ??=
+          const TextStyle(color: Colors.grey, fontSize: 11);
       topLabelTextStyle ??= const TextStyle(color: Colors.grey, fontSize: 11);
 
       // Die letzte vertikale Linie muss bei Centered zusätzlich gezeichnet werden, das nächste Label allerdings
@@ -1029,9 +1135,11 @@ class CooChartPainter extends CustomPainter {
         bool shouldShowLabelAtHour = true;
         if (xAxisConfig.topLabelsAtHours != null &&
             i < metadata.allDateTimeXAxisValues.length &&
-            (xAxisConfig.valueType == XAxisValueType.date || xAxisConfig.valueType == XAxisValueType.datetime)) {
+            (xAxisConfig.valueType == XAxisValueType.date ||
+                xAxisConfig.valueType == XAxisValueType.datetime)) {
           final currentDateTime = metadata.allDateTimeXAxisValues[i];
-          shouldShowLabelAtHour = xAxisConfig.topLabelsAtHours!.contains(currentDateTime.hour);
+          shouldShowLabelAtHour =
+              xAxisConfig.topLabelsAtHours!.contains(currentDateTime.hour);
         }
 
         // Top Labels Callbacks - always call if callback exists, let callback decide
@@ -1041,7 +1149,8 @@ class CooChartPainter extends CustomPainter {
             if (xAxisStepLineTopLabelLineChartCallback != null) {
               final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
               if (dataPoints != null) {
-                final callbackResult = xAxisStepLineTopLabelLineChartCallback!(i, dataPoints);
+                final callbackResult =
+                    xAxisStepLineTopLabelLineChartCallback!(i, dataPoints);
                 // Only use callback result if it's not empty
                 if (callbackResult.isNotEmpty) {
                   topLabel = callbackResult;
@@ -1053,10 +1162,11 @@ class CooChartPainter extends CustomPainter {
           case CooChartType.bar:
             if (xAxisStepLineTopLabelBarChartCallback != null) {
               // Check both metadata and metadataOpposite for bar chart data
-              final dataPoints =
-                  metadata.barChartDataPointsByColumnIndex[i] ?? metadataOpposite?.barChartDataPointsByColumnIndex[i];
+              final dataPoints = metadata.barChartDataPointsByColumnIndex[i] ??
+                  metadataOpposite?.barChartDataPointsByColumnIndex[i];
               if (dataPoints != null) {
-                final callbackResult = xAxisStepLineTopLabelBarChartCallback!(i, dataPoints);
+                final callbackResult =
+                    xAxisStepLineTopLabelBarChartCallback!(i, dataPoints);
                 // Only use callback result if it's not empty
                 if (callbackResult.isNotEmpty) {
                   topLabel = callbackResult;
@@ -1092,7 +1202,8 @@ class CooChartPainter extends CustomPainter {
         final double bottomLabelsYPos = chartHeight + padding.top + 10;
 
         if (xAxisConfig.showTopLabels) {
-          _axisLabelPainter.text = TextSpan(text: topLabel, style: topLabelTextStyle);
+          _axisLabelPainter.text =
+              TextSpan(text: topLabel, style: topLabelTextStyle);
           _axisLabelPainter.layout();
           final double labelTextWidth = _axisLabelPainter.width;
 
@@ -1110,7 +1221,8 @@ class CooChartPainter extends CustomPainter {
           if (xAxisConfig.stepAxisLine != null) {
             if (!isStepAxisLine) {
               drawLabel = false;
-            } else if (xAxisConfig.stepAxisLineStart > 0 && i < xAxisConfig.stepAxisLineStart) {
+            } else if (xAxisConfig.stepAxisLineStart > 0 &&
+                i < xAxisConfig.stepAxisLineStart) {
               // Skip labels before the start position (but only if stepAxisLineStart > 0)
               drawLabel = false;
             }
@@ -1126,7 +1238,9 @@ class CooChartPainter extends CustomPainter {
             double xPos;
             if (isStepAxisLine && textFitsInSpace) {
               // Es müssen Anzahl steps * breite Column für den Offset nehmen
-              xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
+              xPos = x -
+                  (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) +
+                  xPosCenter;
             } else {
               xPos = x - (xOffsetInterval / 2) + xPosCenter;
             }
@@ -1149,7 +1263,8 @@ class CooChartPainter extends CustomPainter {
 
           if (highlightPointsVerticalLine && i != 0 && i == mouseInRectYIndex) {
             if (xAxisConfig.topLabelSecondTextStyleHighlight != null) {
-              secondTopLabelTextStyle = xAxisConfig.topLabelSecondTextStyleHighlight!;
+              secondTopLabelTextStyle =
+                  xAxisConfig.topLabelSecondTextStyleHighlight!;
             } else {
               secondTopLabelTextStyle ??= const TextStyle(
                 fontSize: 11,
@@ -1159,15 +1274,18 @@ class CooChartPainter extends CustomPainter {
             }
           }
 
-          secondTopLabelTextStyle ??= const TextStyle(color: Colors.grey, fontSize: 9);
+          secondTopLabelTextStyle ??=
+              const TextStyle(color: Colors.grey, fontSize: 9);
 
           // Check if we should show second label at this hour based on secondTopLabelsAtHours filter
           bool shouldShowSecondLabelAtHour = true;
           if (xAxisConfig.secondTopLabelsAtHours != null &&
               i < metadata.allDateTimeXAxisValues.length &&
-              (xAxisConfig.valueType == XAxisValueType.date || xAxisConfig.valueType == XAxisValueType.datetime)) {
+              (xAxisConfig.valueType == XAxisValueType.date ||
+                  xAxisConfig.valueType == XAxisValueType.datetime)) {
             final currentDateTime = metadata.allDateTimeXAxisValues[i];
-            shouldShowSecondLabelAtHour = xAxisConfig.secondTopLabelsAtHours!.contains(currentDateTime.hour);
+            shouldShowSecondLabelAtHour = xAxisConfig.secondTopLabelsAtHours!
+                .contains(currentDateTime.hour);
           }
 
           // Callbacks - only if hour filter allows it
@@ -1175,9 +1293,12 @@ class CooChartPainter extends CustomPainter {
             switch (chartType) {
               case CooChartType.line:
                 if (xAxisStepLineSecondTopLabelLineChartCallback != null) {
-                  final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
+                  final dataPoints =
+                      metadata.lineChartDataPointsByColumnIndex[i];
                   if (dataPoints != null) {
-                    final callbackResult = xAxisStepLineSecondTopLabelLineChartCallback!(i, dataPoints);
+                    final callbackResult =
+                        xAxisStepLineSecondTopLabelLineChartCallback!(
+                            i, dataPoints);
                     // Only use callback result if it's not empty, otherwise fall through to defaults
                     if (callbackResult.isNotEmpty) {
                       secondTopLabel = callbackResult;
@@ -1187,18 +1308,23 @@ class CooChartPainter extends CustomPainter {
                 break;
               case CooChartType.bar:
                 if (xAxisStepLineSecondTopLabelBarChartCallback != null) {
-                  final dataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? [];
-                  final callbackResult = xAxisStepLineSecondTopLabelBarChartCallback!(i, dataPoints);
+                  final dataPoints =
+                      metadata.barChartDataPointsByColumnIndex[i] ?? [];
+                  final callbackResult =
+                      xAxisStepLineSecondTopLabelBarChartCallback!(
+                          i, dataPoints);
                   // Only use callback result if it's not empty, otherwise fall through to defaults
                   if (callbackResult.isNotEmpty) {
                     secondTopLabel = callbackResult;
                   }
                 } else {
-                  final dataPoints = metadata.barChartDataPointsByColumnIndex[i];
+                  final dataPoints =
+                      metadata.barChartDataPointsByColumnIndex[i];
                   if (dataPoints != null && dataPoints.isNotEmpty) {
                     final firstDataPoint = dataPoints.first;
                     if (firstDataPoint.groupedValue?.secondaryLabel != null) {
-                      secondTopLabel = firstDataPoint.groupedValue!.secondaryLabel;
+                      secondTopLabel =
+                          firstDataPoint.groupedValue!.secondaryLabel;
                     }
                   }
                 }
@@ -1224,7 +1350,8 @@ class CooChartPainter extends CustomPainter {
           }
 
           if (secondTopLabel != null) {
-            _axisLabelPainter.text = TextSpan(text: secondTopLabel, style: secondTopLabelTextStyle);
+            _axisLabelPainter.text =
+                TextSpan(text: secondTopLabel, style: secondTopLabelTextStyle);
             _axisLabelPainter.layout();
             final double labelTextWidth = _axisLabelPainter.width;
 
@@ -1240,7 +1367,8 @@ class CooChartPainter extends CustomPainter {
             if (xAxisConfig.stepAxisLine != null) {
               if (!isStepAxisLine) {
                 drawLabel = false;
-              } else if (xAxisConfig.stepAxisLineStart > 0 && i < xAxisConfig.stepAxisLineStart) {
+              } else if (xAxisConfig.stepAxisLineStart > 0 &&
+                  i < xAxisConfig.stepAxisLineStart) {
                 drawLabel = false;
               }
             }
@@ -1251,13 +1379,16 @@ class CooChartPainter extends CustomPainter {
 
               double xPos;
               if (isStepAxisLine && textFitsInSpace) {
-                xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
+                xPos = x -
+                    (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) +
+                    xPosCenter;
               } else {
                 xPos = x - (xOffsetInterval / 2) + xPosCenter;
               }
 
               // Position second top labels above the first top labels
-              double yPos = padding.top.toDouble() - 45; // 20px higher than first top labels
+              double yPos = padding.top.toDouble() -
+                  45; // 20px higher than first top labels
               if (xAxisConfig.topLabelOffset != null) {
                 xPos += xAxisConfig.topLabelOffset!.dx;
                 yPos += xAxisConfig.topLabelOffset!.dy;
@@ -1280,13 +1411,17 @@ class CooChartPainter extends CustomPainter {
           shouldUseSvgLabels = false;
         }
 
-        if (shouldUseSvgLabels && chartType == CooChartType.bar && xAxisStepLineBottomSvgBarChartCallback != null) {
+        if (shouldUseSvgLabels &&
+            chartType == CooChartType.bar &&
+            xAxisStepLineBottomSvgBarChartCallback != null) {
           // For SVG labels, we don't need the dataPoints parameter since wind direction is based on index
           bottomSvgLabel = xAxisStepLineBottomSvgBarChartCallback!(i, []);
-        } else if (chartType == CooChartType.bar && xAxisStepLineBottomWidgetBarChartCallback != null) {
+        } else if (chartType == CooChartType.bar &&
+            xAxisStepLineBottomWidgetBarChartCallback != null) {
           // For widget labels
           final dataPoints = metadata.barChartDataPointsByColumnIndex[i] ?? [];
-          bottomWidgetLabel = xAxisStepLineBottomWidgetBarChartCallback!(i, dataPoints);
+          bottomWidgetLabel =
+              xAxisStepLineBottomWidgetBarChartCallback!(i, dataPoints);
         } else {
           // Bottom Labels Callbacks
           switch (chartType) {
@@ -1294,7 +1429,8 @@ class CooChartPainter extends CustomPainter {
               if (xAxisStepLineBottomLabelLineChartCallback != null) {
                 final dataPoints = metadata.lineChartDataPointsByColumnIndex[i];
                 if (dataPoints != null) {
-                  bottomLabel = xAxisStepLineBottomLabelLineChartCallback!(i, dataPoints);
+                  bottomLabel =
+                      xAxisStepLineBottomLabelLineChartCallback!(i, dataPoints);
                 }
               }
               break;
@@ -1302,7 +1438,8 @@ class CooChartPainter extends CustomPainter {
               if (xAxisStepLineBottomLabelBarChartCallback != null) {
                 final dataPoints = metadata.barChartDataPointsByColumnIndex[i];
                 if (dataPoints != null) {
-                  bottomLabel = xAxisStepLineBottomLabelBarChartCallback!(i, dataPoints);
+                  bottomLabel =
+                      xAxisStepLineBottomLabelBarChartCallback!(i, dataPoints);
                 }
                 break;
               }
@@ -1313,7 +1450,8 @@ class CooChartPainter extends CustomPainter {
             switch (xAxisConfig.valueType) {
               case XAxisValueType.date:
               case XAxisValueType.datetime:
-                bottomLabel = bottomDateFormat!.format(metadata.allDateTimeXAxisValues[i]);
+                bottomLabel = bottomDateFormat!
+                    .format(metadata.allDateTimeXAxisValues[i]);
                 break;
               case XAxisValueType.number:
                 bottomLabel = startNumber.toString();
@@ -1345,7 +1483,8 @@ class CooChartPainter extends CustomPainter {
             );
           } else if (bottomLabel != null) {
             // Render text label
-            _axisLabelPainter.text = TextSpan(text: bottomLabel, style: bottomLabelTextStyle);
+            _axisLabelPainter.text =
+                TextSpan(text: bottomLabel, style: bottomLabelTextStyle);
             _axisLabelPainter.layout();
             final double labelTextWidth = _axisLabelPainter.width;
             // Prüfen ob die Größe noch in den Bereich passt
@@ -1364,7 +1503,8 @@ class CooChartPainter extends CustomPainter {
                 drawLabel = false;
               } else {
                 // Prüfen ob die Größe noch in den Bereich passt
-                if (xAxisConfig.stepAxisLineStart > 0 && i < xAxisConfig.stepAxisLineStart) {
+                if (xAxisConfig.stepAxisLineStart > 0 &&
+                    i < xAxisConfig.stepAxisLineStart) {
                   // Skip labels before the start position (but only if stepAxisLineStart > 0)
                   drawLabel = false;
                 }
@@ -1379,7 +1519,9 @@ class CooChartPainter extends CustomPainter {
               double xPos;
               if (isStepAxisLine) {
                 // Es müssen Anzahl steps * breite Column für den Offset nehmen
-                xPos = x - (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) + xPosCenter;
+                xPos = x -
+                    (xOffsetInterval * xAxisConfig.stepAxisLine! / 2) +
+                    xPosCenter;
               } else {
                 xPos = x - (xOffsetInterval / 2) + xPosCenter;
               }
@@ -1424,14 +1566,17 @@ class CooChartPainter extends CustomPainter {
     }
   }
 
-  void paintColumnBlocks(
-      ui.Canvas canvas, ChartColumnBlocks columnBlocks, double chartWidth, double chartHeight, bool topBlocks) {
-    ChartColumnBlockConfig config = topBlocks ? columnBlocks.topConfig : columnBlocks.bottomConfig;
-    final columnDatas = topBlocks ? columnBlocks.topDatas : columnBlocks.bottomDatas;
+  void paintColumnBlocks(ui.Canvas canvas, ChartColumnBlocks columnBlocks,
+      double chartWidth, double chartHeight, bool topBlocks) {
+    ChartColumnBlockConfig config =
+        topBlocks ? columnBlocks.topConfig : columnBlocks.bottomConfig;
+    final columnDatas =
+        topBlocks ? columnBlocks.topDatas : columnBlocks.bottomDatas;
 
     final columnDatasHeight = config.height.toDouble();
     // Wenn padding für die Legende verwendet werden soll kann angegben werden wie breit sie ist.
-    double backgroundPaddingSize = columnBlocks.bottomConfig.backgroundColorPadding.toDouble();
+    double backgroundPaddingSize =
+        columnBlocks.bottomConfig.backgroundColorPadding.toDouble();
 
     int xGridLineCount = metadata.maxAbsoluteValueCount;
     if (!centerDataPointBetweenVerticalGrid) {
@@ -1469,7 +1614,8 @@ class CooChartPainter extends CustomPainter {
       // nicht, denn das wäre ein nicht vorhandener Datenpunkt zu viel
       if (!centerDataPointBetweenVerticalGrid || i != xGridLineCount) {
         // Hintergrundfarbe rendern
-        bool isBackgroundColor = config.backgroundColor != null || columnData.backgroundColor != null;
+        bool isBackgroundColor = config.backgroundColor != null ||
+            columnData.backgroundColor != null;
         if (isBackgroundColor) {
           final Paint columnLegendBackground = Paint()
             ..color = columnData.backgroundColor ?? config.backgroundColor!
@@ -1482,9 +1628,11 @@ class CooChartPainter extends CustomPainter {
               columnDatasHeight +
               backgroundPaddingSize;
           final rectX1 = rectX0 + xOffsetInterval - (backgroundPaddingSize * 2);
-          final rectY1 = rectY0 + columnDatasHeight - (backgroundPaddingSize * 2);
+          final rectY1 =
+              rectY0 + columnDatasHeight - (backgroundPaddingSize * 2);
 
-          var rect = Rect.fromPoints(Offset(rectX0, rectY0), Offset(rectX1, rectY1));
+          var rect =
+              Rect.fromPoints(Offset(rectX0, rectY0), Offset(rectX1, rectY1));
           canvas.drawRect(rect, columnLegendBackground);
           // Wenn ein spezieller Mouse-Over Highlight benötigt wird kann das hier verwendet werden
           // if (mousePosition != null) {
@@ -1504,17 +1652,22 @@ class CooChartPainter extends CustomPainter {
           final TextStyle blockDataTextStyle = isHighlightColum
               ? columnData.textStyleHighlight ?? textStyleHighlight
               : columnData.textStyle ?? textStyle;
-          _columLegendTextPainter.text = TextSpan(text: columnData.text, style: blockDataTextStyle);
+          _columLegendTextPainter.text =
+              TextSpan(text: columnData.text, style: blockDataTextStyle);
           _columLegendTextPainter.layout();
 
           // Berechnen des Startpunktes damit der Text in seiner errechneten Größe mittig ist
-          final xPosCenter = (xOffsetInterval / 2) - (_columLegendTextPainter.width / 2);
+          final xPosCenter =
+              (xOffsetInterval / 2) - (_columLegendTextPainter.width / 2);
           // Berechnen der XPos relativ zu dem gerade berechnetem Punkt
           final xPos = x - (xOffsetInterval / 2) + xPosCenter;
 
           // Center ist höhe der fläche / 2 + höhe des textes / 2
-          final double yPosCenter = (columnDatasHeight / 2) + (_columLegendTextPainter.height / 2);
-          final yPos = (topBlocks ? config.height : chartHeight) + padding.top.toDouble() - yPosCenter;
+          final double yPosCenter =
+              (columnDatasHeight / 2) + (_columLegendTextPainter.height / 2);
+          final yPos = (topBlocks ? config.height : chartHeight) +
+              padding.top.toDouble() -
+              yPosCenter;
 
           _columLegendTextPainter.paint(canvas, Offset(xPos, yPos));
         }
@@ -1523,7 +1676,8 @@ class CooChartPainter extends CustomPainter {
         if (columnData.assetImages.isNotEmpty) {
           assetImageLoop:
           for (var blockAssetImage in columnData.assetImages) {
-            final ui.Image? image = columLegendsAssetImages[blockAssetImage.path];
+            final ui.Image? image =
+                columLegendsAssetImages[blockAssetImage.path];
             if (image == null) {
               continue assetImageLoop;
             }
@@ -1534,7 +1688,8 @@ class CooChartPainter extends CustomPainter {
             final xPos = x - (xOffsetInterval / 2) + xPosCenter;
 
             // Center ist höhe der fläche / 2 + höhe des textes / 2
-            final double yPosCenter = (columnDatasHeight / 2) + (image.height / 2);
+            final double yPosCenter =
+                (columnDatasHeight / 2) + (image.height / 2);
             final yPos = (topBlocks ? config.height : chartHeight) +
                 padding.top.toDouble() -
                 yPosCenter -
@@ -1544,7 +1699,8 @@ class CooChartPainter extends CustomPainter {
             // Deswegen wird das schlechtere von SVG zu PNG transformierte Bild gezeichnet
             // canvas.drawPicture(columLegendsAssetSvgPictureInfos[blockAssetImage.path]!.picture);
 
-            canvas.drawImage(image, Offset(xPos, yPos), Paint()..filterQuality = FilterQuality.high);
+            canvas.drawImage(image, Offset(xPos, yPos),
+                Paint()..filterQuality = FilterQuality.high);
           }
         }
       }
@@ -1560,7 +1716,8 @@ class CooChartPainter extends CustomPainter {
   }) {
     try {
       // Try to get the SVG from cache
-      final PictureInfo? pictureInfo = CooChartPainterUtil.getSvgFromCache(svgLabel.assetPath);
+      final PictureInfo? pictureInfo =
+          CooChartPainterUtil.getSvgFromCache(svgLabel.assetPath);
 
       if (pictureInfo != null) {
         // Calculate center position
@@ -1598,14 +1755,16 @@ class CooChartPainter extends CustomPainter {
         final fallbackPaint = Paint()
           ..color = Colors.transparent
           ..style = PaintingStyle.fill;
-        canvas.drawCircle(Offset(x + svgLabel.offsetX, y + svgLabel.offsetY), 8.0, fallbackPaint);
+        canvas.drawCircle(Offset(x + svgLabel.offsetX, y + svgLabel.offsetY),
+            8.0, fallbackPaint);
       }
     } catch (e) {
       // Fallback for any errors
       final fallbackPaint = Paint()
         ..color = Colors.red
         ..style = PaintingStyle.fill;
-      canvas.drawCircle(Offset(x + svgLabel.offsetX, y + svgLabel.offsetY), 8.0, fallbackPaint);
+      canvas.drawCircle(Offset(x + svgLabel.offsetX, y + svgLabel.offsetY), 8.0,
+          fallbackPaint);
     }
   }
 
@@ -1647,7 +1806,10 @@ class CooChartPainter extends CustomPainter {
       final centerY = y + widgetLabel.offsetY - (widgetLabel.height / 2);
 
       // Validate calculated positions
-      if (centerX.isNaN || centerY.isNaN || centerX.isInfinite || centerY.isInfinite) {
+      if (centerX.isNaN ||
+          centerY.isNaN ||
+          centerX.isInfinite ||
+          centerY.isInfinite) {
         canvas.restore();
         return;
       }
@@ -1656,7 +1818,8 @@ class CooChartPainter extends CustomPainter {
       canvas.translate(centerX, centerY);
 
       // Apply rotation if specified
-      if (widgetLabel.rotationDegrees != 0.0 && !widgetLabel.rotationDegrees.isNaN) {
+      if (widgetLabel.rotationDegrees != 0.0 &&
+          !widgetLabel.rotationDegrees.isNaN) {
         // Translate to center of widget for rotation
         canvas.translate(widgetLabel.width / 2, widgetLabel.height / 2);
         // Convert degrees to radians and rotate
@@ -1712,7 +1875,8 @@ class CooChartPainter extends CustomPainter {
         final fallbackPaint = Paint()
           ..color = Colors.transparent
           ..style = PaintingStyle.fill;
-        canvas.drawCircle(Offset(widgetSize.width / 2, widgetSize.height / 2), 6.0, fallbackPaint);
+        canvas.drawCircle(Offset(widgetSize.width / 2, widgetSize.height / 2),
+            6.0, fallbackPaint);
       }
 
       // Restore canvas state
@@ -1722,7 +1886,10 @@ class CooChartPainter extends CustomPainter {
       final fallbackPaint = Paint()
         ..color = Colors.blue
         ..style = PaintingStyle.fill;
-      canvas.drawCircle(Offset(x + widgetLabel.offsetX, y + widgetLabel.offsetY), 8.0, fallbackPaint);
+      canvas.drawCircle(
+          Offset(x + widgetLabel.offsetX, y + widgetLabel.offsetY),
+          8.0,
+          fallbackPaint);
     }
   }
 
@@ -1738,14 +1905,16 @@ class CooChartPainter extends CustomPainter {
     }
 
     // Nur für Datum/Zeit-basierte X-Achsen implementieren
-    if (xAxisConfig.valueType != XAxisValueType.datetime && xAxisConfig.valueType != XAxisValueType.date) {
+    if (xAxisConfig.valueType != XAxisValueType.datetime &&
+        xAxisConfig.valueType != XAxisValueType.date) {
       return;
     }
 
     final chartStartY = padding.top.toDouble();
     final chartEndY = chartStartY + chartHeight;
 
-    for (final ChartBackgroundTimeRange timeRange in config.backgroundTimeRanges) {
+    for (final ChartBackgroundTimeRange timeRange
+        in config.backgroundTimeRanges) {
       try {
         _drawTimeRangeForAllDays(
           canvas: canvas,
@@ -1804,7 +1973,8 @@ class CooChartPainter extends CustomPainter {
 
         // Berechne X-Positionen
         double startX = (rangeStart * metadata.xSegmentWidth) + padding.left;
-        double endX = ((rangeEnd + 1) * metadata.xSegmentWidth) + padding.left; // +1 to include end point
+        double endX = ((rangeEnd + 1) * metadata.xSegmentWidth) +
+            padding.left; // +1 to include end point
 
         if (centerDataPointBetweenVerticalGrid) {
           startX += metadata.xSegementWidthHalf;
@@ -1819,7 +1989,8 @@ class CooChartPainter extends CustomPainter {
   }
 
   /// Prüft, ob eine DateTime in einem bestimmten Zeitraum liegt
-  bool _isTimeInRange(DateTime dateTime, TimeOfDay startTime, TimeOfDay endTime) {
+  bool _isTimeInRange(
+      DateTime dateTime, TimeOfDay startTime, TimeOfDay endTime) {
     final currentMinutes = dateTime.hour * 60 + dateTime.minute;
     final startMinutes = startTime.hour * 60 + startTime.minute;
     final endMinutes = endTime.hour * 60 + endTime.minute;
