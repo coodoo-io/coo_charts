@@ -11,16 +11,16 @@ class XAxisLabelSvg {
 
   /// Path to the SVG asset
   final String assetPath;
-  
+
   /// Width of the SVG icon
   final double width;
-  
-  /// Height of the SVG icon  
+
+  /// Height of the SVG icon
   final double height;
-  
+
   /// Horizontal offset from the label position
   final double offsetX;
-  
+
   /// Vertical offset from the label position
   final double offsetY;
 

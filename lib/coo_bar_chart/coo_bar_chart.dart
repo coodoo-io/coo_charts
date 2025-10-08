@@ -13,6 +13,7 @@ import 'package:coo_charts/common/coo_chart_themes.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
 import 'package:coo_charts/common/x_axis_config.dart';
 import 'package:coo_charts/common/x_axis_label_svg.dart';
+import 'package:coo_charts/common/x_axis_label_widget.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_point.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_series.dart';
@@ -37,7 +38,9 @@ class CooBarChart extends StatefulWidget {
     this.onDataPointTab,
     this.xAxisStepLineTopLabelCallback,
     this.xAxisStepLineBottomLabelCallback,
+    this.xAxisStepLineSecondTopLabelCallback,
     this.xAxisStepLineBottomSvgCallback,
+    this.xAxisStepLineBottomWidgetCallback,
   });
 
   final List<CooBarChartDataSeries> dataSeries;
@@ -64,10 +67,16 @@ class CooBarChart extends StatefulWidget {
       xAxisStepLineTopLabelCallback;
   final String Function(int, List<CooBarChartDataPoint>)?
       xAxisStepLineBottomLabelCallback;
+  final String Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineSecondTopLabelCallback;
 
   /// SVG label callbacks for X-axis
   final XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)?
       xAxisStepLineBottomSvgCallback;
+
+  /// Widget label callbacks for X-axis
+  final XAxisLabelWidget? Function(int, List<CooBarChartDataPoint>)?
+      xAxisStepLineBottomWidgetCallback;
 
   @override
   State<CooBarChart> createState() => _CooBarChartState();
@@ -214,8 +223,12 @@ class _CooBarChartState extends State<CooBarChart> {
                       widget.xAxisStepLineTopLabelCallback,
                   xAxisStepLineBottomLabelBarChartCallback:
                       widget.xAxisStepLineBottomLabelCallback,
+                  xAxisStepLineSecondTopLabelBarChartCallback:
+                      widget.xAxisStepLineSecondTopLabelCallback,
                   xAxisStepLineBottomSvgBarChartCallback:
                       widget.xAxisStepLineBottomSvgCallback,
+                  xAxisStepLineBottomWidgetBarChartCallback:
+                      widget.xAxisStepLineBottomWidgetCallback,
                 ),
               ),
             ],

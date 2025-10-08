@@ -12,16 +12,16 @@ class DataPointSvgIcon {
 
   /// Path to the SVG asset
   final String assetPath;
-  
+
   /// Width of the SVG icon
   final double width;
-  
-  /// Height of the SVG icon  
+
+  /// Height of the SVG icon
   final double height;
-  
+
   /// Horizontal offset from the data point
   final double offsetX;
-  
+
   /// Vertical offset from the data point
   final double offsetY;
 }
@@ -39,7 +39,6 @@ class CooLineChartDataPoint<T> {
 
     /// SVG Icon for data point label
     this.svgIcon,
-
     this.valueObject,
   });
 
@@ -52,7 +51,7 @@ class CooLineChartDataPoint<T> {
   String? label;
   DateTime? time;
   Color? columnBackgroundColor;
-  
+
   /// Optional SVG icon to display instead of or alongside text label
   DataPointSvgIcon? svgIcon;
 

@@ -1,11 +1,19 @@
+import 'dart:math';
+
+import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_config.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_config_image.dart';
 import 'package:coo_charts/common/blocks/chart_column_block_data.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
+import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/coo_chart_themes.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
+import 'package:coo_charts/common/data_point_label_pos.enum.dart';
 import 'package:coo_charts/common/x_axis_config.dart';
+import 'package:coo_charts/common/x_axis_label_svg.dart';
+import 'package:coo_charts/common/x_axis_label_widget.dart';
+import 'package:coo_charts/common/x_axis_value_type.enum.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart.dart';
 import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_point.dart';
@@ -13,10 +21,6 @@ import 'package:coo_charts/coo_bar_chart/coo_bar_chart_data_series.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
 import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
-import 'package:coo_charts/common/data_point_label_pos.enum.dart';
-import 'package:coo_charts/common/x_axis_value_type.enum.dart';
-import 'package:coo_charts/common/x_axis_label_svg.dart';
-import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts_example/linechart_demo_util.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -32,6 +36,195 @@ const kIconWeatherRainPng = 'assets/cloudcoverage-6.png';
 const kIconWindOver50Png = 'assets/wind_over50.png';
 const kIconWindOver90Png = 'assets/wind_over90.png';
 
+/// A wind barb widget that can be used as an X-axis label
+class WindBarbWidget extends StatelessWidget {
+  const WindBarbWidget({
+    super.key,
+    required this.windSpeed,
+    this.size = const Size(40, 40),
+    this.color = Colors.black,
+    this.strokeWidth = 2.0,
+  });
+
+  final double windSpeed;
+  final Size size;
+  final Color color;
+  final double strokeWidth;
+
+  /// Get the painter directly for use in chart rendering
+  WindBarbPainter getPainter() {
+    return WindBarbPainter(
+      windSpeed: windSpeed,
+      color: color,
+      strokeWidth: strokeWidth,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: size,
+      painter: getPainter(),
+    );
+  }
+}
+
+/// Custom painter for wind barbs
+class WindBarbPainter extends CustomPainter {
+  final double windSpeed;
+  final Color color;
+  final double strokeWidth;
+
+  WindBarbPainter({
+    required this.windSpeed,
+    this.color = Colors.black,
+    this.strokeWidth = 2.0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    print('WindBarbPainter.paint called with size: $size, windSpeed: $windSpeed');
+
+    // Validate size to prevent NaN values
+    if (size.width <= 0 ||
+        size.height <= 0 ||
+        size.width.isNaN ||
+        size.height.isNaN ||
+        size.width.isInfinite ||
+        size.height.isInfinite) {
+      print('Invalid size detected, drawing fallback');
+      // Draw a simple fallback dot if size is invalid
+      final Paint fallbackPaint = Paint()
+        ..color = color
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(const Offset(5, 5), 3, fallbackPaint);
+      return;
+    }
+
+    final Paint paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final double shaftLength = size.width * 0.7; // Longer horizontal shaft
+    final Offset start = Offset(size.width * 0.05, size.height / 2);
+    final Offset end = Offset(start.dx + shaftLength, start.dy);
+
+    print('Drawing wind barb: start=$start, end=$end, shaftLength=$shaftLength, windSpeed=$windSpeed');
+
+    // Draw main shaft (horizontal line)
+    canvas.drawLine(start, end, paint);
+
+    // Draw directional arrow at the end
+    _drawArrow(canvas, paint, end, size.width * 0.15);
+
+    // Draw wind barbs based on speed
+    if (windSpeed > 0.5) {
+      _drawWindBarbs(canvas, paint, end, windSpeed, size);
+    }
+
+    // Add a small circle at the start for better visual reference
+    final Paint circlePaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(start, strokeWidth, circlePaint);
+  }
+
+  void _drawArrow(Canvas canvas, Paint paint, Offset end, double arrowSize) {
+    final double arrowAngle = pi / 6; // 30 degrees
+    final Offset left = Offset(
+      end.dx - arrowSize * cos(arrowAngle),
+      end.dy - arrowSize * sin(arrowAngle),
+    );
+    final Offset right = Offset(
+      end.dx - arrowSize * cos(-arrowAngle),
+      end.dy - arrowSize * sin(-arrowAngle),
+    );
+
+    canvas.drawLine(end, left, paint);
+    canvas.drawLine(end, right, paint);
+  }
+
+  void _drawWindBarbs(Canvas canvas, Paint paint, Offset end, double speed, Size size) {
+    // Validate inputs to prevent NaN calculations
+    if (size.width <= 0 ||
+        size.height <= 0 ||
+        size.width.isNaN ||
+        size.height.isNaN ||
+        size.width.isInfinite ||
+        size.height.isInfinite ||
+        speed.isNaN ||
+        speed.isInfinite) {
+      return; // Skip drawing if invalid values
+    }
+
+    double barbSpacing = size.width * 0.12; // Spacing between barbs
+    final double barbLength = size.height * 0.35;
+    final double triangleBase = size.width * 0.12;
+    final double triangleHeight = size.height * 0.35;
+    final double halfBarbLength = size.height * 0.25;
+
+    int fullBarbs = (speed / 1).floor(); // Each full line = 1.0 m/s
+    bool hasHalfBarb = (speed % 1) >= 0.5;
+    int triangles = (fullBarbs / 5).floor(); // Each triangle = 5 m/s
+    fullBarbs %= 5; // Remove count covered by triangles
+
+    Offset currentPoint = end;
+    final double angle = pi / 3; // 60 degrees in radians
+
+    // Draw triangles (5 m/s each)
+    for (int i = 0; i < triangles; i++) {
+      Offset right = currentPoint;
+      Offset left = Offset(right.dx - triangleBase, right.dy);
+      Offset top = Offset(
+        right.dx - (triangleBase / 2),
+        right.dy - triangleHeight, // Move upwards
+      );
+
+      Path triangle = Path()
+        ..moveTo(right.dx, right.dy) // Right point
+        ..lineTo(left.dx, left.dy) // Left point
+        ..lineTo(top.dx, top.dy) // Top of the triangle
+        ..close();
+
+      canvas.drawPath(triangle, paint..style = PaintingStyle.fill);
+      currentPoint = Offset(currentPoint.dx - barbSpacing, currentPoint.dy);
+    }
+
+    if (triangles > 0) {
+      currentPoint = Offset(
+        currentPoint.dx - (barbSpacing / 2),
+        currentPoint.dy,
+      );
+    }
+
+    // Reset paint style for lines
+    paint.style = PaintingStyle.stroke;
+
+    // Draw full barbs (1 m/s each)
+    for (int i = 0; i < fullBarbs; i++) {
+      Offset barbEnd = Offset(
+        currentPoint.dx + barbLength * cos(angle),
+        currentPoint.dy - barbLength * sin(angle), // Move upwards
+      );
+      canvas.drawLine(currentPoint, barbEnd, paint);
+      currentPoint = Offset(currentPoint.dx - (barbSpacing * 0.7), currentPoint.dy);
+    }
+
+    // Draw half barb (0.5 m/s)
+    if (hasHalfBarb) {
+      Offset halfBarbEnd = Offset(
+        currentPoint.dx + (halfBarbLength) * cos(angle),
+        currentPoint.dy - (halfBarbLength) * sin(angle), // Move upwards
+      );
+      canvas.drawLine(currentPoint, halfBarbEnd, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
 class LineChartDemo extends StatefulWidget {
   const LineChartDemo({super.key});
 
@@ -45,11 +238,16 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
   String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelLineChartCallback;
   String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelLineChartCallback;
+  String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineSecondTopLabelLineChartCallback;
   String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomLabelBarChartCallback;
   String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineTopLabelBarChartCallback;
-  
+  String Function(int, List<CooBarChartDataPoint>)? xAxisStepLineSecondTopLabelBarChartCallback;
+
   // SVG callback for X-axis labels
   XAxisLabelSvg? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomSvgBarChartCallback;
+
+  // Widget callback for X-axis labels
+  XAxisLabelWidget? Function(int, List<CooBarChartDataPoint>)? xAxisStepLineBottomWidgetBarChartCallback;
 
   ChartColumnBlocks? chartColumnBlocks;
   ChartConfig chartConfig = const ChartConfig();
@@ -82,7 +280,9 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generateMultipleBarkchart();
     // _generateKachelmann14TageWetterTrend();
     // _create0To10To0ValuesChartDataPoints();
-    _create0To10ValuesChartDataPoints();
+    // _create0To10ValuesChartDataPoints();
+    _generateRainSnowGroupedBarChart();
+    // _generateWindBarbChart();
     // _genrateRandomCooLinechartDataPoints();
     // _generateRandomDualLinechart();
     // _generateKachelmannVorhersageXL();
@@ -91,6 +291,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     // _generate10DataPointsLargeNumer();
     // _generateEmptyLists();
     // _generateRandomDualLinechart();
+    // _generateWeatherDualAxisChart();
   }
 
   @override
@@ -110,39 +311,43 @@ class _LineChartDemoState extends State<LineChartDemo> {
             color: chartBackgroundColorBlack ? Colors.black : Colors.white,
             child: switch (chartType) {
               CooChartType.line => CooLineChart(
-                dataSeries: linechartDataSeries,
-                columnBlocks: chartColumnBlocks,
-                chartConfig: chartConfig,
-                onDataPointTab: (index, cooLinechartDataPoints) => print(
-                    'Tab Index: $index | Anzahl DatPoints: ${cooLinechartDataPoints.length}- 1. DataPoint Value: ${cooLinechartDataPoints[0].value}'),
-                xAxisConfig: xAxisConfig,
-                yAxisConfig: yAxisConfig,
-                yAxisOppositeConfig: yAxisOppositeConfig,
-                xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelLineChartCallback,
-                xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelLineChartCallback,
-              ),
-            CooChartType.bar => CooBarChart(
-                dataSeries: barchartDataSeries,
-                lineDataSeries: linechartDataSeries, // Add line overlay to bar chart
-                columnBlocks: chartColumnBlocks,
-                chartConfig: chartConfig,
-                xAxisConfig: xAxisConfig,
-                yAxisConfig: yAxisConfig,
-                yAxisOppositeConfig: yAxisOppositeConfig,
-                xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelBarChartCallback,
-                xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelBarChartCallback,
-                xAxisStepLineBottomSvgCallback: xAxisStepLineBottomSvgBarChartCallback,
-              ),
+                  dataSeries: linechartDataSeries,
+                  columnBlocks: chartColumnBlocks,
+                  chartConfig: chartConfig,
+                  onDataPointTab: (index, cooLinechartDataPoints) => print(
+                      'Tab Index: $index | Anzahl DatPoints: ${cooLinechartDataPoints.length}- 1. DataPoint Value: ${cooLinechartDataPoints[0].value}'),
+                  xAxisConfig: xAxisConfig,
+                  yAxisConfig: yAxisConfig,
+                  yAxisOppositeConfig: yAxisOppositeConfig,
+                  xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelLineChartCallback,
+                  xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelLineChartCallback,
+                  xAxisStepLineSecondTopLabelCallback: xAxisStepLineSecondTopLabelLineChartCallback),
+              CooChartType.bar => CooBarChart(
+                  key: ValueKey(
+                      'bar_chart_${barchartDataSeries.length}_${DateTime.now().millisecondsSinceEpoch}'), // Force rebuild
+                  dataSeries: barchartDataSeries,
+                  lineDataSeries: linechartDataSeries, // Add line overlay to bar chart
+                  columnBlocks: chartColumnBlocks,
+                  chartConfig: chartConfig,
+                  xAxisConfig: xAxisConfig,
+                  yAxisConfig: yAxisConfig,
+                  yAxisOppositeConfig: yAxisOppositeConfig,
+                  padding: const ChartPadding(
+                      top: 100, left: 50, right: 50, bottom: 50), // Extra top padding for second labels
+                  xAxisStepLineBottomLabelCallback: xAxisStepLineBottomLabelBarChartCallback,
+                  xAxisStepLineTopLabelCallback: xAxisStepLineTopLabelBarChartCallback,
+                  xAxisStepLineSecondTopLabelCallback: xAxisStepLineSecondTopLabelBarChartCallback,
+                  xAxisStepLineBottomSvgCallback: xAxisStepLineBottomSvgBarChartCallback,
+                  xAxisStepLineBottomWidgetCallback: xAxisStepLineBottomWidgetBarChartCallback,
+                ),
             },
           ),
         ),
         Container(
           color: Colors.amber,
           padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
@@ -153,6 +358,26 @@ class _LineChartDemoState extends State<LineChartDemo> {
                       setState(() {});
                     },
                     child: const Text('🌦️ Wetter', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () {
+                      _generateRainSnowGroupedBarChart();
+                      setState(() {
+                        // Force complete rebuild with new key
+                      });
+                    },
+                    child: const Text('🌧️❄️ Regen+Schnee', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                    onPressed: () async {
+                      await _generateWindBarbChart();
+                      setState(() {});
+                    },
+                    child: const Text('💨 Wind Barbs', style: TextStyle(fontSize: 12)),
                   ),
                   const SizedBox(width: 4),
                   ElevatedButton(
@@ -330,13 +555,15 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(
                       () => chartConfig = chartConfig.copyWith(showGridHorizontal: !chartConfig.showGridHorizontal)),
-                  child: Text('Grid-H ${chartConfig.showGridHorizontal ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
+                  child: Text('Grid-H ${chartConfig.showGridHorizontal ? '✅' : '❌'}',
+                      style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(
                       () => chartConfig = chartConfig.copyWith(showGridVertical: !chartConfig.showGridVertical)),
-                  child: Text('Grid-V ${chartConfig.showGridVertical ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
+                  child:
+                      Text('Grid-V ${chartConfig.showGridVertical ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
@@ -393,25 +620,29 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(
                       () => xAxisConfig = xAxisConfig.copyWith(showBottomLabels: !xAxisConfig.showBottomLabels)),
-                  child: Text('Bottom ${xAxisConfig.showBottomLabels ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
+                  child:
+                      Text('Bottom ${xAxisConfig.showBottomLabels ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() =>
                       chartConfig = chartConfig.copyWith(highlightMouseColumn: !chartConfig.highlightMouseColumn)),
-                  child: Text('Highlight ${chartConfig.highlightMouseColumn ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
+                  child: Text('Highlight ${chartConfig.highlightMouseColumn ? '✅' : '❌'}',
+                      style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () =>
                       setState(() => chartConfig = chartConfig.copyWith(highlightPoints: !chartConfig.highlightPoints)),
-                  child: Text('H.Points ${chartConfig.highlightPoints ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
+                  child:
+                      Text('H.Points ${chartConfig.highlightPoints ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() => chartConfig =
                       chartConfig.copyWith(highlightPointsVerticalLine: !chartConfig.highlightPointsVerticalLine)),
-                  child: Text('V.Line ${chartConfig.highlightPointsVerticalLine ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
+                  child: Text('V.Line ${chartConfig.highlightPointsVerticalLine ? '✅' : '❌'}',
+                      style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
@@ -420,7 +651,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
                         chartConfig.copyWith(highlightPointsHorizontalLine: !chartConfig.highlightPointsHorizontalLine);
                     setState(() {});
                   },
-                  child: Text('H.Line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
+                  child: Text('H.Line ${chartConfig.highlightPointsHorizontalLine ? '✅' : '❌'}',
+                      style: const TextStyle(fontSize: 10)),
                 ),
                 // ElevatedButton(
                 //   onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
@@ -432,7 +664,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
                   onPressed: () => setState(() => chartConfig = chartConfig.copyWith(
                       centerDataPointBetweenVerticalGrid: !chartConfig.centerDataPointBetweenVerticalGrid)),
-                  child: Text('Center ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}', style: const TextStyle(fontSize: 10)),
+                  child: Text('Center ${chartConfig.centerDataPointBetweenVerticalGrid ? '✅' : '❌'}',
+                      style: const TextStyle(fontSize: 10)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2)),
@@ -486,9 +719,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
     chartColumnBlocks = null;
     xAxisStepLineTopLabelLineChartCallback = null;
     xAxisStepLineBottomLabelLineChartCallback = null;
+    xAxisStepLineSecondTopLabelLineChartCallback = null;
     xAxisStepLineTopLabelBarChartCallback = null;
     xAxisStepLineBottomLabelBarChartCallback = null;
+    xAxisStepLineSecondTopLabelBarChartCallback = null;
     xAxisStepLineBottomSvgBarChartCallback = null;
+    xAxisStepLineBottomWidgetBarChartCallback = null;
     yAxisLabelCount = null;
     linechartDataSeries.clear();
     barchartDataSeries.clear();
@@ -498,7 +734,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateWeatherDualAxisChart() async {
     _resetToDefault();
     chartType = CooChartType.bar; // Switch to bar chart for combo display
-    
+
     // Preload SVG assets for weather icons
     await CooChartPainterUtil.preloadSvgAssets([
       kIconWeatherCloudySvg,
@@ -506,13 +742,13 @@ class _LineChartDemoState extends State<LineChartDemo> {
       kIconWindArrowSvg,
       kIconWindStrongSvg,
     ]);
-    
+
     // Configure left axis for temperature (will be dynamically calculated)
     yAxisConfig = yAxisConfig.copyWith(
       labelPostfix: '°C',
       labelCount: 6,
     );
-    
+
     // Configure right axis for precipitation (will be dynamically calculated)
     yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
       labelPostfix: 'mm',
@@ -521,29 +757,60 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showRightAxis: true,
       showRightLabels: true,
     );
-    
+
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
       showTopLabels: true,
+      showSecondTopLabels: true,
       topDateFormat: 'HH',
-      useSvgLabels: true, // Enable SVG labels for bottom X-axis
+      secondTopDateFormat: 'E', // Show day abbreviation (Mon, Tue, Wed, etc.) for second top labels
+      topLabelSecondTextStyle: const TextStyle(
+        color: Colors.green,
+        fontSize: 10,
+        fontWeight: FontWeight.bold,
+      ),
+      topLabelSecondTextStyleHighlight: const TextStyle(
+        color: Color(0xFF006400),
+        fontSize: 11,
+        fontWeight: FontWeight.bold,
+      ),
+      useSvgLabels: true,
     );
 
     chartConfig = chartConfig.copyWith(
       showGridHorizontal: true,
       showGridVertical: true,
       theme: CooChartThemes().defaultTheme.copyWith(
-        labelColor: Colors.black,
-      ),
+            labelColor: Colors.black,
+          ),
     );
 
     // Generate precipitation BAR data for the bar chart
     barchartDataSeries.clear();
     var precipitationBars = <CooBarChartDataPoint>[];
     var currentTime = DateTime.now().copyWith(hour: 15, minute: 0, second: 0, millisecond: 0);
-    final precipValues = [0, 0, 1, 2, 6, 2, 1, 0, 0, 1, 8, 1, 0, 0, 1, 12, 2, 1]; // Added extreme values: 6mm, 8mm, 12mm
-    
+    final precipValues = [
+      0,
+      0,
+      1,
+      2,
+      6,
+      2,
+      1,
+      0,
+      0,
+      1,
+      8,
+      1,
+      0,
+      0,
+      1,
+      12,
+      2,
+      1
+    ]; // Added extreme values: 6mm, 8mm, 12mm
+
     for (int i = 0; i < precipValues.length; i++) {
       precipitationBars.add(CooBarChartDataPoint(
         value: precipValues[i].toDouble(),
@@ -553,7 +820,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     barchartDataSeries.add(CooBarChartDataSeries(
       dataPoints: precipitationBars,
-      barColor: const Color(0xFF54B9E9).withOpacity(0.7),
+      barColor: const Color(0xFF54B9E9).withValues(alpha: 0.7),
       maxBarWidth: 20,
       opposite: true, // Use the right axis for precipitation bars
     ));
@@ -562,18 +829,18 @@ class _LineChartDemoState extends State<LineChartDemo> {
     linechartDataSeries.clear();
     var temperaturePoints = <CooLineChartDataPoint>[];
     final tempValues = [32, 30, 28, 24, 21, 19, 18, 19, 22, 26, 29, 32, 30, 28, 25, 22, 20, 18];
-    
+
     for (int i = 0; i < tempValues.length; i++) {
       // Choose different weather icons based on temperature and precipitation
       final hasRain = precipValues[i] > 0;
-      
+
       // Show SVG icon at every point
       final DataPointSvgIcon weatherIcon = DataPointSvgIcon(
         assetPath: hasRain ? kIconWeatherRainSvg : kIconWeatherCloudySvg,
         width: 20,
         height: 20,
       );
-      
+
       temperaturePoints.add(CooLineChartDataPoint(
         value: tempValues[i].toDouble(),
         time: currentTime.add(Duration(hours: i * 3)),
@@ -598,14 +865,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
       ),
       dataPointLabelPosition: DataPointLabelPos.top,
     ));
-    
+
     // Configure wind direction arrows as SVG labels for X-axis
     xAxisStepLineBottomLabelBarChartCallback = (index, dataPoints) {
       // This won't be used when useSvgLabels is true, but kept for fallback
       return ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][index % 8];
     };
-    
-    // Set SVG callback for wind direction arrows  
+
+    // Set SVG callback for wind direction arrows
     xAxisStepLineBottomSvgBarChartCallback = (index, dataPoints) {
       // Simulate different wind directions with different icons
       final bool isStrongWind = precipValues[index] > 4; // Strong wind when high precipitation
@@ -616,6 +883,14 @@ class _LineChartDemoState extends State<LineChartDemo> {
         offsetY: 0, // Center vertically
       );
     };
+
+    // Remove custom top label callback - let it use default date formatting
+    // This way we can test if second top labels work with default first top labels
+    xAxisStepLineTopLabelBarChartCallback = null;
+
+    // Set SECOND TOP LABELS callback for wind speed and direction information
+    // Temporarily disabled to test secondTopDateFormat feature
+    xAxisStepLineSecondTopLabelBarChartCallback = null;
   }
 
   _create0To10To0ValuesChartDataPoints() {
@@ -835,7 +1110,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
         minValue: 0,
         maxValue: 1.2,
         time: DateTime(2023, 10, 22),
-        columnBackgroundColor: Colors.grey.withOpacity(0.2)));
+        columnBackgroundColor: Colors.grey.withValues(alpha: 0.2)));
     sonnenscheindauer.add(CooBarChartDataPoint(
       value: 03.3,
       minValue: 0.3,
@@ -919,8 +1194,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     );
     barchartDataSeries.add(serie);
 
-    final bgColor = Colors.grey.withOpacity(0.2);
-    final bgColorBottom = Colors.blue.withOpacity(0.2);
+    final bgColor = Colors.grey.withValues(alpha: 0.2);
+    final bgColorBottom = Colors.blue.withValues(alpha: 0.2);
     const blockTextStyle = TextStyle(color: Colors.green, fontSize: 7);
     final columnTopDatas = List<ChartColumnBlockData>.empty(growable: true);
     columnTopDatas.add(ChartColumnBlockData(
@@ -1001,7 +1276,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
         minValue: 0,
         maxValue: 1.2,
         time: DateTime(2023, 10, 22),
-        columnBackgroundColor: Colors.grey.withOpacity(0.2)));
+        columnBackgroundColor: Colors.grey.withValues(alpha: 0.2)));
     sonnenscheindauer.add(CooBarChartDataPoint(
       value: 03.3,
       minValue: 0.3,
@@ -1087,8 +1362,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
     );
     barchartDataSeries.add(serie);
 
-    final bgColor = Colors.grey.withOpacity(0.2);
-    final bgColorBottom = Colors.blue.withOpacity(0.2);
+    final bgColor = Colors.grey.withValues(alpha: 0.2);
+    final bgColorBottom = Colors.blue.withValues(alpha: 0.2);
     final columnTopDatas = List<ChartColumnBlockData>.empty(growable: true);
     columnTopDatas.add(ChartColumnBlockData(
         text: 'a',
@@ -1498,7 +1773,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     columnBottomDatas.add(ChartColumnBlockData(
       time: DateTime(2023, 4, 9),
       text: 'a',
-      backgroundColor: colorLimitClear.withOpacity(1),
+      backgroundColor: colorLimitClear.withValues(alpha: 1),
       assetImages: [
         const BlockAssetImage(path: kIconWeatherCloudySvg),
         const BlockAssetImage(path: kIconWindOver50Svg, offsetTop: 50),
@@ -1844,12 +2119,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateSimpleLineChart() {
     _resetToDefault();
     chartType = CooChartType.line;
-    
+
     yAxisConfig = yAxisConfig.copyWith(
       labelPostfix: '°C',
       labelCount: 6,
     );
-    
+
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
@@ -1859,8 +2134,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showGridHorizontal: true,
       showGridVertical: true,
       theme: CooChartThemes().defaultTheme.copyWith(
-        labelColor: Colors.black,
-      ),
+            labelColor: Colors.black,
+          ),
     );
 
     // Generate simple temperature line data
@@ -1868,7 +2143,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     var temperaturePoints = <CooLineChartDataPoint>[];
     var currentTime = DateTime.now().copyWith(hour: 6, minute: 0, second: 0, millisecond: 0);
     final tempValues = [12, 14, 16, 18, 22, 24, 26, 25, 23, 20, 18, 15]; // Simple temperature curve
-    
+
     for (int i = 0; i < tempValues.length; i++) {
       temperaturePoints.add(CooLineChartDataPoint(
         value: tempValues[i].toDouble(),
@@ -1894,13 +2169,13 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateSimpleBarChart() {
     _resetToDefault();
     chartType = CooChartType.bar;
-    
+
     yAxisConfig = yAxisConfig.copyWith(
       labelPostfix: 'mm',
       labelCount: 5,
       minLabelValue: 0,
     );
-    
+
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
@@ -1910,8 +2185,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showGridHorizontal: true,
       showGridVertical: true,
       theme: CooChartThemes().defaultTheme.copyWith(
-        labelColor: Colors.black,
-      ),
+            labelColor: Colors.black,
+          ),
     );
 
     // Generate simple precipitation bar data
@@ -1919,7 +2194,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
     var precipitationBars = <CooBarChartDataPoint>[];
     var currentTime = DateTime.now().copyWith(hour: 6, minute: 0, second: 0, millisecond: 0);
     final precipValues = [0, 1, 3, 5, 2, 0, 0, 1, 4, 2, 1, 0]; // Simple precipitation values
-    
+
     for (int i = 0; i < precipValues.length; i++) {
       precipitationBars.add(CooBarChartDataPoint(
         value: precipValues[i].toDouble(),
@@ -1938,13 +2213,13 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateLineBarComboNormalLabels() async {
     _resetToDefault();
     chartType = CooChartType.bar; // Use bar chart with line overlay
-    
+
     // Configure left axis for temperature
     yAxisConfig = yAxisConfig.copyWith(
       labelPostfix: '°C',
       labelCount: 6,
     );
-    
+
     // Configure right axis for precipitation
     yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
       labelPostfix: 'mm',
@@ -1953,7 +2228,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showRightAxis: true,
       showRightLabels: true,
     );
-    
+
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
@@ -1965,8 +2240,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showGridHorizontal: true,
       showGridVertical: true,
       theme: CooChartThemes().defaultTheme.copyWith(
-        labelColor: Colors.black,
-      ),
+            labelColor: Colors.black,
+          ),
     );
 
     // Generate data for both charts
@@ -1977,20 +2252,20 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateLineBarComboSvgXLabels() async {
     _resetToDefault();
     chartType = CooChartType.bar; // Use bar chart with line overlay
-    
+
     // Preload SVG assets for X-axis labels
     await CooChartPainterUtil.preloadSvgAssets([
       kIconWeatherCloudySvg,
       kIconWeatherRainSvg,
       kIconWindArrowSvg,
     ]);
-    
+
     // Configure left axis for temperature
     yAxisConfig = yAxisConfig.copyWith(
       labelPostfix: '°C',
       labelCount: 6,
     );
-    
+
     // Configure right axis for precipitation
     yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
       labelPostfix: 'mm',
@@ -1999,7 +2274,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showRightAxis: true,
       showRightLabels: true,
     );
-    
+
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
@@ -2012,8 +2287,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showGridHorizontal: true,
       showGridVertical: true,
       theme: CooChartThemes().defaultTheme.copyWith(
-        labelColor: Colors.black,
-      ),
+            labelColor: Colors.black,
+          ),
     );
 
     // Set up SVG callback for X-axis
@@ -2035,13 +2310,13 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateLineBarComboNormalDataPoints() async {
     _resetToDefault();
     chartType = CooChartType.bar; // Use bar chart with line overlay
-    
+
     // Configure axes
     yAxisConfig = yAxisConfig.copyWith(
       labelPostfix: '°C',
       labelCount: 6,
     );
-    
+
     yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
       labelPostfix: 'mm',
       labelCount: 5,
@@ -2049,7 +2324,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showRightAxis: true,
       showRightLabels: true,
     );
-    
+
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
@@ -2061,8 +2336,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showGridHorizontal: true,
       showGridVertical: true,
       theme: CooChartThemes().defaultTheme.copyWith(
-        labelColor: Colors.black,
-      ),
+            labelColor: Colors.black,
+          ),
     );
 
     // Generate data for both charts
@@ -2073,7 +2348,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
   _generateLineBarComboSvgDataPoints() async {
     _resetToDefault();
     chartType = CooChartType.bar; // Use bar chart with line overlay
-    
+
     // Preload SVG assets for data point icons
     await CooChartPainterUtil.preloadSvgAssets([
       kIconWeatherCloudySvg,
@@ -2081,13 +2356,13 @@ class _LineChartDemoState extends State<LineChartDemo> {
       kIconWindArrowSvg,
       kIconWindStrongSvg,
     ]);
-    
+
     // Configure axes
     yAxisConfig = yAxisConfig.copyWith(
       labelPostfix: '°C',
       labelCount: 6,
     );
-    
+
     yAxisOppositeConfig = yAxisOppositeConfig.copyWith(
       labelPostfix: 'mm',
       labelCount: 5,
@@ -2095,7 +2370,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showRightAxis: true,
       showRightLabels: true,
     );
-    
+
     xAxisConfig = xAxisConfig.copyWith(
       valueType: XAxisValueType.datetime,
       bottomDateFormat: 'HH',
@@ -2107,8 +2382,8 @@ class _LineChartDemoState extends State<LineChartDemo> {
       showGridHorizontal: true,
       showGridVertical: true,
       theme: CooChartThemes().defaultTheme.copyWith(
-        labelColor: Colors.black,
-      ),
+            labelColor: Colors.black,
+          ),
     );
 
     // Generate data for both charts
@@ -2118,12 +2393,12 @@ class _LineChartDemoState extends State<LineChartDemo> {
   /// Helper function to generate data for combo charts
   _generateComboChartData(bool useSvgXLabels, bool useSvgDataPoints) {
     var currentTime = DateTime.now().copyWith(hour: 15, minute: 0, second: 0, millisecond: 0);
-    
+
     // Generate precipitation BAR data
     barchartDataSeries.clear();
     var precipitationBars = <CooBarChartDataPoint>[];
     final precipValues = [0, 1, 2, 5, 3, 1, 0, 2, 4, 1, 0, 1];
-    
+
     for (int i = 0; i < precipValues.length; i++) {
       precipitationBars.add(CooBarChartDataPoint(
         value: precipValues[i].toDouble(),
@@ -2133,7 +2408,7 @@ class _LineChartDemoState extends State<LineChartDemo> {
 
     barchartDataSeries.add(CooBarChartDataSeries(
       dataPoints: precipitationBars,
-      barColor: Colors.blue.withOpacity(0.7),
+      barColor: Colors.blue.withValues(alpha: 0.7),
       showDataLabels: true,
       opposite: true, // Right axis
     ));
@@ -2148,18 +2423,20 @@ class _LineChartDemoState extends State<LineChartDemo> {
       kIconWindArrowSvg,
       kIconWindStrongSvg,
     ];
-    
+
     for (int i = 0; i < tempValues.length; i++) {
       var dataPoint = CooLineChartDataPoint(
         value: tempValues[i].toDouble(),
         time: currentTime.add(Duration(hours: i * 3)),
-        svgIcon: useSvgDataPoints ? DataPointSvgIcon(
-          assetPath: weatherIcons[i % weatherIcons.length],
-          width: 20,
-          height: 20,
-        ) : null,
+        svgIcon: useSvgDataPoints
+            ? DataPointSvgIcon(
+                assetPath: weatherIcons[i % weatherIcons.length],
+                width: 20,
+                height: 20,
+              )
+            : null,
       );
-      
+
       temperaturePoints.add(dataPoint);
     }
 
@@ -2178,5 +2455,275 @@ class _LineChartDemoState extends State<LineChartDemo> {
     ));
   }
 
-  // === END NEW DEMO FUNCTIONS ===
+  /// Wind Barb demo - shows wind data with custom wind barb widgets as X-axis labels
+  _generateWindBarbChart() async {
+    _resetToDefault();
+    chartType = CooChartType.bar;
+
+    // Configure X-axis for wind data
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.date,
+      bottomDateFormat: 'dd.MM.',
+      showBottomLabels: true,
+    );
+
+    // Configure Y-axis for wind speed
+    yAxisConfig = yAxisConfig.copyWith(
+      labelCount: 8,
+      labelPostfix: ' m/s',
+      maxLabelValue: 25.0,
+      minLabelValue: 0.0,
+    );
+
+    chartConfig = chartConfig.copyWith(
+      showChartBorder: true,
+      showGridHorizontal: true,
+      showGridVertical: true,
+      scrollable: true,
+    );
+
+    // Generate multiple wind speed data series that share the same time points
+    barchartDataSeries.clear();
+
+    // Create 10 time points (days)
+    final int dataSeriesSize = 10;
+
+    // Series 1: Light winds (0-5 m/s) - Light blue bars
+    {
+      List<CooBarChartDataPoint> lightWinds = [];
+      final List<double> values = [1.0, 2.5, 1.5, 3.0, 2.0, 4.0, 3.5, 2.5, 1.0, 4.5];
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        lightWinds.add(CooBarChartDataPoint(
+          value: values[i],
+          time: time,
+        ));
+        time = time.add(const Duration(days: 1));
+      }
+      barchartDataSeries.add(CooBarChartDataSeries(
+        dataPoints: lightWinds,
+        barColor: Colors.lightBlue,
+      ));
+    }
+
+    // Series 2: Moderate winds (5-12 m/s) - Green bars
+    {
+      List<CooBarChartDataPoint> moderateWinds = [];
+      final List<double> values = [6.0, 8.5, 7.0, 9.5, 6.5, 11.0, 8.0, 7.5, 10.0, 9.0];
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        moderateWinds.add(CooBarChartDataPoint(
+          value: values[i],
+          time: time,
+        ));
+        time = time.add(const Duration(days: 1));
+      }
+      barchartDataSeries.add(CooBarChartDataSeries(
+        dataPoints: moderateWinds,
+        barColor: Colors.green,
+      ));
+    }
+
+    // Series 3: Strong winds (12-20 m/s) - Orange bars
+    {
+      List<CooBarChartDataPoint> strongWinds = [];
+      final List<double> values = [13.0, 15.5, 14.0, 17.0, 12.5, 18.5, 16.0, 14.5, 19.0, 15.0];
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        strongWinds.add(CooBarChartDataPoint(
+          value: values[i],
+          time: time,
+        ));
+        time = time.add(const Duration(days: 1));
+      }
+      barchartDataSeries.add(CooBarChartDataSeries(
+        dataPoints: strongWinds,
+        barColor: Colors.orange,
+      ));
+    }
+
+    // Series 4: Very strong winds (20+ m/s) - Red bars
+    {
+      List<CooBarChartDataPoint> veryStrongWinds = [];
+      final List<double> values = [21.0, 23.5, 20.5, 24.0, 22.0, 25.0, 23.0, 21.5, 24.5, 22.5];
+      var time = DateTime.now();
+      for (int i = 0; i < dataSeriesSize; i++) {
+        veryStrongWinds.add(CooBarChartDataPoint(
+          value: values[i],
+          time: time,
+        ));
+        time = time.add(const Duration(days: 1));
+      }
+      barchartDataSeries.add(CooBarChartDataSeries(
+        dataPoints: veryStrongWinds,
+        barColor: Colors.red,
+      ));
+    }
+
+    // Set up wind barb widgets as X-axis labels
+    xAxisStepLineBottomWidgetBarChartCallback = (index, dataPoints) {
+      print('Widget callback called for index: $index');
+
+      if (index < 0 || index >= dataSeriesSize) {
+        print('Returning null for index $index');
+        return null;
+      }
+
+      // Use the highest wind speed from all series for this time point
+      double maxWindSpeed = 0;
+      for (var series in barchartDataSeries) {
+        if (index < series.dataPoints.length) {
+          maxWindSpeed = max(maxWindSpeed, series.dataPoints[index].value ?? 0);
+        }
+      }
+
+      print('Creating wind barb widget for index $index with max speed $maxWindSpeed');
+
+      return XAxisLabelWidget(
+        widget: WindBarbWidget(
+          windSpeed: maxWindSpeed,
+          size: const Size(50, 35),
+          color: Colors.black,
+          strokeWidth: 2.0,
+        ),
+        width: 50.0,
+        height: 35.0,
+        offsetX: 0.0,
+        offsetY: 20.0,
+        rotationDegrees: 0.0,
+      );
+    };
+
+    print('Wind barb chart configured with ${barchartDataSeries.length} series');
+    print('Each series has $dataSeriesSize data points');
+  }
+
+  /// NEW: Demo function for Rain & Snow grouped bars
+  /// Shows precipitation data with rain (dark blue #005288) and snow (light blue #7DBBEA) side by side
+  _generateRainSnowGroupedBarChart() {
+    print('=== Starting Rain/Snow Grouped Bar Chart Demo ===');
+
+    // Clear everything first
+    barchartDataSeries.clear();
+    linechartDataSeries.clear();
+    chartColumnBlocks = null;
+
+    _resetToDefault();
+    chartType = CooChartType.bar;
+    print('Chart type set to: $chartType');
+
+    // Configure Y-axis for precipitation in mm
+    yAxisConfig = yAxisConfig.copyWith(
+      labelCount: 8,
+      labelPostfix: ' mm',
+      minLabelValue: 0,
+      maxLabelValue: 20, // Increased for higher values (up to ~8mm)
+    );
+    print('Y-axis configured: ${yAxisConfig.labelPostfix}');
+
+    // Configure X-axis for time-based data
+    xAxisConfig = xAxisConfig.copyWith(
+      valueType: XAxisValueType.datetime, // Use datetime like other examples
+      showBottomLabels: true,
+      showTopLabels: true,
+      showSecondTopLabels: true,
+      topDateFormat: 'EEE',
+      secondTopDateFormat: 'MMM d', // Custom format for second top labels (e.g., "Oct 22")
+      bottomDateFormat: 'dd.MM',
+      topLabelSecondTextStyle: const TextStyle(
+        color: Color(0xFF7DBBEA),
+        fontSize: 9,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+    print('X-axis configured for datetime type');
+
+    chartConfig = chartConfig.copyWith(
+      showGridHorizontal: true,
+      showGridVertical: true,
+      highlightMouseColumn: true,
+      scrollable: true, // Make it scrollable to see all bars
+      centerDataPointBetweenVerticalGrid: false, // Better spacing
+    );
+
+    // Data already cleared above - no need to clear again
+    print('Data series already cleared');
+
+    // Generate sample rain and snow data for 14 days
+    var precipitationData = <CooBarChartDataPoint>[];
+    var baseTime = DateTime(2023, 10, 22); // Use fixed date like other examples
+
+    // Sample data: Rain and Snow values in mm - More varied examples
+    final rainSnowData = [
+      {'rain': 2.5, 'snow': 1.0}, // Day 1: Both, more rain
+      {'rain': 4.2, 'snow': 0.0}, // Day 2: Only rain
+      {'rain': 0.0, 'snow': 3.5}, // Day 3: Only snow
+      {'rain': 1.8, 'snow': 2.2}, // Day 4: Both, more snow
+      {'rain': 6.1, 'snow': 0.0}, // Day 5: Heavy rain only
+      {'rain': 0.5, 'snow': 4.8}, // Day 6: Light rain, heavy snow
+      {'rain': 3.3, 'snow': 1.5}, // Day 7: Both, more rain
+      {'rain': 0.8, 'snow': 3.2}, // Day 8: Both, more snow
+      {'rain': 5.5, 'snow': 0.0}, // Day 9: Heavy rain only
+      {'rain': 0.0, 'snow': 2.1}, // Day 10: Medium snow only
+      {'rain': 2.9, 'snow': 2.9}, // Day 11: Equal amounts
+      {'rain': 0.0, 'snow': 5.2}, // Day 12: Heavy snow only
+      {'rain': 1.2, 'snow': 0.7}, // Day 13: Both, light amounts
+      {'rain': 7.3, 'snow': 0.0}, // Day 14: Very heavy rain
+    ];
+
+    for (int i = 0; i < rainSnowData.length; i++) {
+      final dayData = rainSnowData[i];
+      final rainValue = dayData['rain']!;
+      final snowValue = dayData['snow']!;
+
+      precipitationData.add(CooBarChartDataPoint(
+        time: baseTime.add(Duration(days: i)),
+        label: 'Tag ${i + 1}',
+        groupedValue: GroupedBarValue(
+          primaryValue: rainValue,
+          secondaryValue: snowValue,
+          primaryColor: const Color(0xFF005288), // Dark blue for rain
+          secondaryColor: const Color(0xFF7DBBEA), // Light blue for snow
+          primaryLabel: 'Regen: ${rainValue.toStringAsFixed(1)}mm',
+          // secondaryLabel: 'Schnee: ${snowValue.toStringAsFixed(1)}mm', // Commented out to test secondTopDateFormat
+        ),
+      ));
+      print(
+          'Added data point ${i + 1}: Rain=${rainValue}mm, Snow=${snowValue}mm, hasGrouped=${precipitationData.last.hasGroupedValues}');
+    }
+    print('Created ${precipitationData.length} data points');
+
+    // Add the series
+    CooBarChartDataSeries series = CooBarChartDataSeries(
+      dataPoints: precipitationData,
+      label: 'Niederschlag',
+      showDataLabels: false, // Will be handled by grouped bars
+      opposite: false,
+      barWidth: 20, // Reduced width to prevent overlap (was 30)
+      maxBarWidth: 25, // Set maximum width limit
+    );
+    barchartDataSeries.add(series);
+    print('Added series with ${series.dataPoints.length} points');
+    print('Total bar chart series: ${barchartDataSeries.length}');
+
+    // Debug: Print all data points
+    for (int i = 0; i < precipitationData.length; i++) {
+      final dp = precipitationData[i];
+      print(
+          'Data Point ${i + 1}: ${dp.label}, hasGrouped: ${dp.hasGroupedValues}, rain: ${dp.groupedValue?.primaryValue}, snow: ${dp.groupedValue?.secondaryValue}');
+    }
+
+    // Optional: Add X-axis labels showing dates
+    xAxisStepLineBottomLabelBarChartCallback = (index, dataPoints) {
+      if (index < dataPoints.length) {
+        final DateTime? time = dataPoints[index].time;
+        if (time != null) {
+          return '${time.day}.${time.month}';
+        }
+      }
+      return 'Tag ${index + 1}';
+    };
+
+    print('=== Rain/Snow Demo Setup Complete ===');
+  }
 }

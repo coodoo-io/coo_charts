@@ -360,8 +360,8 @@ class CooChartPainterUtil {
                 Offset(rectPosX0, rectPosY0 + rectPosY1 / 2),
                 [
                   colorScheme.backgroundColor,
-                  colorScheme.backgroundColor.withOpacity(0.7),
-                  colorScheme.backgroundColor.withOpacity(0),
+                  colorScheme.backgroundColor.withValues(alpha: 0.7),
+                  colorScheme.backgroundColor.withValues(alpha: 0),
                 ],
                 [
                   0.4,
@@ -376,8 +376,8 @@ class CooChartPainterUtil {
                 Offset(rectPosX1, rectPosY0 + rectPosY1),
                 [
                   colorScheme.backgroundColor,
-                  colorScheme.backgroundColor.withOpacity(0.7),
-                  colorScheme.backgroundColor.withOpacity(0),
+                  colorScheme.backgroundColor.withValues(alpha: 0.7),
+                  colorScheme.backgroundColor.withValues(alpha: 0),
                 ],
                 [
                   0.4,

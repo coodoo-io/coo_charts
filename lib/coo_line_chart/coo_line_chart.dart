@@ -2,19 +2,19 @@ import 'dart:ui' as ui;
 
 import 'package:coo_charts/chart_painter/chart_painter_init.dart';
 import 'package:coo_charts/chart_painter/chart_painter_metadata.dart';
+import 'package:coo_charts/chart_painter/coo_chart_painter.dart';
+import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/chart_painter/coo_chart_y_axis_painter.dart';
 import 'package:coo_charts/common/blocks/chart_column_blocks.dart';
 import 'package:coo_charts/common/chart_config.dart';
 import 'package:coo_charts/common/chart_padding.enum.dart';
 import 'package:coo_charts/common/chart_tab_info.dart';
-import 'package:coo_charts/chart_painter/coo_chart_painter.dart';
-import 'package:coo_charts/chart_painter/coo_chart_painter_util.dart';
 import 'package:coo_charts/common/coo_chart_themes.dart';
 import 'package:coo_charts/common/coo_chart_type.enum.dart';
-import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
-import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
 import 'package:coo_charts/common/x_axis_config.dart';
 import 'package:coo_charts/common/y_axis_config.dart';
+import 'package:coo_charts/coo_line_chart/coo_line_chart_data_point.dart';
+import 'package:coo_charts/coo_line_chart/coo_line_chart_data_series.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -34,6 +34,7 @@ class CooLineChart extends StatefulWidget {
     this.onDataPointTab,
     this.xAxisStepLineTopLabelCallback,
     this.xAxisStepLineBottomLabelCallback,
+    this.xAxisStepLineSecondTopLabelCallback,
   });
 
   final List<CooLineChartDataSeries> dataSeries;
@@ -57,6 +58,7 @@ class CooLineChart extends StatefulWidget {
   /// If given every step this callback will be invoekd
   final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineTopLabelCallback;
   final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineBottomLabelCallback;
+  final String Function(int, List<CooLineChartDataPoint>)? xAxisStepLineSecondTopLabelCallback;
 
   @override
   State<CooLineChart> createState() => _CooLineChartState();
@@ -182,6 +184,7 @@ class _CooLineChartState extends State<CooLineChart> {
               onLineChartDataPointTabCallback: widget.onDataPointTab,
               xAxisStepLineTopLabelLineChartCallback: widget.xAxisStepLineTopLabelCallback,
               xAxisStepLineBottomLabelLineChartCallback: widget.xAxisStepLineBottomLabelCallback,
+              xAxisStepLineSecondTopLabelLineChartCallback: widget.xAxisStepLineSecondTopLabelCallback,
             ),
           ),
         ),
