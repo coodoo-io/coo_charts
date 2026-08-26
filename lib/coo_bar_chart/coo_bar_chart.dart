@@ -270,7 +270,7 @@ class _CooBarChartState extends State<CooBarChart> {
 
   void loadColumnDataImageAssets(
     ChartColumnBlocks columnBlocks,
-    final VoidCallback onLoadingFinished,
+    VoidCallback onLoadingFinished,
   ) async {
     if (initialized) {
       return;

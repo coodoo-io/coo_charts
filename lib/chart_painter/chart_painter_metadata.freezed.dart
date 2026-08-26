@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'chart_painter_metadata.dart';
@@ -9,664 +9,375 @@ part of 'chart_painter_metadata.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$ChartPainterMetadata {
-// All sich auf diesem Index befindenden LineChart Datenpunkte
-// Die exakte Punkt (X,Y) eines LineChart DataPoint Objekts müsste man in Verbidung dises Objektes noch in einem
-// eigenen Objekt halten. Dann könnte man auch den nächstgelegenen Punkt zum Maus Pointer herausfinden
-  Map<int, List<CooLineChartDataPoint>> get lineChartDataPointsByColumnIndex => throw _privateConstructorUsedError;
-  Map<int, List<CooBarChartDataPoint>> get barChartDataPointsByColumnIndex =>
-      throw _privateConstructorUsedError; // If there are datapoints wich are marked as opposite this flag will be true
-  bool get hasOpposite => throw _privateConstructorUsedError;
 
-  /// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
-  /// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
-  List<DateTime> get allDateTimeXAxisValues => throw _privateConstructorUsedError;
+ Map<int, List<CooLineChartDataPoint<dynamic>>> get lineChartDataPointsByColumnIndex; Map<int, List<CooBarChartDataPoint<dynamic>>> get barChartDataPointsByColumnIndex; bool get hasOpposite;/// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
+/// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
+ List<DateTime> get allDateTimeXAxisValues;/// Die Werte aller Datenreihen werden hier gehalten. Dabei werden alle gegebenen Datenreihen angesehen und jeder
+/// Wert exakt einmal in diesem Set gespeichrt. So kanne infach über alle vorkommenden Datenwerte iteriert werden.
+ Set<double> get allDataPointValues; double get maxDataPointValue; double get minDataPointValue; int get maxAbsoluteValueCount;/// Y-Achse maximale Label-Wert
+ double get yAxisMaxValue;/// Y-Achse kleinster Label-Wert
+ double get yAxisMinValue;/// Größe des "Pixel-Steps" zwischen zwie y-Achse Labelpunkten
+/// Wird zum Berechnen der Datenpunkte für das malen auf dem Canvas benötigt
+ double get yAxisSteps;/// Layout Attributes
+/// The width and height of the constraints
+ double get layoutWidth; double get layoutHeight;/// The height of the given canvas
+ double get canvasWidth; double get canvasHeight;/// calculated height of painted chart
+ double get chartWidth; double get chartHeight; double get xSegmentWidth; double get xSegementWidthHalf;/// Number of y-axis labels
+ int get yAxisLabelCount;
+/// Create a copy of ChartPainterMetadata
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChartPainterMetadataCopyWith<ChartPainterMetadata> get copyWith => _$ChartPainterMetadataCopyWithImpl<ChartPainterMetadata>(this as ChartPainterMetadata, _$identity);
 
-  /// Die Werte aller Datenreihen werden hier gehalten. Dabei werden alle gegebenen Datenreihen angesehen und jeder
-  /// Wert exakt einmal in diesem Set gespeichrt. So kanne infach über alle vorkommenden Datenwerte iteriert werden.
-  Set<double> get allDataPointValues =>
-      throw _privateConstructorUsedError; // Größter Datenpunktwert aller gegbenen Datenpunkt
-  double get maxDataPointValue =>
-      throw _privateConstructorUsedError; // Kleinster Datenpunktwert aller gegbenen Datenpunkt
-  double get minDataPointValue =>
-      throw _privateConstructorUsedError; // Anzahl aller gegebener Punkt auf dem x-Achsenwert
-  int get maxAbsoluteValueCount => throw _privateConstructorUsedError;
 
-  /// Y-Achse maximale Label-Wert
-  double get yAxisMaxValue => throw _privateConstructorUsedError;
 
-  /// Y-Achse kleinster Label-Wert
-  double get yAxisMinValue => throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChartPainterMetadata&&const DeepCollectionEquality().equals(other.lineChartDataPointsByColumnIndex, lineChartDataPointsByColumnIndex)&&const DeepCollectionEquality().equals(other.barChartDataPointsByColumnIndex, barChartDataPointsByColumnIndex)&&(identical(other.hasOpposite, hasOpposite) || other.hasOpposite == hasOpposite)&&const DeepCollectionEquality().equals(other.allDateTimeXAxisValues, allDateTimeXAxisValues)&&const DeepCollectionEquality().equals(other.allDataPointValues, allDataPointValues)&&(identical(other.maxDataPointValue, maxDataPointValue) || other.maxDataPointValue == maxDataPointValue)&&(identical(other.minDataPointValue, minDataPointValue) || other.minDataPointValue == minDataPointValue)&&(identical(other.maxAbsoluteValueCount, maxAbsoluteValueCount) || other.maxAbsoluteValueCount == maxAbsoluteValueCount)&&(identical(other.yAxisMaxValue, yAxisMaxValue) || other.yAxisMaxValue == yAxisMaxValue)&&(identical(other.yAxisMinValue, yAxisMinValue) || other.yAxisMinValue == yAxisMinValue)&&(identical(other.yAxisSteps, yAxisSteps) || other.yAxisSteps == yAxisSteps)&&(identical(other.layoutWidth, layoutWidth) || other.layoutWidth == layoutWidth)&&(identical(other.layoutHeight, layoutHeight) || other.layoutHeight == layoutHeight)&&(identical(other.canvasWidth, canvasWidth) || other.canvasWidth == canvasWidth)&&(identical(other.canvasHeight, canvasHeight) || other.canvasHeight == canvasHeight)&&(identical(other.chartWidth, chartWidth) || other.chartWidth == chartWidth)&&(identical(other.chartHeight, chartHeight) || other.chartHeight == chartHeight)&&(identical(other.xSegmentWidth, xSegmentWidth) || other.xSegmentWidth == xSegmentWidth)&&(identical(other.xSegementWidthHalf, xSegementWidthHalf) || other.xSegementWidthHalf == xSegementWidthHalf)&&(identical(other.yAxisLabelCount, yAxisLabelCount) || other.yAxisLabelCount == yAxisLabelCount));
+}
 
-  /// Größe des "Pixel-Steps" zwischen zwie y-Achse Labelpunkten
-  /// Wird zum Berechnen der Datenpunkte für das malen auf dem Canvas benötigt
-  double get yAxisSteps => throw _privateConstructorUsedError;
 
-  /// Layout Attributes
-  /// The width and height of the constraints
-  double get layoutWidth => throw _privateConstructorUsedError;
-  double get layoutHeight => throw _privateConstructorUsedError;
+@override
+int get hashCode => Object.hashAll([runtimeType,const DeepCollectionEquality().hash(lineChartDataPointsByColumnIndex),const DeepCollectionEquality().hash(barChartDataPointsByColumnIndex),hasOpposite,const DeepCollectionEquality().hash(allDateTimeXAxisValues),const DeepCollectionEquality().hash(allDataPointValues),maxDataPointValue,minDataPointValue,maxAbsoluteValueCount,yAxisMaxValue,yAxisMinValue,yAxisSteps,layoutWidth,layoutHeight,canvasWidth,canvasHeight,chartWidth,chartHeight,xSegmentWidth,xSegementWidthHalf,yAxisLabelCount]);
 
-  /// The height of the given canvas
-  double get canvasWidth => throw _privateConstructorUsedError;
-  double get canvasHeight => throw _privateConstructorUsedError;
+@override
+String toString() {
+  return 'ChartPainterMetadata(lineChartDataPointsByColumnIndex: $lineChartDataPointsByColumnIndex, barChartDataPointsByColumnIndex: $barChartDataPointsByColumnIndex, hasOpposite: $hasOpposite, allDateTimeXAxisValues: $allDateTimeXAxisValues, allDataPointValues: $allDataPointValues, maxDataPointValue: $maxDataPointValue, minDataPointValue: $minDataPointValue, maxAbsoluteValueCount: $maxAbsoluteValueCount, yAxisMaxValue: $yAxisMaxValue, yAxisMinValue: $yAxisMinValue, yAxisSteps: $yAxisSteps, layoutWidth: $layoutWidth, layoutHeight: $layoutHeight, canvasWidth: $canvasWidth, canvasHeight: $canvasHeight, chartWidth: $chartWidth, chartHeight: $chartHeight, xSegmentWidth: $xSegmentWidth, xSegementWidthHalf: $xSegementWidthHalf, yAxisLabelCount: $yAxisLabelCount)';
+}
 
-  /// calculated height of painted chart
-  double get chartWidth => throw _privateConstructorUsedError;
-  double get chartHeight => throw _privateConstructorUsedError; // Abstand zwischen zwei Datenpunkte auf der X-Achse
-  double get xSegmentWidth =>
-      throw _privateConstructorUsedError; // Hilfsvariable zu xSegmentWidth, damit sie nicht jedesmal berechnet werden muss
-  double get xSegementWidthHalf => throw _privateConstructorUsedError;
 
-  /// Number of y-axis labels
-  int get yAxisLabelCount => throw _privateConstructorUsedError;
-
-  /// Create a copy of ChartPainterMetadata
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $ChartPainterMetadataCopyWith<ChartPainterMetadata> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $ChartPainterMetadataCopyWith<$Res> {
-  factory $ChartPainterMetadataCopyWith(ChartPainterMetadata value, $Res Function(ChartPainterMetadata) then) =
-      _$ChartPainterMetadataCopyWithImpl<$Res, ChartPainterMetadata>;
-  @useResult
-  $Res call(
-      {Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex,
-      Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex,
-      bool hasOpposite,
-      List<DateTime> allDateTimeXAxisValues,
-      Set<double> allDataPointValues,
-      double maxDataPointValue,
-      double minDataPointValue,
-      int maxAbsoluteValueCount,
-      double yAxisMaxValue,
-      double yAxisMinValue,
-      double yAxisSteps,
-      double layoutWidth,
-      double layoutHeight,
-      double canvasWidth,
-      double canvasHeight,
-      double chartWidth,
-      double chartHeight,
-      double xSegmentWidth,
-      double xSegementWidthHalf,
-      int yAxisLabelCount});
-}
+abstract mixin class $ChartPainterMetadataCopyWith<$Res>  {
+  factory $ChartPainterMetadataCopyWith(ChartPainterMetadata value, $Res Function(ChartPainterMetadata) _then) = _$ChartPainterMetadataCopyWithImpl;
+@useResult
+$Res call({
+ Map<int, List<CooLineChartDataPoint<dynamic>>> lineChartDataPointsByColumnIndex, Map<int, List<CooBarChartDataPoint<dynamic>>> barChartDataPointsByColumnIndex, bool hasOpposite, List<DateTime> allDateTimeXAxisValues, Set<double> allDataPointValues, double maxDataPointValue, double minDataPointValue, int maxAbsoluteValueCount, double yAxisMaxValue, double yAxisMinValue, double yAxisSteps, double layoutWidth, double layoutHeight, double canvasWidth, double canvasHeight, double chartWidth, double chartHeight, double xSegmentWidth, double xSegementWidthHalf, int yAxisLabelCount
+});
 
+
+
+
+}
 /// @nodoc
-class _$ChartPainterMetadataCopyWithImpl<$Res, $Val extends ChartPainterMetadata>
+class _$ChartPainterMetadataCopyWithImpl<$Res>
     implements $ChartPainterMetadataCopyWith<$Res> {
-  _$ChartPainterMetadataCopyWithImpl(this._value, this._then);
+  _$ChartPainterMetadataCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final ChartPainterMetadata _self;
+  final $Res Function(ChartPainterMetadata) _then;
 
-  /// Create a copy of ChartPainterMetadata
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? lineChartDataPointsByColumnIndex = null,
-    Object? barChartDataPointsByColumnIndex = null,
-    Object? hasOpposite = null,
-    Object? allDateTimeXAxisValues = null,
-    Object? allDataPointValues = null,
-    Object? maxDataPointValue = null,
-    Object? minDataPointValue = null,
-    Object? maxAbsoluteValueCount = null,
-    Object? yAxisMaxValue = null,
-    Object? yAxisMinValue = null,
-    Object? yAxisSteps = null,
-    Object? layoutWidth = null,
-    Object? layoutHeight = null,
-    Object? canvasWidth = null,
-    Object? canvasHeight = null,
-    Object? chartWidth = null,
-    Object? chartHeight = null,
-    Object? xSegmentWidth = null,
-    Object? xSegementWidthHalf = null,
-    Object? yAxisLabelCount = null,
-  }) {
-    return _then(_value.copyWith(
-      lineChartDataPointsByColumnIndex: null == lineChartDataPointsByColumnIndex
-          ? _value.lineChartDataPointsByColumnIndex
-          : lineChartDataPointsByColumnIndex // ignore: cast_nullable_to_non_nullable
-              as Map<int, List<CooLineChartDataPoint>>,
-      barChartDataPointsByColumnIndex: null == barChartDataPointsByColumnIndex
-          ? _value.barChartDataPointsByColumnIndex
-          : barChartDataPointsByColumnIndex // ignore: cast_nullable_to_non_nullable
-              as Map<int, List<CooBarChartDataPoint>>,
-      hasOpposite: null == hasOpposite
-          ? _value.hasOpposite
-          : hasOpposite // ignore: cast_nullable_to_non_nullable
-              as bool,
-      allDateTimeXAxisValues: null == allDateTimeXAxisValues
-          ? _value.allDateTimeXAxisValues
-          : allDateTimeXAxisValues // ignore: cast_nullable_to_non_nullable
-              as List<DateTime>,
-      allDataPointValues: null == allDataPointValues
-          ? _value.allDataPointValues
-          : allDataPointValues // ignore: cast_nullable_to_non_nullable
-              as Set<double>,
-      maxDataPointValue: null == maxDataPointValue
-          ? _value.maxDataPointValue
-          : maxDataPointValue // ignore: cast_nullable_to_non_nullable
-              as double,
-      minDataPointValue: null == minDataPointValue
-          ? _value.minDataPointValue
-          : minDataPointValue // ignore: cast_nullable_to_non_nullable
-              as double,
-      maxAbsoluteValueCount: null == maxAbsoluteValueCount
-          ? _value.maxAbsoluteValueCount
-          : maxAbsoluteValueCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      yAxisMaxValue: null == yAxisMaxValue
-          ? _value.yAxisMaxValue
-          : yAxisMaxValue // ignore: cast_nullable_to_non_nullable
-              as double,
-      yAxisMinValue: null == yAxisMinValue
-          ? _value.yAxisMinValue
-          : yAxisMinValue // ignore: cast_nullable_to_non_nullable
-              as double,
-      yAxisSteps: null == yAxisSteps
-          ? _value.yAxisSteps
-          : yAxisSteps // ignore: cast_nullable_to_non_nullable
-              as double,
-      layoutWidth: null == layoutWidth
-          ? _value.layoutWidth
-          : layoutWidth // ignore: cast_nullable_to_non_nullable
-              as double,
-      layoutHeight: null == layoutHeight
-          ? _value.layoutHeight
-          : layoutHeight // ignore: cast_nullable_to_non_nullable
-              as double,
-      canvasWidth: null == canvasWidth
-          ? _value.canvasWidth
-          : canvasWidth // ignore: cast_nullable_to_non_nullable
-              as double,
-      canvasHeight: null == canvasHeight
-          ? _value.canvasHeight
-          : canvasHeight // ignore: cast_nullable_to_non_nullable
-              as double,
-      chartWidth: null == chartWidth
-          ? _value.chartWidth
-          : chartWidth // ignore: cast_nullable_to_non_nullable
-              as double,
-      chartHeight: null == chartHeight
-          ? _value.chartHeight
-          : chartHeight // ignore: cast_nullable_to_non_nullable
-              as double,
-      xSegmentWidth: null == xSegmentWidth
-          ? _value.xSegmentWidth
-          : xSegmentWidth // ignore: cast_nullable_to_non_nullable
-              as double,
-      xSegementWidthHalf: null == xSegementWidthHalf
-          ? _value.xSegementWidthHalf
-          : xSegementWidthHalf // ignore: cast_nullable_to_non_nullable
-              as double,
-      yAxisLabelCount: null == yAxisLabelCount
-          ? _value.yAxisLabelCount
-          : yAxisLabelCount // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
-  }
+/// Create a copy of ChartPainterMetadata
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? lineChartDataPointsByColumnIndex = null,Object? barChartDataPointsByColumnIndex = null,Object? hasOpposite = null,Object? allDateTimeXAxisValues = null,Object? allDataPointValues = null,Object? maxDataPointValue = null,Object? minDataPointValue = null,Object? maxAbsoluteValueCount = null,Object? yAxisMaxValue = null,Object? yAxisMinValue = null,Object? yAxisSteps = null,Object? layoutWidth = null,Object? layoutHeight = null,Object? canvasWidth = null,Object? canvasHeight = null,Object? chartWidth = null,Object? chartHeight = null,Object? xSegmentWidth = null,Object? xSegementWidthHalf = null,Object? yAxisLabelCount = null,}) {
+  return _then(ChartPainterMetadata(
+lineChartDataPointsByColumnIndex: null == lineChartDataPointsByColumnIndex ? _self.lineChartDataPointsByColumnIndex : lineChartDataPointsByColumnIndex // ignore: cast_nullable_to_non_nullable
+as Map<int, List<CooLineChartDataPoint<dynamic>>>,barChartDataPointsByColumnIndex: null == barChartDataPointsByColumnIndex ? _self.barChartDataPointsByColumnIndex : barChartDataPointsByColumnIndex // ignore: cast_nullable_to_non_nullable
+as Map<int, List<CooBarChartDataPoint<dynamic>>>,hasOpposite: null == hasOpposite ? _self.hasOpposite : hasOpposite // ignore: cast_nullable_to_non_nullable
+as bool,allDateTimeXAxisValues: null == allDateTimeXAxisValues ? _self.allDateTimeXAxisValues : allDateTimeXAxisValues // ignore: cast_nullable_to_non_nullable
+as List<DateTime>,allDataPointValues: null == allDataPointValues ? _self.allDataPointValues : allDataPointValues // ignore: cast_nullable_to_non_nullable
+as Set<double>,maxDataPointValue: null == maxDataPointValue ? _self.maxDataPointValue : maxDataPointValue // ignore: cast_nullable_to_non_nullable
+as double,minDataPointValue: null == minDataPointValue ? _self.minDataPointValue : minDataPointValue // ignore: cast_nullable_to_non_nullable
+as double,maxAbsoluteValueCount: null == maxAbsoluteValueCount ? _self.maxAbsoluteValueCount : maxAbsoluteValueCount // ignore: cast_nullable_to_non_nullable
+as int,yAxisMaxValue: null == yAxisMaxValue ? _self.yAxisMaxValue : yAxisMaxValue // ignore: cast_nullable_to_non_nullable
+as double,yAxisMinValue: null == yAxisMinValue ? _self.yAxisMinValue : yAxisMinValue // ignore: cast_nullable_to_non_nullable
+as double,yAxisSteps: null == yAxisSteps ? _self.yAxisSteps : yAxisSteps // ignore: cast_nullable_to_non_nullable
+as double,layoutWidth: null == layoutWidth ? _self.layoutWidth : layoutWidth // ignore: cast_nullable_to_non_nullable
+as double,layoutHeight: null == layoutHeight ? _self.layoutHeight : layoutHeight // ignore: cast_nullable_to_non_nullable
+as double,canvasWidth: null == canvasWidth ? _self.canvasWidth : canvasWidth // ignore: cast_nullable_to_non_nullable
+as double,canvasHeight: null == canvasHeight ? _self.canvasHeight : canvasHeight // ignore: cast_nullable_to_non_nullable
+as double,chartWidth: null == chartWidth ? _self.chartWidth : chartWidth // ignore: cast_nullable_to_non_nullable
+as double,chartHeight: null == chartHeight ? _self.chartHeight : chartHeight // ignore: cast_nullable_to_non_nullable
+as double,xSegmentWidth: null == xSegmentWidth ? _self.xSegmentWidth : xSegmentWidth // ignore: cast_nullable_to_non_nullable
+as double,xSegementWidthHalf: null == xSegementWidthHalf ? _self.xSegementWidthHalf : xSegementWidthHalf // ignore: cast_nullable_to_non_nullable
+as double,yAxisLabelCount: null == yAxisLabelCount ? _self.yAxisLabelCount : yAxisLabelCount // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
 }
 
-/// @nodoc
-abstract class _$$ChartPainterMetadataImplCopyWith<$Res> implements $ChartPainterMetadataCopyWith<$Res> {
-  factory _$$ChartPainterMetadataImplCopyWith(
-          _$ChartPainterMetadataImpl value, $Res Function(_$ChartPainterMetadataImpl) then) =
-      __$$ChartPainterMetadataImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex,
-      Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex,
-      bool hasOpposite,
-      List<DateTime> allDateTimeXAxisValues,
-      Set<double> allDataPointValues,
-      double maxDataPointValue,
-      double minDataPointValue,
-      int maxAbsoluteValueCount,
-      double yAxisMaxValue,
-      double yAxisMinValue,
-      double yAxisSteps,
-      double layoutWidth,
-      double layoutHeight,
-      double canvasWidth,
-      double canvasHeight,
-      double chartWidth,
-      double chartHeight,
-      double xSegmentWidth,
-      double xSegementWidthHalf,
-      int yAxisLabelCount});
 }
 
-/// @nodoc
-class __$$ChartPainterMetadataImplCopyWithImpl<$Res>
-    extends _$ChartPainterMetadataCopyWithImpl<$Res, _$ChartPainterMetadataImpl>
-    implements _$$ChartPainterMetadataImplCopyWith<$Res> {
-  __$$ChartPainterMetadataImplCopyWithImpl(
-      _$ChartPainterMetadataImpl _value, $Res Function(_$ChartPainterMetadataImpl) _then)
-      : super(_value, _then);
 
-  /// Create a copy of ChartPainterMetadata
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? lineChartDataPointsByColumnIndex = null,
-    Object? barChartDataPointsByColumnIndex = null,
-    Object? hasOpposite = null,
-    Object? allDateTimeXAxisValues = null,
-    Object? allDataPointValues = null,
-    Object? maxDataPointValue = null,
-    Object? minDataPointValue = null,
-    Object? maxAbsoluteValueCount = null,
-    Object? yAxisMaxValue = null,
-    Object? yAxisMinValue = null,
-    Object? yAxisSteps = null,
-    Object? layoutWidth = null,
-    Object? layoutHeight = null,
-    Object? canvasWidth = null,
-    Object? canvasHeight = null,
-    Object? chartWidth = null,
-    Object? chartHeight = null,
-    Object? xSegmentWidth = null,
-    Object? xSegementWidthHalf = null,
-    Object? yAxisLabelCount = null,
-  }) {
-    return _then(_$ChartPainterMetadataImpl(
-      lineChartDataPointsByColumnIndex: null == lineChartDataPointsByColumnIndex
-          ? _value._lineChartDataPointsByColumnIndex
-          : lineChartDataPointsByColumnIndex // ignore: cast_nullable_to_non_nullable
-              as Map<int, List<CooLineChartDataPoint>>,
-      barChartDataPointsByColumnIndex: null == barChartDataPointsByColumnIndex
-          ? _value._barChartDataPointsByColumnIndex
-          : barChartDataPointsByColumnIndex // ignore: cast_nullable_to_non_nullable
-              as Map<int, List<CooBarChartDataPoint>>,
-      hasOpposite: null == hasOpposite
-          ? _value.hasOpposite
-          : hasOpposite // ignore: cast_nullable_to_non_nullable
-              as bool,
-      allDateTimeXAxisValues: null == allDateTimeXAxisValues
-          ? _value._allDateTimeXAxisValues
-          : allDateTimeXAxisValues // ignore: cast_nullable_to_non_nullable
-              as List<DateTime>,
-      allDataPointValues: null == allDataPointValues
-          ? _value._allDataPointValues
-          : allDataPointValues // ignore: cast_nullable_to_non_nullable
-              as Set<double>,
-      maxDataPointValue: null == maxDataPointValue
-          ? _value.maxDataPointValue
-          : maxDataPointValue // ignore: cast_nullable_to_non_nullable
-              as double,
-      minDataPointValue: null == minDataPointValue
-          ? _value.minDataPointValue
-          : minDataPointValue // ignore: cast_nullable_to_non_nullable
-              as double,
-      maxAbsoluteValueCount: null == maxAbsoluteValueCount
-          ? _value.maxAbsoluteValueCount
-          : maxAbsoluteValueCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      yAxisMaxValue: null == yAxisMaxValue
-          ? _value.yAxisMaxValue
-          : yAxisMaxValue // ignore: cast_nullable_to_non_nullable
-              as double,
-      yAxisMinValue: null == yAxisMinValue
-          ? _value.yAxisMinValue
-          : yAxisMinValue // ignore: cast_nullable_to_non_nullable
-              as double,
-      yAxisSteps: null == yAxisSteps
-          ? _value.yAxisSteps
-          : yAxisSteps // ignore: cast_nullable_to_non_nullable
-              as double,
-      layoutWidth: null == layoutWidth
-          ? _value.layoutWidth
-          : layoutWidth // ignore: cast_nullable_to_non_nullable
-              as double,
-      layoutHeight: null == layoutHeight
-          ? _value.layoutHeight
-          : layoutHeight // ignore: cast_nullable_to_non_nullable
-              as double,
-      canvasWidth: null == canvasWidth
-          ? _value.canvasWidth
-          : canvasWidth // ignore: cast_nullable_to_non_nullable
-              as double,
-      canvasHeight: null == canvasHeight
-          ? _value.canvasHeight
-          : canvasHeight // ignore: cast_nullable_to_non_nullable
-              as double,
-      chartWidth: null == chartWidth
-          ? _value.chartWidth
-          : chartWidth // ignore: cast_nullable_to_non_nullable
-              as double,
-      chartHeight: null == chartHeight
-          ? _value.chartHeight
-          : chartHeight // ignore: cast_nullable_to_non_nullable
-              as double,
-      xSegmentWidth: null == xSegmentWidth
-          ? _value.xSegmentWidth
-          : xSegmentWidth // ignore: cast_nullable_to_non_nullable
-              as double,
-      xSegementWidthHalf: null == xSegementWidthHalf
-          ? _value.xSegementWidthHalf
-          : xSegementWidthHalf // ignore: cast_nullable_to_non_nullable
-              as double,
-      yAxisLabelCount: null == yAxisLabelCount
-          ? _value.yAxisLabelCount
-          : yAxisLabelCount // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
-  }
+/// Adds pattern-matching-related methods to [ChartPainterMetadata].
+extension ChartPainterMetadataPatterns on ChartPainterMetadata {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ChartPainterMetadata value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ChartPainterMetadata() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ChartPainterMetadata value)  $default,){
+final _that = this;
+switch (_that) {
+case _ChartPainterMetadata():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ChartPainterMetadata value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ChartPainterMetadata() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Map<int, List<CooLineChartDataPoint<dynamic>>> lineChartDataPointsByColumnIndex,  Map<int, List<CooBarChartDataPoint<dynamic>>> barChartDataPointsByColumnIndex,  bool hasOpposite,  List<DateTime> allDateTimeXAxisValues,  Set<double> allDataPointValues,  double maxDataPointValue,  double minDataPointValue,  int maxAbsoluteValueCount,  double yAxisMaxValue,  double yAxisMinValue,  double yAxisSteps,  double layoutWidth,  double layoutHeight,  double canvasWidth,  double canvasHeight,  double chartWidth,  double chartHeight,  double xSegmentWidth,  double xSegementWidthHalf,  int yAxisLabelCount)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ChartPainterMetadata() when $default != null:
+return $default(_that.lineChartDataPointsByColumnIndex,_that.barChartDataPointsByColumnIndex,_that.hasOpposite,_that.allDateTimeXAxisValues,_that.allDataPointValues,_that.maxDataPointValue,_that.minDataPointValue,_that.maxAbsoluteValueCount,_that.yAxisMaxValue,_that.yAxisMinValue,_that.yAxisSteps,_that.layoutWidth,_that.layoutHeight,_that.canvasWidth,_that.canvasHeight,_that.chartWidth,_that.chartHeight,_that.xSegmentWidth,_that.xSegementWidthHalf,_that.yAxisLabelCount);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Map<int, List<CooLineChartDataPoint<dynamic>>> lineChartDataPointsByColumnIndex,  Map<int, List<CooBarChartDataPoint<dynamic>>> barChartDataPointsByColumnIndex,  bool hasOpposite,  List<DateTime> allDateTimeXAxisValues,  Set<double> allDataPointValues,  double maxDataPointValue,  double minDataPointValue,  int maxAbsoluteValueCount,  double yAxisMaxValue,  double yAxisMinValue,  double yAxisSteps,  double layoutWidth,  double layoutHeight,  double canvasWidth,  double canvasHeight,  double chartWidth,  double chartHeight,  double xSegmentWidth,  double xSegementWidthHalf,  int yAxisLabelCount)  $default,) {final _that = this;
+switch (_that) {
+case _ChartPainterMetadata():
+return $default(_that.lineChartDataPointsByColumnIndex,_that.barChartDataPointsByColumnIndex,_that.hasOpposite,_that.allDateTimeXAxisValues,_that.allDataPointValues,_that.maxDataPointValue,_that.minDataPointValue,_that.maxAbsoluteValueCount,_that.yAxisMaxValue,_that.yAxisMinValue,_that.yAxisSteps,_that.layoutWidth,_that.layoutHeight,_that.canvasWidth,_that.canvasHeight,_that.chartWidth,_that.chartHeight,_that.xSegmentWidth,_that.xSegementWidthHalf,_that.yAxisLabelCount);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Map<int, List<CooLineChartDataPoint<dynamic>>> lineChartDataPointsByColumnIndex,  Map<int, List<CooBarChartDataPoint<dynamic>>> barChartDataPointsByColumnIndex,  bool hasOpposite,  List<DateTime> allDateTimeXAxisValues,  Set<double> allDataPointValues,  double maxDataPointValue,  double minDataPointValue,  int maxAbsoluteValueCount,  double yAxisMaxValue,  double yAxisMinValue,  double yAxisSteps,  double layoutWidth,  double layoutHeight,  double canvasWidth,  double canvasHeight,  double chartWidth,  double chartHeight,  double xSegmentWidth,  double xSegementWidthHalf,  int yAxisLabelCount)?  $default,) {final _that = this;
+switch (_that) {
+case _ChartPainterMetadata() when $default != null:
+return $default(_that.lineChartDataPointsByColumnIndex,_that.barChartDataPointsByColumnIndex,_that.hasOpposite,_that.allDateTimeXAxisValues,_that.allDataPointValues,_that.maxDataPointValue,_that.minDataPointValue,_that.maxAbsoluteValueCount,_that.yAxisMaxValue,_that.yAxisMinValue,_that.yAxisSteps,_that.layoutWidth,_that.layoutHeight,_that.canvasWidth,_that.canvasHeight,_that.chartWidth,_that.chartHeight,_that.xSegmentWidth,_that.xSegementWidthHalf,_that.yAxisLabelCount);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
 
-class _$ChartPainterMetadataImpl implements _ChartPainterMetadata {
-  const _$ChartPainterMetadataImpl(
-      {required final Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex,
-      required final Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex,
-      required this.hasOpposite,
-      required final List<DateTime> allDateTimeXAxisValues,
-      required final Set<double> allDataPointValues,
-      required this.maxDataPointValue,
-      required this.minDataPointValue,
-      required this.maxAbsoluteValueCount,
-      required this.yAxisMaxValue,
-      required this.yAxisMinValue,
-      required this.yAxisSteps,
-      required this.layoutWidth,
-      required this.layoutHeight,
-      required this.canvasWidth,
-      required this.canvasHeight,
-      required this.chartWidth,
-      required this.chartHeight,
-      required this.xSegmentWidth,
-      required this.xSegementWidthHalf,
-      required this.yAxisLabelCount})
-      : _lineChartDataPointsByColumnIndex = lineChartDataPointsByColumnIndex,
-        _barChartDataPointsByColumnIndex = barChartDataPointsByColumnIndex,
-        _allDateTimeXAxisValues = allDateTimeXAxisValues,
-        _allDataPointValues = allDataPointValues;
 
-// All sich auf diesem Index befindenden LineChart Datenpunkte
-// Die exakte Punkt (X,Y) eines LineChart DataPoint Objekts müsste man in Verbidung dises Objektes noch in einem
-// eigenen Objekt halten. Dann könnte man auch den nächstgelegenen Punkt zum Maus Pointer herausfinden
-  final Map<int, List<CooLineChartDataPoint>> _lineChartDataPointsByColumnIndex;
-// All sich auf diesem Index befindenden LineChart Datenpunkte
-// Die exakte Punkt (X,Y) eines LineChart DataPoint Objekts müsste man in Verbidung dises Objektes noch in einem
-// eigenen Objekt halten. Dann könnte man auch den nächstgelegenen Punkt zum Maus Pointer herausfinden
-  @override
-  Map<int, List<CooLineChartDataPoint>> get lineChartDataPointsByColumnIndex {
-    if (_lineChartDataPointsByColumnIndex is EqualUnmodifiableMapView) return _lineChartDataPointsByColumnIndex;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_lineChartDataPointsByColumnIndex);
-  }
+class _ChartPainterMetadata implements ChartPainterMetadata {
+  const _ChartPainterMetadata({required  Map<int, List<CooLineChartDataPoint<dynamic>>> lineChartDataPointsByColumnIndex, required  Map<int, List<CooBarChartDataPoint<dynamic>>> barChartDataPointsByColumnIndex, required this.hasOpposite, required  List<DateTime> allDateTimeXAxisValues, required  Set<double> allDataPointValues, required this.maxDataPointValue, required this.minDataPointValue, required this.maxAbsoluteValueCount, required this.yAxisMaxValue, required this.yAxisMinValue, required this.yAxisSteps, required this.layoutWidth, required this.layoutHeight, required this.canvasWidth, required this.canvasHeight, required this.chartWidth, required this.chartHeight, required this.xSegmentWidth, required this.xSegementWidthHalf, required this.yAxisLabelCount}): _lineChartDataPointsByColumnIndex = lineChartDataPointsByColumnIndex,_barChartDataPointsByColumnIndex = barChartDataPointsByColumnIndex,_allDateTimeXAxisValues = allDateTimeXAxisValues,_allDataPointValues = allDataPointValues;
+  
 
-  final Map<int, List<CooBarChartDataPoint>> _barChartDataPointsByColumnIndex;
-  @override
-  Map<int, List<CooBarChartDataPoint>> get barChartDataPointsByColumnIndex {
-    if (_barChartDataPointsByColumnIndex is EqualUnmodifiableMapView) return _barChartDataPointsByColumnIndex;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_barChartDataPointsByColumnIndex);
-  }
-
-// If there are datapoints wich are marked as opposite this flag will be true
-  @override
-  final bool hasOpposite;
-
-  /// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
-  /// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
-  final List<DateTime> _allDateTimeXAxisValues;
-
-  /// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
-  /// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
-  @override
-  List<DateTime> get allDateTimeXAxisValues {
-    if (_allDateTimeXAxisValues is EqualUnmodifiableListView) return _allDateTimeXAxisValues;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_allDateTimeXAxisValues);
-  }
-
-  /// Die Werte aller Datenreihen werden hier gehalten. Dabei werden alle gegebenen Datenreihen angesehen und jeder
-  /// Wert exakt einmal in diesem Set gespeichrt. So kanne infach über alle vorkommenden Datenwerte iteriert werden.
-  final Set<double> _allDataPointValues;
-
-  /// Die Werte aller Datenreihen werden hier gehalten. Dabei werden alle gegebenen Datenreihen angesehen und jeder
-  /// Wert exakt einmal in diesem Set gespeichrt. So kanne infach über alle vorkommenden Datenwerte iteriert werden.
-  @override
-  Set<double> get allDataPointValues {
-    if (_allDataPointValues is EqualUnmodifiableSetView) return _allDataPointValues;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableSetView(_allDataPointValues);
-  }
-
-// Größter Datenpunktwert aller gegbenen Datenpunkt
-  @override
-  final double maxDataPointValue;
-// Kleinster Datenpunktwert aller gegbenen Datenpunkt
-  @override
-  final double minDataPointValue;
-// Anzahl aller gegebener Punkt auf dem x-Achsenwert
-  @override
-  final int maxAbsoluteValueCount;
-
-  /// Y-Achse maximale Label-Wert
-  @override
-  final double yAxisMaxValue;
-
-  /// Y-Achse kleinster Label-Wert
-  @override
-  final double yAxisMinValue;
-
-  /// Größe des "Pixel-Steps" zwischen zwie y-Achse Labelpunkten
-  /// Wird zum Berechnen der Datenpunkte für das malen auf dem Canvas benötigt
-  @override
-  final double yAxisSteps;
-
-  /// Layout Attributes
-  /// The width and height of the constraints
-  @override
-  final double layoutWidth;
-  @override
-  final double layoutHeight;
-
-  /// The height of the given canvas
-  @override
-  final double canvasWidth;
-  @override
-  final double canvasHeight;
-
-  /// calculated height of painted chart
-  @override
-  final double chartWidth;
-  @override
-  final double chartHeight;
-// Abstand zwischen zwei Datenpunkte auf der X-Achse
-  @override
-  final double xSegmentWidth;
-// Hilfsvariable zu xSegmentWidth, damit sie nicht jedesmal berechnet werden muss
-  @override
-  final double xSegementWidthHalf;
-
-  /// Number of y-axis labels
-  @override
-  final int yAxisLabelCount;
-
-  @override
-  String toString() {
-    return 'ChartPainterMetadata(lineChartDataPointsByColumnIndex: $lineChartDataPointsByColumnIndex, barChartDataPointsByColumnIndex: $barChartDataPointsByColumnIndex, hasOpposite: $hasOpposite, allDateTimeXAxisValues: $allDateTimeXAxisValues, allDataPointValues: $allDataPointValues, maxDataPointValue: $maxDataPointValue, minDataPointValue: $minDataPointValue, maxAbsoluteValueCount: $maxAbsoluteValueCount, yAxisMaxValue: $yAxisMaxValue, yAxisMinValue: $yAxisMinValue, yAxisSteps: $yAxisSteps, layoutWidth: $layoutWidth, layoutHeight: $layoutHeight, canvasWidth: $canvasWidth, canvasHeight: $canvasHeight, chartWidth: $chartWidth, chartHeight: $chartHeight, xSegmentWidth: $xSegmentWidth, xSegementWidthHalf: $xSegementWidthHalf, yAxisLabelCount: $yAxisLabelCount)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ChartPainterMetadataImpl &&
-            const DeepCollectionEquality()
-                .equals(other._lineChartDataPointsByColumnIndex, _lineChartDataPointsByColumnIndex) &&
-            const DeepCollectionEquality()
-                .equals(other._barChartDataPointsByColumnIndex, _barChartDataPointsByColumnIndex) &&
-            (identical(other.hasOpposite, hasOpposite) || other.hasOpposite == hasOpposite) &&
-            const DeepCollectionEquality().equals(other._allDateTimeXAxisValues, _allDateTimeXAxisValues) &&
-            const DeepCollectionEquality().equals(other._allDataPointValues, _allDataPointValues) &&
-            (identical(other.maxDataPointValue, maxDataPointValue) || other.maxDataPointValue == maxDataPointValue) &&
-            (identical(other.minDataPointValue, minDataPointValue) || other.minDataPointValue == minDataPointValue) &&
-            (identical(other.maxAbsoluteValueCount, maxAbsoluteValueCount) ||
-                other.maxAbsoluteValueCount == maxAbsoluteValueCount) &&
-            (identical(other.yAxisMaxValue, yAxisMaxValue) || other.yAxisMaxValue == yAxisMaxValue) &&
-            (identical(other.yAxisMinValue, yAxisMinValue) || other.yAxisMinValue == yAxisMinValue) &&
-            (identical(other.yAxisSteps, yAxisSteps) || other.yAxisSteps == yAxisSteps) &&
-            (identical(other.layoutWidth, layoutWidth) || other.layoutWidth == layoutWidth) &&
-            (identical(other.layoutHeight, layoutHeight) || other.layoutHeight == layoutHeight) &&
-            (identical(other.canvasWidth, canvasWidth) || other.canvasWidth == canvasWidth) &&
-            (identical(other.canvasHeight, canvasHeight) || other.canvasHeight == canvasHeight) &&
-            (identical(other.chartWidth, chartWidth) || other.chartWidth == chartWidth) &&
-            (identical(other.chartHeight, chartHeight) || other.chartHeight == chartHeight) &&
-            (identical(other.xSegmentWidth, xSegmentWidth) || other.xSegmentWidth == xSegmentWidth) &&
-            (identical(other.xSegementWidthHalf, xSegementWidthHalf) ||
-                other.xSegementWidthHalf == xSegementWidthHalf) &&
-            (identical(other.yAxisLabelCount, yAxisLabelCount) || other.yAxisLabelCount == yAxisLabelCount));
-  }
-
-  @override
-  int get hashCode => Object.hashAll([
-        runtimeType,
-        const DeepCollectionEquality().hash(_lineChartDataPointsByColumnIndex),
-        const DeepCollectionEquality().hash(_barChartDataPointsByColumnIndex),
-        hasOpposite,
-        const DeepCollectionEquality().hash(_allDateTimeXAxisValues),
-        const DeepCollectionEquality().hash(_allDataPointValues),
-        maxDataPointValue,
-        minDataPointValue,
-        maxAbsoluteValueCount,
-        yAxisMaxValue,
-        yAxisMinValue,
-        yAxisSteps,
-        layoutWidth,
-        layoutHeight,
-        canvasWidth,
-        canvasHeight,
-        chartWidth,
-        chartHeight,
-        xSegmentWidth,
-        xSegementWidthHalf,
-        yAxisLabelCount
-      ]);
-
-  /// Create a copy of ChartPainterMetadata
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ChartPainterMetadataImplCopyWith<_$ChartPainterMetadataImpl> get copyWith =>
-      __$$ChartPainterMetadataImplCopyWithImpl<_$ChartPainterMetadataImpl>(this, _$identity);
+ final  Map<int, List<CooLineChartDataPoint<dynamic>>> _lineChartDataPointsByColumnIndex;
+@override Map<int, List<CooLineChartDataPoint<dynamic>>> get lineChartDataPointsByColumnIndex {
+  if (_lineChartDataPointsByColumnIndex is EqualUnmodifiableMapView) return _lineChartDataPointsByColumnIndex;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_lineChartDataPointsByColumnIndex);
 }
 
-abstract class _ChartPainterMetadata implements ChartPainterMetadata {
-  const factory _ChartPainterMetadata(
-      {required final Map<int, List<CooLineChartDataPoint>> lineChartDataPointsByColumnIndex,
-      required final Map<int, List<CooBarChartDataPoint>> barChartDataPointsByColumnIndex,
-      required final bool hasOpposite,
-      required final List<DateTime> allDateTimeXAxisValues,
-      required final Set<double> allDataPointValues,
-      required final double maxDataPointValue,
-      required final double minDataPointValue,
-      required final int maxAbsoluteValueCount,
-      required final double yAxisMaxValue,
-      required final double yAxisMinValue,
-      required final double yAxisSteps,
-      required final double layoutWidth,
-      required final double layoutHeight,
-      required final double canvasWidth,
-      required final double canvasHeight,
-      required final double chartWidth,
-      required final double chartHeight,
-      required final double xSegmentWidth,
-      required final double xSegementWidthHalf,
-      required final int yAxisLabelCount}) = _$ChartPainterMetadataImpl;
-
-// All sich auf diesem Index befindenden LineChart Datenpunkte
-// Die exakte Punkt (X,Y) eines LineChart DataPoint Objekts müsste man in Verbidung dises Objektes noch in einem
-// eigenen Objekt halten. Dann könnte man auch den nächstgelegenen Punkt zum Maus Pointer herausfinden
-  @override
-  Map<int, List<CooLineChartDataPoint>> get lineChartDataPointsByColumnIndex;
-  @override
-  Map<int, List<CooBarChartDataPoint>>
-      get barChartDataPointsByColumnIndex; // If there are datapoints wich are marked as opposite this flag will be true
-  @override
-  bool get hasOpposite;
-
-  /// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
-  /// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
-  @override
-  List<DateTime> get allDateTimeXAxisValues;
-
-  /// Die Werte aller Datenreihen werden hier gehalten. Dabei werden alle gegebenen Datenreihen angesehen und jeder
-  /// Wert exakt einmal in diesem Set gespeichrt. So kanne infach über alle vorkommenden Datenwerte iteriert werden.
-  @override
-  Set<double> get allDataPointValues; // Größter Datenpunktwert aller gegbenen Datenpunkt
-  @override
-  double get maxDataPointValue; // Kleinster Datenpunktwert aller gegbenen Datenpunkt
-  @override
-  double get minDataPointValue; // Anzahl aller gegebener Punkt auf dem x-Achsenwert
-  @override
-  int get maxAbsoluteValueCount;
-
-  /// Y-Achse maximale Label-Wert
-  @override
-  double get yAxisMaxValue;
-
-  /// Y-Achse kleinster Label-Wert
-  @override
-  double get yAxisMinValue;
-
-  /// Größe des "Pixel-Steps" zwischen zwie y-Achse Labelpunkten
-  /// Wird zum Berechnen der Datenpunkte für das malen auf dem Canvas benötigt
-  @override
-  double get yAxisSteps;
-
-  /// Layout Attributes
-  /// The width and height of the constraints
-  @override
-  double get layoutWidth;
-  @override
-  double get layoutHeight;
-
-  /// The height of the given canvas
-  @override
-  double get canvasWidth;
-  @override
-  double get canvasHeight;
-
-  /// calculated height of painted chart
-  @override
-  double get chartWidth;
-  @override
-  double get chartHeight; // Abstand zwischen zwei Datenpunkte auf der X-Achse
-  @override
-  double get xSegmentWidth; // Hilfsvariable zu xSegmentWidth, damit sie nicht jedesmal berechnet werden muss
-  @override
-  double get xSegementWidthHalf;
-
-  /// Number of y-axis labels
-  @override
-  int get yAxisLabelCount;
-
-  /// Create a copy of ChartPainterMetadata
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ChartPainterMetadataImplCopyWith<_$ChartPainterMetadataImpl> get copyWith => throw _privateConstructorUsedError;
+ final  Map<int, List<CooBarChartDataPoint<dynamic>>> _barChartDataPointsByColumnIndex;
+@override Map<int, List<CooBarChartDataPoint<dynamic>>> get barChartDataPointsByColumnIndex {
+  if (_barChartDataPointsByColumnIndex is EqualUnmodifiableMapView) return _barChartDataPointsByColumnIndex;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_barChartDataPointsByColumnIndex);
 }
+
+@override final  bool hasOpposite;
+/// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
+/// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
+ final  List<DateTime> _allDateTimeXAxisValues;
+/// Falls die Datenreihe eine zeitlichen Verlauf hat werden hier alle DateTime Datenpunkte zeitlich sortiert
+/// gehalten. Es werden alle gegebenen Datenreihen analysiert und jeder Zeitpunkt nur einmal hinzugefügt.
+@override List<DateTime> get allDateTimeXAxisValues {
+  if (_allDateTimeXAxisValues is EqualUnmodifiableListView) return _allDateTimeXAxisValues;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_allDateTimeXAxisValues);
+}
+
+/// Die Werte aller Datenreihen werden hier gehalten. Dabei werden alle gegebenen Datenreihen angesehen und jeder
+/// Wert exakt einmal in diesem Set gespeichrt. So kanne infach über alle vorkommenden Datenwerte iteriert werden.
+ final  Set<double> _allDataPointValues;
+/// Die Werte aller Datenreihen werden hier gehalten. Dabei werden alle gegebenen Datenreihen angesehen und jeder
+/// Wert exakt einmal in diesem Set gespeichrt. So kanne infach über alle vorkommenden Datenwerte iteriert werden.
+@override Set<double> get allDataPointValues {
+  if (_allDataPointValues is EqualUnmodifiableSetView) return _allDataPointValues;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableSetView(_allDataPointValues);
+}
+
+@override final  double maxDataPointValue;
+@override final  double minDataPointValue;
+@override final  int maxAbsoluteValueCount;
+/// Y-Achse maximale Label-Wert
+@override final  double yAxisMaxValue;
+/// Y-Achse kleinster Label-Wert
+@override final  double yAxisMinValue;
+/// Größe des "Pixel-Steps" zwischen zwie y-Achse Labelpunkten
+/// Wird zum Berechnen der Datenpunkte für das malen auf dem Canvas benötigt
+@override final  double yAxisSteps;
+/// Layout Attributes
+/// The width and height of the constraints
+@override final  double layoutWidth;
+@override final  double layoutHeight;
+/// The height of the given canvas
+@override final  double canvasWidth;
+@override final  double canvasHeight;
+/// calculated height of painted chart
+@override final  double chartWidth;
+@override final  double chartHeight;
+@override final  double xSegmentWidth;
+@override final  double xSegementWidthHalf;
+/// Number of y-axis labels
+@override final  int yAxisLabelCount;
+
+/// Create a copy of ChartPainterMetadata
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ChartPainterMetadataCopyWith<_ChartPainterMetadata> get copyWith => __$ChartPainterMetadataCopyWithImpl<_ChartPainterMetadata>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChartPainterMetadata&&const DeepCollectionEquality().equals(other._lineChartDataPointsByColumnIndex, _lineChartDataPointsByColumnIndex)&&const DeepCollectionEquality().equals(other._barChartDataPointsByColumnIndex, _barChartDataPointsByColumnIndex)&&(identical(other.hasOpposite, hasOpposite) || other.hasOpposite == hasOpposite)&&const DeepCollectionEquality().equals(other._allDateTimeXAxisValues, _allDateTimeXAxisValues)&&const DeepCollectionEquality().equals(other._allDataPointValues, _allDataPointValues)&&(identical(other.maxDataPointValue, maxDataPointValue) || other.maxDataPointValue == maxDataPointValue)&&(identical(other.minDataPointValue, minDataPointValue) || other.minDataPointValue == minDataPointValue)&&(identical(other.maxAbsoluteValueCount, maxAbsoluteValueCount) || other.maxAbsoluteValueCount == maxAbsoluteValueCount)&&(identical(other.yAxisMaxValue, yAxisMaxValue) || other.yAxisMaxValue == yAxisMaxValue)&&(identical(other.yAxisMinValue, yAxisMinValue) || other.yAxisMinValue == yAxisMinValue)&&(identical(other.yAxisSteps, yAxisSteps) || other.yAxisSteps == yAxisSteps)&&(identical(other.layoutWidth, layoutWidth) || other.layoutWidth == layoutWidth)&&(identical(other.layoutHeight, layoutHeight) || other.layoutHeight == layoutHeight)&&(identical(other.canvasWidth, canvasWidth) || other.canvasWidth == canvasWidth)&&(identical(other.canvasHeight, canvasHeight) || other.canvasHeight == canvasHeight)&&(identical(other.chartWidth, chartWidth) || other.chartWidth == chartWidth)&&(identical(other.chartHeight, chartHeight) || other.chartHeight == chartHeight)&&(identical(other.xSegmentWidth, xSegmentWidth) || other.xSegmentWidth == xSegmentWidth)&&(identical(other.xSegementWidthHalf, xSegementWidthHalf) || other.xSegementWidthHalf == xSegementWidthHalf)&&(identical(other.yAxisLabelCount, yAxisLabelCount) || other.yAxisLabelCount == yAxisLabelCount));
+}
+
+
+@override
+int get hashCode => Object.hashAll([runtimeType,const DeepCollectionEquality().hash(_lineChartDataPointsByColumnIndex),const DeepCollectionEquality().hash(_barChartDataPointsByColumnIndex),hasOpposite,const DeepCollectionEquality().hash(_allDateTimeXAxisValues),const DeepCollectionEquality().hash(_allDataPointValues),maxDataPointValue,minDataPointValue,maxAbsoluteValueCount,yAxisMaxValue,yAxisMinValue,yAxisSteps,layoutWidth,layoutHeight,canvasWidth,canvasHeight,chartWidth,chartHeight,xSegmentWidth,xSegementWidthHalf,yAxisLabelCount]);
+
+@override
+String toString() {
+  return 'ChartPainterMetadata(lineChartDataPointsByColumnIndex: $lineChartDataPointsByColumnIndex, barChartDataPointsByColumnIndex: $barChartDataPointsByColumnIndex, hasOpposite: $hasOpposite, allDateTimeXAxisValues: $allDateTimeXAxisValues, allDataPointValues: $allDataPointValues, maxDataPointValue: $maxDataPointValue, minDataPointValue: $minDataPointValue, maxAbsoluteValueCount: $maxAbsoluteValueCount, yAxisMaxValue: $yAxisMaxValue, yAxisMinValue: $yAxisMinValue, yAxisSteps: $yAxisSteps, layoutWidth: $layoutWidth, layoutHeight: $layoutHeight, canvasWidth: $canvasWidth, canvasHeight: $canvasHeight, chartWidth: $chartWidth, chartHeight: $chartHeight, xSegmentWidth: $xSegmentWidth, xSegementWidthHalf: $xSegementWidthHalf, yAxisLabelCount: $yAxisLabelCount)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ChartPainterMetadataCopyWith<$Res> implements $ChartPainterMetadataCopyWith<$Res> {
+  factory _$ChartPainterMetadataCopyWith(_ChartPainterMetadata value, $Res Function(_ChartPainterMetadata) _then) = __$ChartPainterMetadataCopyWithImpl;
+@override @useResult
+$Res call({
+ Map<int, List<CooLineChartDataPoint<dynamic>>> lineChartDataPointsByColumnIndex, Map<int, List<CooBarChartDataPoint<dynamic>>> barChartDataPointsByColumnIndex, bool hasOpposite, List<DateTime> allDateTimeXAxisValues, Set<double> allDataPointValues, double maxDataPointValue, double minDataPointValue, int maxAbsoluteValueCount, double yAxisMaxValue, double yAxisMinValue, double yAxisSteps, double layoutWidth, double layoutHeight, double canvasWidth, double canvasHeight, double chartWidth, double chartHeight, double xSegmentWidth, double xSegementWidthHalf, int yAxisLabelCount
+});
+
+
+
+
+}
+/// @nodoc
+class __$ChartPainterMetadataCopyWithImpl<$Res>
+    implements _$ChartPainterMetadataCopyWith<$Res> {
+  __$ChartPainterMetadataCopyWithImpl(this._self, this._then);
+
+  final _ChartPainterMetadata _self;
+  final $Res Function(_ChartPainterMetadata) _then;
+
+/// Create a copy of ChartPainterMetadata
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? lineChartDataPointsByColumnIndex = null,Object? barChartDataPointsByColumnIndex = null,Object? hasOpposite = null,Object? allDateTimeXAxisValues = null,Object? allDataPointValues = null,Object? maxDataPointValue = null,Object? minDataPointValue = null,Object? maxAbsoluteValueCount = null,Object? yAxisMaxValue = null,Object? yAxisMinValue = null,Object? yAxisSteps = null,Object? layoutWidth = null,Object? layoutHeight = null,Object? canvasWidth = null,Object? canvasHeight = null,Object? chartWidth = null,Object? chartHeight = null,Object? xSegmentWidth = null,Object? xSegementWidthHalf = null,Object? yAxisLabelCount = null,}) {
+  return _then(_ChartPainterMetadata(
+lineChartDataPointsByColumnIndex: null == lineChartDataPointsByColumnIndex ? _self._lineChartDataPointsByColumnIndex : lineChartDataPointsByColumnIndex // ignore: cast_nullable_to_non_nullable
+as Map<int, List<CooLineChartDataPoint<dynamic>>>,barChartDataPointsByColumnIndex: null == barChartDataPointsByColumnIndex ? _self._barChartDataPointsByColumnIndex : barChartDataPointsByColumnIndex // ignore: cast_nullable_to_non_nullable
+as Map<int, List<CooBarChartDataPoint<dynamic>>>,hasOpposite: null == hasOpposite ? _self.hasOpposite : hasOpposite // ignore: cast_nullable_to_non_nullable
+as bool,allDateTimeXAxisValues: null == allDateTimeXAxisValues ? _self._allDateTimeXAxisValues : allDateTimeXAxisValues // ignore: cast_nullable_to_non_nullable
+as List<DateTime>,allDataPointValues: null == allDataPointValues ? _self._allDataPointValues : allDataPointValues // ignore: cast_nullable_to_non_nullable
+as Set<double>,maxDataPointValue: null == maxDataPointValue ? _self.maxDataPointValue : maxDataPointValue // ignore: cast_nullable_to_non_nullable
+as double,minDataPointValue: null == minDataPointValue ? _self.minDataPointValue : minDataPointValue // ignore: cast_nullable_to_non_nullable
+as double,maxAbsoluteValueCount: null == maxAbsoluteValueCount ? _self.maxAbsoluteValueCount : maxAbsoluteValueCount // ignore: cast_nullable_to_non_nullable
+as int,yAxisMaxValue: null == yAxisMaxValue ? _self.yAxisMaxValue : yAxisMaxValue // ignore: cast_nullable_to_non_nullable
+as double,yAxisMinValue: null == yAxisMinValue ? _self.yAxisMinValue : yAxisMinValue // ignore: cast_nullable_to_non_nullable
+as double,yAxisSteps: null == yAxisSteps ? _self.yAxisSteps : yAxisSteps // ignore: cast_nullable_to_non_nullable
+as double,layoutWidth: null == layoutWidth ? _self.layoutWidth : layoutWidth // ignore: cast_nullable_to_non_nullable
+as double,layoutHeight: null == layoutHeight ? _self.layoutHeight : layoutHeight // ignore: cast_nullable_to_non_nullable
+as double,canvasWidth: null == canvasWidth ? _self.canvasWidth : canvasWidth // ignore: cast_nullable_to_non_nullable
+as double,canvasHeight: null == canvasHeight ? _self.canvasHeight : canvasHeight // ignore: cast_nullable_to_non_nullable
+as double,chartWidth: null == chartWidth ? _self.chartWidth : chartWidth // ignore: cast_nullable_to_non_nullable
+as double,chartHeight: null == chartHeight ? _self.chartHeight : chartHeight // ignore: cast_nullable_to_non_nullable
+as double,xSegmentWidth: null == xSegmentWidth ? _self.xSegmentWidth : xSegmentWidth // ignore: cast_nullable_to_non_nullable
+as double,xSegementWidthHalf: null == xSegementWidthHalf ? _self.xSegementWidthHalf : xSegementWidthHalf // ignore: cast_nullable_to_non_nullable
+as double,yAxisLabelCount: null == yAxisLabelCount ? _self.yAxisLabelCount : yAxisLabelCount // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+// dart format on

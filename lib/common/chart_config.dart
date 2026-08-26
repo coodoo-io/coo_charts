@@ -9,7 +9,7 @@ part 'chart_config.freezed.dart';
 
 // Common chart config for every chart Type
 @freezed
-class ChartConfig with _$ChartConfig {
+abstract class ChartConfig with _$ChartConfig {
   const factory ChartConfig({
     /// The color schema for the whole chart. If not set the default color schema will be used
     CooChartTheme? theme,
