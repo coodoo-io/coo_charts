@@ -4,7 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'coo_chart_color_theme.freezed.dart';
 
 @freezed
-class CooChartTheme with _$CooChartTheme {
+abstract class CooChartTheme with _$CooChartTheme {
   const factory CooChartTheme({
     /// The color of the complete chart painter
     required Color backgroundColor,

@@ -7,7 +7,7 @@ part 'chart_painter_metadata.freezed.dart';
 /// Alle von den Chartdaten abhängigen und berechneten Werte die für die Darstellung notwendig sind.
 
 @freezed
-class ChartPainterMetadata with _$ChartPainterMetadata {
+abstract class ChartPainterMetadata with _$ChartPainterMetadata {
   const factory ChartPainterMetadata({
     // All sich auf diesem Index befindenden LineChart Datenpunkte
     // Die exakte Punkt (X,Y) eines LineChart DataPoint Objekts müsste man in Verbidung dises Objektes noch in einem

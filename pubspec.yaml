@@ -6,22 +6,22 @@ repository: https://github.com/coodoo-io/coo_charts
 issue_tracker: https://github.com/coodoo-io/coo_charts/issues
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.0.0"
+  sdk: ">=3.13.0 <4.0.0"
+  flutter: ">=3.47.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.18.1
+  intl: ^0.20.3
   flutter_svg: ^2.0.7
   image: ^4.2.0
-  freezed_annotation: ^2.4.1
+  freezed_annotation: ^3.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-  build_runner: ^2.4.6
-  freezed: ^2.4.5
+  flutter_lints: ^6.0.0
+  build_runner: ^2.16.0
+  freezed: ^4.0.0
 
 flutter:

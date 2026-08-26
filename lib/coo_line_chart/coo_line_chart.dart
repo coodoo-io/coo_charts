@@ -225,7 +225,7 @@ class _CooLineChartState extends State<CooLineChart> {
 
   void loadColumnDataImageAssets(
     ChartColumnBlocks columnBlocks,
-    final VoidCallback onLoadingFinished,
+    VoidCallback onLoadingFinished,
   ) async {
     if (initialized) {
       return;
