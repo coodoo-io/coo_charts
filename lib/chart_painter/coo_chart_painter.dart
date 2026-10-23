@@ -180,6 +180,14 @@ class CooChartPainter extends CustomPainter {
       showFullRect: true,
     );
 
+    // Ohne Datenpunkte gibt es keine Spalten. Die Init setzt die Spaltenanzahl
+    // trotzdem auf 1, damit das Layout nicht durch 0 teilt. Spalten, X-Labels,
+    // Column-Blocks und Tap-Bereiche würden dann ins Leere greifen.
+    if (!_hasDataPoints) {
+      _drawYAxisHorizontalGridLine(canvas);
+      return;
+    }
+
     // Berechnet die Spalten für alle Datenpunkte und setzt den Index welche Column für die
     // darüberliegende Maus gerade aktiv ist.
     _drawBackgroundRect(
@@ -208,18 +216,7 @@ class CooChartPainter extends CustomPainter {
       chartHeight: metadata.chartHeight,
     );
 
-    CooChartPainterUtil.drawYAxisHorizontalGridLine(
-      canvas: canvas,
-      config: chartConfig,
-      colorScheme: theme,
-      metadata: metadata,
-      yAxisConfig: yAxisConfig,
-      columnBlocks: columnBlocks,
-      showGridHorizontal: showGridHorizontal,
-      padding: padding,
-      axisLabelPainter: _axisLabelPainter,
-      opposite: false,
-    );
+    _drawYAxisHorizontalGridLine(canvas);
     // if (yAxisOppositeConfig != null && metadataOpposite != null && metadataOpposite!.hasOpposite) {
     //   CooChartPainterUtil.drawYAxisHorizontalGridLine(
     //     canvas: canvas,
@@ -843,6 +840,26 @@ class CooChartPainter extends CustomPainter {
         }
       }
     }
+  }
+
+  bool get _hasDataPoints => [metadata, metadataOpposite].any((m) =>
+      m != null &&
+      (m.lineChartDataPointsByColumnIndex.isNotEmpty ||
+          m.barChartDataPointsByColumnIndex.isNotEmpty));
+
+  void _drawYAxisHorizontalGridLine(Canvas canvas) {
+    CooChartPainterUtil.drawYAxisHorizontalGridLine(
+      canvas: canvas,
+      config: chartConfig,
+      colorScheme: theme,
+      metadata: metadata,
+      yAxisConfig: yAxisConfig,
+      columnBlocks: columnBlocks,
+      showGridHorizontal: showGridHorizontal,
+      padding: padding,
+      axisLabelPainter: _axisLabelPainter,
+      opposite: false,
+    );
   }
 
   ///
